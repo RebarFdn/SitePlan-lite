@@ -25,6 +25,8 @@ DATA_PATH:Path = BASE_PATH.parent / 'SiteLiteData'
 
 # File Paths
 ENV_PATH:Path = Path.joinpath(BASE_PATH, '.env') 
+# Certificate and Key paths
+CERT_PATH:Path = BASE_PATH / 'keys'
 
 __config:Config = Config(ENV_PATH)
 
@@ -38,7 +40,7 @@ ADMIN_ACCESS:Secret  = __config('DB_SECRET',  cast=Secret)
 
 # Network
 ALLOWED_HOSTS:list = ['127.0.0.1', 'localhost']
-PORT:int = 8004
+PORT:int = 9092
 HOST:str = '0.0.0.0'
 
 # Templates Engine

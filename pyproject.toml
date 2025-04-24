@@ -9,6 +9,12 @@ dependencies = [
     "stringgenerator>=0.4.4",
     "jinja2>=3.1.6",
     "pydantic[email]>=2.11.3",
+    "starlette-wtf>=0.4.5",
+    "uvicorn>=0.34.2",
+    "starlette-htmx>=0.1.1",
+    "starlette-login>=1.0.2",
+    "werkzeug>=3.1.3",
+    "httpx>=0.28.1",
 ]
 
 [build-system]

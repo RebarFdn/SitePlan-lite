@@ -108,7 +108,7 @@ class GenerateId:
             value: 
                 function
     '''
-    tags = dict(
+    tags:dict = dict(
             doc='[h-z5-9]{8:16}',
             app='[a-z0-9]{16:32}',
             key='[a-z0-9]{32:32}',

@@ -173,3 +173,5 @@ cython_debug/
 # node
 node_modules/
 static/node_modules/
+# Cert Keys
+keys/
