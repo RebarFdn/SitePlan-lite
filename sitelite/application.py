@@ -90,8 +90,8 @@ app = Starlette(
 
     ],
     routes=router,
-    on_startup= startApp(),
-    on_shutdown= shutdownApp()
+    on_startup= startApp()
+    
     )
 
 app.add_middleware(
