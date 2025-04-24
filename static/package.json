@@ -1,0 +1,36 @@
+{
+  "name": "sitelite",
+  "version": "1.0.1",
+  "description": "SitePlan-lite static resources manager",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "snyk test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RebarFdn/SitePlan-lite.git"
+  },
+  "keywords": [
+    "planning",
+    "construction",
+    "development"
+  ],
+  "author": "Ian A. Moncrieffe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RebarFdn/SitePlan-lite/issues"
+  },
+  "homepage": "https://github.com/RebarFdn/SitePlan-lite#readme",
+  "devDependencies": {
+    "daisyui": "^5.0.28"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.4",
+    "apexcharts": "^4.6.0",
+    "htmx.org": "^2.0.4",
+    "tailwindcss": "^4.1.4"
+  }
+}
