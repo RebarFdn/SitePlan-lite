@@ -2,8 +2,6 @@
 # April 23 2025
 
 from pathlib import Path
-import os
-import typing
 from starlette.config import Config
 from starlette.datastructures import Secret
 from starlette.templating import Jinja2Templates
@@ -12,16 +10,20 @@ from modules.utils import converTime, convert_timestamp, to_dollars
 
 # Documents Paths
 BASE_PATH:Path = Path(__file__).parent.parent
-LOGS_PATH:Path = BASE_PATH / 'logs'
 STATIC_PATH:Path = BASE_PATH / 'static'
 TEMPLATES_PATH:Path = BASE_PATH / 'templates'
 
 DOCS_PATH:Path = STATIC_PATH / 'docs'
 IMAGES_PATH:Path = STATIC_PATH / 'imgs'
-IMAGES_PATH:Path = STATIC_PATH / 'images'
 MAPS_PATH:Path = STATIC_PATH / 'maps'
 PROFILES_PATH:Path = IMAGES_PATH / 'workers'
 DATA_PATH:Path = BASE_PATH.parent / 'SiteLiteData'
+# Logs
+LOG_PATH:Path = Path.joinpath(BASE_PATH, 'logs')
+SYSTEM_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'system.log')
+SERVER_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'server.log')
+APP_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'app.log')
+
 
 # File Paths
 ENV_PATH:Path = Path.joinpath(BASE_PATH, '.env') 
@@ -46,11 +48,6 @@ HOST:str = '0.0.0.0'
 # Templates Engine
 TEMPLATES = Jinja2Templates(TEMPLATES_PATH)
 
-# Logs
-LOG_PATH:Path = Path.joinpath(BASE_PATH, 'logs')
-SYSTEM_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'system.log')
-SERVER_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'server.log')
-APP_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'app.log')
 
 
 env = TEMPLATES.env
@@ -59,11 +56,3 @@ env.filters['convert_timestamp'] = convert_timestamp
 env.filters['convert_time'] = converTime
 
 
-
-if DATA_PATH.exists():
-    pass
-else:
-    os.mkdir(DATA_PATH)
-
-base_contents = os.listdir(BASE_PATH)
-print(base_contents)

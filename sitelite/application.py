@@ -11,22 +11,54 @@ from starlette_login.login_manager import LoginManager
 from starlette_login.decorator import login_required
 from starlette_login.middleware import AuthenticationMiddleware
 from routes import router
-from config import CERT_PATH, DEBUG, DOCS_PATH, HOST, PORT, SECRET_KEY, Path
+from config import  DEBUG, HOST, PORT, SECRET_KEY, ALLOWED_HOSTS
+from config import CERT_PATH, DATA_PATH,  DOCS_PATH, IMAGES_PATH, LOG_PATH, MAPS_PATH, PROFILES_PATH, Path
 from modules.platformUser import user_list
 
-login_manager = LoginManager(redirect_to='login', secret_key=SECRET_KEY)
-login_manager.set_user_loader(user_list.user_loader)
-
-# Startup Tasks
-def startApp():
-    #reset_invoice_repo()
+# Pre Statrtup Tasks
+def preStartApp():
     print('Checking for Documents Directory ...')
     if DOCS_PATH.exists():
         pass # delete all files
     else:
         print('Creating Documents Directory ...')
         DOCS_PATH.mkdir()
-    print()
+    if IMAGES_PATH.exists():
+        pass
+    else:
+        print('Creating Images Directory ...')
+        IMAGES_PATH.mkdir()
+    if MAPS_PATH.exists():
+        pass
+    else:
+        print('Creating Maps Directory ...')
+        MAPS_PATH.mkdir()
+    if PROFILES_PATH.exists():
+        pass
+    else:
+        print('Creating Profiles Directory ...')
+        PROFILES_PATH.mkdir()
+    if LOG_PATH.exists():
+        pass
+    else:
+        print('Creating Logs Directory ...')
+        LOG_PATH.mkdir()
+    if DATA_PATH.exists():
+        pass
+    else:
+        print('Creating Data Directory ...')
+        DATA_PATH.mkdir()
+    print('Checking for Certificate and Key ...')       
+    
+    
+login_manager = LoginManager(redirect_to='login', secret_key=SECRET_KEY)
+login_manager.set_user_loader(user_list.user_loader)
+
+
+# Startup Tasks
+def startApp():
+    print('Application is starting ... !')
+    print('Checking for Database ...')
     print('clearing caches')
     #Mapper().clear_img_cache()
     print('Starting SiteApp Servers ')
@@ -78,16 +110,38 @@ app.add_middleware(
 )
 
 if __name__ == '__main__':
-    import uvicorn
+    from  uvicorn import run
+    # Perform pre-startup tasks
+    preStartApp()
+    
     key_path:Path = CERT_PATH /  "localhost+2-key.pem"
     cert_path:Path = CERT_PATH / "localhost+2.pem"
-    try:
-        uvicorn.run(
-            app=app, 
-            host=HOST, 
-            port=PORT, 
-            ssl_certfile=cert_path, 
-            ssl_keyfile=key_path 
-        )
-    except Exception as e:
-        print(str(e))
+    # Check if the certificate and key files exist
+    if not key_path.exists() or not cert_path.exists():
+        print(f"Certificate or key file not found at {key_path} or {cert_path}.")
+        try:
+            run(
+                app=app, 
+                host=HOST, 
+                port=PORT, 
+                ssl_certfile=None, 
+                ssl_keyfile=None 
+            )
+        except Exception as e:
+            print(str(e))
+    else:
+        print(f"Certificate and key file found at {key_path} and {cert_path}.")
+        # Start the server with SSL
+        try:
+            run(
+                app=app, 
+                host=HOST, 
+                port=PORT, 
+                ssl_certfile=cert_path, 
+                ssl_keyfile=key_path 
+            )
+        except Exception as e:
+            print(str(e))
+    print('Server is running ...')
+    print('Press Ctrl+C to stop the server.')
+    

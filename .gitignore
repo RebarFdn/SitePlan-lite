@@ -175,3 +175,9 @@ node_modules/
 static/node_modules/
 # Cert Keys
 keys/
+# Docs
+docs/
+# Maps
+maps/
+# Logs
+logs/
