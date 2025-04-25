@@ -97,27 +97,12 @@ class ModelForm(BaseModel):
             if not insert: 
                 yield """</body></html>"""
         return StreamingResponse( generate_form(), media_type="text/html")
-    
-    def validate(self, value: Any) -> Any:        
-        try:
-            model = Model(**value)
-            print(model)
-        except ValidationError as ero:
-            error_locations = ero.errors() #[e['loc'] for e in ero.errors()]
-            print("PydanticUserError", error_locations)
-            return ero.errors()
-        return value
-    
-    
-    def process_form(self, form):
-        nested = self.model_json_schema().get('$defs')
-        
-        try:
-            model = self(**data)
-            print(model)
-        except ValidationError as ero:
-            error_locations = ero.errors() #[e['loc'] for e in ero.errors()]
-            print("PydanticUserError", error_locations)
-        
-        return {"nested": nested.keys(), "form": form }
 
+
+    def validate(self, value:Any) -> Any:
+        try:
+            model = ModelForm( **value )
+        except ValidationError as ero:
+            error_locations = ero.errors()
+            return error_locations
+        return value

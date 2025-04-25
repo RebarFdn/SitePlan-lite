@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, SecretStr, ValidationError, field_serializer
+from models.form_model import ModelForm
 from typing import Any
+
 # Password Model
 class Password(BaseModel):
     password: SecretStr = Field(
@@ -16,7 +18,7 @@ class Password(BaseModel):
     
 
 # Registration Model
-class RegisterUser(BaseModel):
+class RegisterUser(ModelForm):
     name: str = Field(default=None, min_length=3, max_length=32)
     username: str = Field(default=None, min_length=3, max_length=8)
     password:Password = Password()
