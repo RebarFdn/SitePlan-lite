@@ -48,7 +48,12 @@ def preStartApp():
     else:
         print('Creating Data Directory ...')
         DATA_PATH.mkdir()
-    print('Checking for Certificate and Key ...')       
+    if CERT_PATH.exists():
+        pass    
+    else:
+        print('Creating Certificate Directory ...')
+        CERT_PATH.mkdir()
+          
     
     
 login_manager = LoginManager(redirect_to='login', secret_key=SECRET_KEY)
