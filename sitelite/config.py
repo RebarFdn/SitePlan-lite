@@ -29,7 +29,10 @@ APP_LOG_PATH:Path = Path.joinpath(LOG_PATH, 'app.log')
 ENV_PATH:Path = Path.joinpath(BASE_PATH, '.env') 
 # Certificate and Key paths
 CERT_PATH:Path = BASE_PATH / 'keys'
-
+# Icons Path
+ICONS_PATH:Path = IMAGES_PATH / 'icons' 
+FAVICON_PATH:Path = ICONS_PATH / 'favicon-16x16.png'
+# Application Secrets
 __config:Config = Config(ENV_PATH)
 
 # Application Specific Settings
