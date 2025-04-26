@@ -2,7 +2,9 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse
 from config import TEMPLATES
 from starlette.routing import Mount,Route, WebSocketRoute
+from pydantic import ValidationError, PydanticUserError
 from models.auth_models import Password, RegisterUser
+
 # Application Home Page
 
 
@@ -14,12 +16,17 @@ async def Register(request:Request):
     '''  '''
     if request.method == 'POST':
         form = await request.form()
-        err = RegisterUser().validate(value=form)
-        if err:
-            return err
-        else:
-            data = RegisterUser( **form, password=Password( **form ))
-            return HTMLResponse(f"""<div>{data}</div>""")
+        try:
+            data = RegisterUser( 
+                name=form.get('name'),
+                username=form.get('username'), 
+                email=form.get('email'), 
+                password=form.get('password') 
+            )
+            return HTMLResponse(f"""<div>{data.model_dump()}</div>""")
+        except  ValidationError as ero:           
+            return HTMLResponse(f"""<div>{ero}</div>""")       
+        
     else:
         form = RegisterUser().form()
         return form

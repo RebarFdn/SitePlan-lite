@@ -3,7 +3,7 @@ from models.form_model import ModelForm
 from typing import Any
 
 # Password Model
-class Password(BaseModel):
+class Password(ModelForm):
     password: SecretStr = Field(
         default=None, min_length=6, max_length=12,
         json_schema_extra={"icon": "shield", "help": "Password should be between 6 and 12 letters."} 
@@ -12,7 +12,7 @@ class Password(BaseModel):
         try:
             model = Password( **value )
         except ValidationError as ero:
-            error_locations = ero.errors()
+            error_locations = ero
             return error_locations
         return value
     
@@ -21,9 +21,19 @@ class Password(BaseModel):
 class RegisterUser(ModelForm):
     name: str = Field(default=None, min_length=3, max_length=32)
     username: str = Field(default=None, min_length=3, max_length=8)
-    password:Password = Password()
     email: EmailStr = None
+    password:SecretStr = Field(
+        default=None, min_length=6, max_length=12,
+        json_schema_extra={"icon": "shield", "help": "Password should be between 6 and 12 letters."} 
+    )
+    
+
+    def validate(self, value:Any) -> Any:
+        try:
+            model = RegisterUser( **value )
+        except ValidationError as ero:
+            error_locations = ero.errors
+            return error_locations
+        return value
 
 
-regu = RegisterUser()
-print(regu)   

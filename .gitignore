@@ -181,3 +181,6 @@ docs/
 maps/
 # Logs
 logs/
+# Js packages
+static/jscss/
+jscss/
