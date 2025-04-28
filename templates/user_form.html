@@ -1,0 +1,16 @@
+{% include '/baseTemplates/main_template.html'%}
+{% block content %}
+    <form method="post">
+        <input type="hidden" name="csrf" value="{{form.csrf}}" />
+
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{form.fields.name.value}}">
+        <div>{{ form.fields.name.error }}</div>
+
+        <label for="age">Age</label>
+        <input type="text" name="age" id="age" value="{{form.fields.age.value}}">
+        <div>{{ form.fields.age.error }}</div>
+        <input type="submit" value="Submit User">
+    </form>
+
+{% endblock %}
