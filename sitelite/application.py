@@ -4,14 +4,14 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from starlette_compress import CompressMiddleware
 from starlette_wtf import CSRFProtectMiddleware
 from starlette_htmx.middleware import HtmxMiddleware
 from starlette_login.backends import SessionAuthBackend
 from starlette_login.login_manager import LoginManager
-from starlette_login.decorator import login_required
 from starlette_login.middleware import AuthenticationMiddleware
 from routes import router
-from config import  DEBUG, HOST, PORT, SECRET_KEY, ALLOWED_HOSTS
+from config import  DEBUG, HOST, PORT, SECRET_KEY
 from config import CERT_PATH, DATA_PATH,  DOCS_PATH, IMAGES_PATH, LOG_PATH, MAPS_PATH, PROFILES_PATH, Path
 from modules.platformUser import user_list
 
@@ -92,6 +92,11 @@ app = Starlette(
             login_manager=login_manager,
             allow_websocket=False,
         ),
+    Middleware(CompressMiddleware, 
+        zstd_level=6, 
+        brotli_quality=6, 
+        gzip_level=6, 
+        minimum_size=1000 )
 
     ],
     routes=router,

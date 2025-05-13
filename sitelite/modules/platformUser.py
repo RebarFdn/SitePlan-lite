@@ -1,4 +1,5 @@
-import typing, asyncio
+import typing
+import asyncio
 from dataclasses import dataclass
 from starlette.requests import Request
 from starlette_login.mixins import UserMixin
@@ -160,14 +161,14 @@ class User():
                     await self.conn.post( json=self.data)
                 
                     return {"status": 202, "message": "Accepted"}
-                except Exception as e:                
+                except Exception:                
                     return {"status": 500, "message": "Internal Server Error"}
         else:
             try:
                 await self.conn.post( json=self.data)
                 
                 return {"status": 202, "message": "Accepted"}
-            except Exception as e:                
+            except Exception:                
                 return {"status": 500, "message": "Internal Server Error"}
 
                 
@@ -265,7 +266,8 @@ class User():
 
     @property
     def user_access_data(self, data:dict=None):
-        import json, hashlib
+        import json
+        import hashlib
         if data:
             uad = json.loads(json.dumps(data))           
         else:

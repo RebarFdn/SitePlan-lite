@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "buildcss": "tailwindcss -i ./css/input.css -o ./css/site.css --watch",
+    "build": "tailwindcss -i ./css/input.css -o ./css/site.css --watch",
     "test": "snyk test"
   },
   "repository": {
