@@ -186,3 +186,8 @@ logs/
 # Js packages
 static/jscss/
 jscss/
+
+fontawesome/
+
+imgs/icons/
+imgs/workers/

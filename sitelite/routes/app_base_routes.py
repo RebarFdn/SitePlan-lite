@@ -35,3 +35,19 @@ async def register_user(request:Request):
     except:
         form = RegisterUser().data_form()
         html_form = RegisterUser().html_form(header=header, post='/register', form=form)
+
+
+
+
+@router.get("/project/{id}/{property}")
+@router.post("/project/{id}/{property}")
+@router.put("/project/{id}/{property}")
+@router.delete("/project/{id}/{property}")
+async def gppd_project_(request:Request): # get, post, put & delete
+    ''' '''      
+    prop = request.path_params.get('property')    
+    if prop.__len__() > 1  :
+        pm = projectManager( id=request.path_params.get('id'), properties=[prop]) 
+    else :
+        pm = projectManager( id=request.path_params.get('id'))         
+    return await pm._template(request)

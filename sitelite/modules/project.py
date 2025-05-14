@@ -130,11 +130,8 @@ class projectManager:
         else:
             pass
         property_search = {
-            'index': TEMPLATES.TemplateResponse('/components/project/projectsIndex.jinja', 
+            'index': TEMPLATES.TemplateResponse('/components/project/projectsIndex.html', 
                         {"request": request, "projects": await all_projects()}
-                    ),
-            'phases': TEMPLATES.TemplateResponse('/components/project/projectPhases.jinja', 
-                        {"request": request, "project_phases": project_phases()}
                     )
         }
         
@@ -146,10 +143,10 @@ class projectManager:
         await self.load_data()
         search_ = {
             'id': TEMPLATES.TemplateResponse(
-                '/components/project/projectPage.jinja', 
+                '/components/project/projectPage.html', 
                 {"request": request, "project": self.project }),
             'account': TEMPLATES.TemplateResponse(
-                '/components/project/projectAccountConsole.jinja', 
+                '/components/project/projectAccount.html', 
                 {"request": request, "project": self.project }),
         }
         if self.properties:

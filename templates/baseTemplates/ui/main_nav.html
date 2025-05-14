@@ -12,35 +12,102 @@
         <ul
           tabindex="0"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-          <li><a>Item 1</a></li>
+          <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button" ><span class="fa fa-cubes"></span>Projects</label></li>
           <li>
-            <a>Parent</a>
+            <a><span class="fa fa-users"></span> Team</a>
             <ul class="p-2">
-              <li><a>Submenu 1</a></li>
-              <li><a>Submenu 2</a></li>
+              <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
+              <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
+              <li><a><span class="fa fa-user-times"></span>Workers</a></li>
             </ul>
           </li>
-          <li><a>Item 3</a></li>
+          <li><a><span class="fa fa-dollar"></span>Industry Rates</a></li>
+          <li><a><span class="fa fa-truck"></span>Suppliers</a></li>
+          <li><a><span class="fa fa-wrench"></span>Tools</a>
+            <ul class="p-2">
+              <li><a><span class="fa fa-calculator"></span>  Calculator</a></li>
+              <li><a><span class="fa fa-poo"></span> Dropbox</a></li>
+              <li><a><span class="fa fa-edit"></span> Estimator</a></li>
+              <li><a><span class="fa fa-list-ol"></span> Todos</a></li>
+            </ul></li>
         </ul>
       </div>
       
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
-        <li><a>Item 1</a></li>
+        <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button"><span class="fa fa-cubes"></span>Projects</label></li>
         <li>
           <details>
-            <summary>Parent</summary>
-            <ul class="p-2">
-              <li><a>Submenu 1</a></li>
-              <li><a>Submenu 2</a></li>
+            <summary><span class="fa fa-users"></span> Team</summary>
+            <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+              <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
+              <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
+              <li><a><span class="fa fa-user-times"></span>Workers</a></li>
             </ul>
           </details>
         </li>
-        <li><a>Item 3</a></li>
+        <li><a><span class="fa fa-dollar"></span>Industry Rates</a></li>
+          <li><a><span class="fa fa-truck"></span>Suppliers</a></li>
+          <li><details class="dropdown">
+            <summary><span class="fa fa-wrench"></span>Tools</summary>
+            <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+              <li><a><span class="fa fa-calculator"></span>  Calculator</a></li>
+              <li><a><span class="fa fa-poo"></span> Dropbox</a></li>
+              <li><a><span class="fa fa-edit"></span> Estimator</a></li>
+              <li><a><span class="fa fa-list-ol"></span> Todos</a></li>
+            </ul>
+          </details></li>
+          <li> <div class="dropdown">
+        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+        </div>
+        <ul
+          tabindex="0"
+          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+          <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button"><span class="fa fa-cubes"></span>Projects</label></li>
+          <li>
+            <a><span class="fa fa-users"></span> Team</a>
+            <ul class="p-2">
+              <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
+              <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
+              <li><a><span class="fa fa-user-times"></span>Workers</a></li>
+            </ul>
+          </li>
+          <li><a><span class="fa fa-dollar"></span>Industry Rates</a></li>
+          <li><a><span class="fa fa-truck"></span>Suppliers</a></li>
+          
+            <li><details class="dropdown">
+              <summary class="btn m-1"><span class="fa fa-wrench"></span> Tools</summary>
+              <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                <li><a><span class="fa fa-calculator"></span>  Calculator</a></li>
+              <li><a><span class="fa fa-poo"></span> Dropbox</a></li>
+              <li><a><span class="fa fa-edit"></span> Estimator</a></li>
+              <li><a><span class="fa fa-list-ol"></span> Todos</a></li>
+              </ul>
+            </details></li>
+        </ul>
+      </div>
+           </li>
       </ul>
     </div>
     <div class="navbar-end">
-      <a class="btn">Button</a>
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn m-1">User</div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+          <li><a><span class="fa fa-user"></span>Active User</a></li>
+          <li><a><span class="fa fa-gear"></span>Settings</a></li>
+          <li><div class="tooltip tooltip-info" data-tip="Admin credentials required!">
+            
+            <a  href="http://127.0.0.1:5984/_utils/" target="blank"><span class="fa fa-database"></span> Admin</a>
+          </div>
+          </li>
+          <li><a href="/register"><span class="fa fa-long-arrow-left"></span>Logout</a></li>
+          
+        </ul>
+      </div>
+      
+     
+
     </div>
   </div>
