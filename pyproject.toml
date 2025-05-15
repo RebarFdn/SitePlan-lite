@@ -22,6 +22,7 @@ dependencies = [
     "starlette-compress>=1.5.1",
     "shiny>=1.4.0",
     "shinywidgets>=0.5.2",
+    "tabulate>=0.9.0",
 ]
 
 [build-system]

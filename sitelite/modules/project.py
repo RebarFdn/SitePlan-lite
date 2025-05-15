@@ -1,11 +1,14 @@
-from typing import Coroutine, List
+from typing import Coroutine, List, Any
 from asyncio import sleep
 from starlette.requests import Request
+from starlette.responses import HTMLResponse, JSONResponse
 from database import Recouch, local_db
 from logger import logger
 from modules.utils import timestamp, load_metadata, set_metadata, generate_id
 from models import Project, project_phases, project_template 
 from config import TEMPLATES
+
+from tabulate import tabulate
 
 _databases:dict = { # Project Databases
             "local":"site-projects", 
@@ -116,6 +119,10 @@ class projectManager:
         finally:            
             del(payload)
             
+    def html_table(self, data:Any=None ):
+        table = tabulate(data, tablefmt="html")
+        return table
+
 
     async def _template(self, request:Request):
         if request.method == 'POST':            
@@ -130,7 +137,7 @@ class projectManager:
         else:
             pass
         property_search = {
-            'index': TEMPLATES.TemplateResponse('/components/project/projectsIndex.html', 
+            'index': TEMPLATES.TemplateResponse('/components/project/Index.html', 
                         {"request": request, "projects": await all_projects()}
                     )
         }
@@ -141,12 +148,13 @@ class projectManager:
             pass
         
         await self.load_data()
+        table = self.html_table(data=self.project.get('activity_log'))
         search_ = {
             'id': TEMPLATES.TemplateResponse(
-                '/components/project/projectPage.html', 
-                {"request": request, "project": self.project }),
+                '/components/project/Home.html', 
+                {"request": request, "project": self.project, "table": table }),
             'account': TEMPLATES.TemplateResponse(
-                '/components/project/projectAccount.html', 
+                '/components/project/Account.html', 
                 {"request": request, "project": self.project }),
         }
         if self.properties:

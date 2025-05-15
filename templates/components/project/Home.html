@@ -1,0 +1,104 @@
+<h2 class="card-title" hx-get="/project/index/i" hx-target="#right-bar" hx-trigger="every 5s">{{ project.name }} Home Page</h2>
+
+<div class="tabs tabs-lift">
+    <label class="tab"> <span class="fa fa-home"></span>
+      <input type="radio" name="my_tabs_4" checked="checked"/>
+     Home
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6">
+        <div id="project-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
+            <div id="projecthome-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
+                {{ project.owner }}
+        
+            </div>
+            <div id="projecthome-left-display" class="md:col-span-2 bg-gray-100 border-gray-300 rounded-sm ml-2">
+                {{ project.address }}
+            </div>
+        </div>
+    </div>
+  
+    <label class="tab"><span class="fa fa-bank"></span>
+      <input type="radio" name="my_tabs_4" />
+      Account
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6">
+        {{ project.account }}
+    </div>
+  
+    <label class="tab"><span class="fa fa-user-times"></span>
+      <input type="radio" name="my_tabs_4" />
+      Workers
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6">
+        {{ project.workers }}    
+    </div>
+
+    <label class="tab"><span class="fa fa-face-cogs"></span>
+        <input type="radio" name="my_tabs_4" />
+        Jobs
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.tasks }}    
+      </div>
+
+    
+      <label class="tab"><span class="fa fa-history"></span>
+        <input type="radio" name="my_tabs_4" />
+        Daywork
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.daywork }}    
+      </div>
+
+    <label class="tab"><span class="fa fa-dollar"></span>
+        <input type="radio" name="my_tabs_4" />
+        Rates
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.rates }}    
+      </div>
+
+    
+      <label class="tab"><span class="fa fa-cubes"></span>
+        <input type="radio" name="my_tabs_4" />
+        Inventory
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.inventory }}    
+      </div>
+
+
+    <label class="tab"><span class="fa fa-list-alt"></span>
+        <input type="radio" name="my_tabs_4" />
+        Orders
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.account.records.purchase_orders }}    
+      </div>
+
+
+    <label class="tab"><span class="fa fa-hourglass-start"></span>
+        <input type="radio" name="my_tabs_4" />
+        Event/State
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.event }}    {{ project.state }}    
+      </div>
+
+
+    <label class="tab"><span class="fa fa-list-ul"></span>
+        <input type="radio" name="my_tabs_4" />
+        Logs
+    </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+        <div id="project-activity-log"> </div>
+        {{ project.activity_log }}
+      </div>
+
+
+
+  </div>
+
+
+
+<script type="module" src="/static/js/app/app.js"></script>
