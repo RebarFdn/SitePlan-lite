@@ -83,16 +83,20 @@ async def projects_index()->list:
     """
     return [{"_id": project.get('id'), "name": project.get('key')} for project in await all_projects()]
 
+
 class projectManager:
+    """Handles Client side requests and responses 
+
+        Returns an Html template 
+    """
     id:str = None
     PROPERTIES_INDEX:list = ['index', 'phases', 'model']
+
     def __init__(self, id:str=None, properties:list=[]):
         self.id = id
         self.properties = properties
         
-    async def load_data(self):
-        self.project = await get_project(id=self.id)
-
+    
     async def create_new_project(self, request:Request):
         payload = project_template()
         async with request.form() as form:
@@ -115,16 +119,13 @@ class projectManager:
         try:     
             return await save_project(data=payload, user='ian') #username) 
         except Exception as e:
-            return print(str(e))
+            return str(e)
         finally:            
             del(payload)
             
-    def html_table(self, data:Any=None ):
-        table = tabulate(data, tablefmt="html")
-        return table
-
-
+    
     async def _template(self, request:Request):
+        # Process Create New and Delete Requests
         if request.method == 'POST':            
             if self.properties.__len__() > 0 and self.properties[0] == 'save':
                 await self.create_new_project(request=request)
@@ -136,23 +137,23 @@ class projectManager:
             self.id = 'index'                
         else:
             pass
+        # Process Get Requests
         property_search = {
             'index': TEMPLATES.TemplateResponse('/components/project/Index.html', 
-                        {"request": request, "projects": await all_projects()}
-                    )
+                        {"request": request, "projects": await all_projects()})
         }
-        
+        # 
         if self.id in self.PROPERTIES_INDEX:
             return property_search.get(self.id)
         else:
             pass
+        # if self.id is a project id 
+        self.project = await get_project(id=self.id)
         
-        await self.load_data()
-        table = self.html_table(data=self.project.get('activity_log'))
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Home.html', 
-                {"request": request, "project": self.project, "table": table }),
+                {"request": request, "project": self.project }),
             'account': TEMPLATES.TemplateResponse(
                 '/components/project/Account.html', 
                 {"request": request, "project": self.project }),
@@ -161,5 +162,62 @@ class projectManager:
             return search_.get(self.properties[0])
         else:
             return search_.get('id')
+
+
+
+class ProjectApi:
+    """Handles Api requests to the server  
+
+        Returns Json 
+    """
+    id:str = None
+    PROPERTIES_INDEX:list = ['index', 'phases', 'model']
+
+    def __init__(self, id:str=None, properties:list=[]):
+        self.id = id
+        self.properties = properties
+
+    async def _jsonapi(self, request:Request):
+        # Process Create New and Delete Requests
+        if request.method == 'POST':            
+            if self.properties.__len__() > 0 and self.properties[0] == 'logs':
+                await self.create_new_project(request=request)
+            else:
+                pass
+        elif request.method == 'DELETE':
+            await delete_project(id=self.id) 
+            await sleep(0.5)           
+            self.id = 'index'                
+        else:
+            pass
+        # Process Get Requests
+        property_search = {
+            'index': JSONResponse( await all_projects() ),
+            'phases': JSONResponse( project_phases() ),
+            'model': JSONResponse( project_template() )
+        }
+        # 
+        if self.id in self.PROPERTIES_INDEX:
+            return property_search.get(self.id)
+        else:
+            pass
+        # if self.id is a project id 
+        self.project = await get_project(id=self.id)
+        
+        search_ = {
+            'id': JSONResponse( self.project ),
+            #'account': JSONResponse( self.project.get('account') ),
+            self.properties[0]: JSONResponse( self.project.get(self.properties[0]) ),
+        }
+        if self.properties:
+            if self.properties.__len__() == 1: 
+                return search_.get(self.properties[0])
+            elif self.properties.__len__() == 2: 
+                search[self.properties[0]] = JSONResponse( self.project.get(self.properties[0], {}).get(self.properties[1]) )
+                return search_.get(self.properties[0])
+        else:
+            return search_.get('id')
+
+
 
 

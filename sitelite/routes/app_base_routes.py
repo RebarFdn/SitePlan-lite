@@ -6,7 +6,7 @@ from starlette.routing import Mount,Route, WebSocketRoute
 from models.data_models import RegisterUser
 from decoRouter import Router
 # Application Modules
-from modules.project import projectManager
+from modules.project import projectManager, ProjectApi
 from modules.employee import employeeManager
 from modules.rate import rateManager
 from modules.supplier import supplierManager
@@ -51,3 +51,18 @@ async def gppd_project_(request:Request): # get, post, put & delete
     else :
         pm = projectManager( id=request.path_params.get('id'))         
     return await pm._template(request)
+
+
+@router.get("/api_project/{id}/{property}/{atribute}")
+@router.post("/api_project/{id}/{property}/{atribute}")
+@router.put("/api_project/{id}/{property}/{atribute}")
+@router.delete("/api_project/{id}/{property}/{atribute}")
+async def api_project(request:Request): # get, post, put & delete
+    ''' '''      
+    prop = request.path_params.get('property') 
+    atrib = request.path_params.get('atribute')    
+    if prop.__len__() > 1 and atrib.__len__() > 1  :
+        papi = ProjectApi( id=request.path_params.get('id'), properties=[prop, attrib]) 
+    else :
+        papi = ProjectApi( id=request.path_params.get('id'))         
+    return await papi._jsonapi(request)

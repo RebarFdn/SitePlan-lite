@@ -9,7 +9,7 @@ alerter()
 var table = new Tabulator("#project-activity-log", {
     height:"300px", //set the table height option
     rowHeight:40,
-    layout:"fitData",
+    //layout:"fitData",
     persistence:{
         sort:true,
         filter:true,

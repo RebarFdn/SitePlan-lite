@@ -1,0 +1,129 @@
+<div id="job-console">
+<div class="navbar bg-base-100 shadow-sm">
+    <div class="flex-1">
+      <a class="btn btn-ghost text-xl" onclick="new_job.showModal()">Jobs</a>
+    </div>
+    <div class="navbar-start">
+        <ul class="menu menu-horizontal px-1">
+        <li><label class="input">
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </g>
+            </svg>
+            <input type="search" name="search-project-jobs" required placeholder="Search Jobs" class="input-sm rounded-md" />
+          </label>
+        </li>
+        <li>
+            <details>
+              <summary>Filter</summary>
+              <ul class="bg-base-100 rounded-t-none p-2">
+                <li><a>Link 1</a></li>
+                <li><a>Link 2</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li><button class="btn" onclick="new_job.showModal()">Create New Job</button></li>        
+        
+      </ul>
+    </div>
+  </div>
+   
+
+  <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
+    <table class="table table-zebra table-xs md:table-sm">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th>Id</th>          
+          <th>Title</th>
+          <th>Description</th>
+          <th>Phase</th>
+          <th>Crew</th>          
+          <th>Tasks</th>
+          <th>State </th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- row 1 -->
+        {% for row in project.tasks  %}
+        <tr>
+          <th><label>{{ row._id }}</label></th>
+          <td class="cursor-pointer" hx-get="/project/{{project._id}}/tasks/{{ row._id }}" hx-target="#job-console" hx-trigger="click">{{ row.title }}</td>
+          <td>{{ row.description }}</td>
+          <td>{{ row.projectPhase }}</td>
+          <td> {{ row.crew.name }} </td>
+          <th> {{ row.tasks | length }} </th>
+          <td>
+            {% if row.state.active %}
+                <span class="badge badge-success">Active</span>
+            {% elif row.state.complete %}
+                <span class="badge badge-primary">Completed</span>
+            {% elif row.state.pause %}
+                <span class="badge badge-warning">Paused</span>
+            {% elif row.state.terminate %}
+                <span class="badge badge-error">Terminated</span>
+            {% else %}
+              
+                <span class="badge badge-outline badge-accent badge-sm">Ready</span>
+            {% endif %}
+            
+        </td>
+        <td><span class="badge">{{ row.get('progress') }}% </span></td>
+        </tr>
+        {% endfor %}
+        <!-- row 1 -->       
+        <tr>
+          <th></th>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td> </td>
+          <th></th>
+        </tr>
+        
+      </tbody>
+      <!-- foot -->
+      <tfoot>
+        <tr>
+            <th>Id</th>          
+            <th>Title</th>
+            <th>Description</th>
+            <th>Phase</th>
+            <th>Crew</th>          
+            <th>Tasks</th>
+            <th>State </th>
+            <th>Progress</th>
+          </tr>
+      </tfoot>
+    </table>
+    {% for k, v in project.tasks[0].items() %}  
+  <span> {{ k }} ... </span>
+  {% endfor %}
+  </div>
+  
+<dialog id="new_job" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="text-lg font-bold">Create New Job</h3>
+    <p class="py-4">Click the button below to close</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+</div>
