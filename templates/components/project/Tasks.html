@@ -58,10 +58,10 @@
       </thead>
       <tbody>
         <!-- row 1 -->
-        {% for row in project.tasks  %}
+        {% for row in tasks  %}
         <tr>
           <th><label>{{ row._id }}</label></th>
-          <td class="cursor-pointer" hx-get="/project/{{project._id}}/tasks/{{ row._id }}" hx-target="#job-console" hx-trigger="click">{{ row.title }}</td>
+          <td class="cursor-pointer" hx-get="/project/{{row.project_id}}/tasks/{{ row._id }}" hx-target="#job-console" hx-trigger="click">{{ row.title }}</td>
           <td>{{ row.description }}</td>
           <td>{{ row.projectPhase }}</td>
           <td> {{ row.crew.name }} </td>
@@ -109,9 +109,8 @@
           </tr>
       </tfoot>
     </table>
-    {% for k, v in project.tasks[0].items() %}  
-  <span> {{ k }} ... </span>
-  {% endfor %}
+   
+  
   </div>
   
 <dialog id="new_job" class="modal">
