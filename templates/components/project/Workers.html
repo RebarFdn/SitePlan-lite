@@ -75,8 +75,9 @@
                 </div>
               </div>
               <div>
-                <div class="font-bold">{{ row.value.name }}</div>
+                <div class="font-bold cursor-pointer" hx-get="/Project/{{project._id}}/workers/{{ row.id }}" hx-target="#workers-console" hx-trigger="click">{{ row.value.name }}</div>
                 <div class="text-sm opacity-50">{{ row.value.oc }} | {{ row.key }}</div>
+                
               </div>
             </div>
           </td>

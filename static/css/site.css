@@ -2157,6 +2157,11 @@
       }
     }
   }
+  .btn-sm {
+    --fontsize: 0.75rem;
+    --btn-p: 0.75rem;
+    --size: calc(var(--size-field, 0.25rem) * 8);
+  }
   .badge-accent {
     --badge-color: var(--color-accent);
     --badge-fg: var(--color-accent-content);
@@ -2180,6 +2185,10 @@
   .badge-warning {
     --badge-color: var(--color-warning);
     --badge-fg: var(--color-warning-content);
+  }
+  .btn-info {
+    --btn-color: var(--color-info);
+    --btn-fg: var(--color-info-content);
   }
   .sm\:footer-horizontal {
     @media (width >= 40rem) {

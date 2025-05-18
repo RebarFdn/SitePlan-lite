@@ -8,12 +8,14 @@ from modules.utils import timestamp, load_metadata, set_metadata, generate_id
 from models import Project, project_phases, project_template 
 from config import TEMPLATES
 
-from tabulate import tabulate
+import time
+from plyer import notification
+#from tabulate import tabulate
 
 _databases:dict = { # Project Databases
-            "local":"site-projects", 
+            "local":"lite-projects", 
             "local_partitioned": False,
-            "slave":"site-projects", 
+            "slave":"lite-projects", 
             "slave_partitioned": False            
             }
 # connection to site-projects database 
@@ -149,7 +151,13 @@ class projectManager:
             pass
         # if self.id is a project id 
         self.project = await get_project(id=self.id)
-        
+        notification.notify(
+            title = "HEADING HERE",
+            message=" DESCRIPTION HERE" ,
+          
+            # displaying time
+            timeout=2 
+        )
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Home.html', 
@@ -209,24 +217,44 @@ class ProjectClient:
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Home.html', 
                 {"request": request, "project": self.project }),
-            #'account': JSONResponse( self.project.get('account') ),
             
         }
         if self.properties:
             if self.properties.__len__() == 1: 
-                search_[self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
-                {"request": request, self.properties[0]:  self.project.get(self.properties[0])  }), 
+                notification.notify(
+                    title = "Request Properties",
+                    message= f"/components/project/{self.properties[0].capitalize()}.html" ,
+                
+                    # displaying time
+                    timeout=2 
+                )
+                search_ [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
+                    {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})
+             
+                
                 return search_.get(self.properties[0])
             elif self.properties.__len__() == 2:
-                if self.properties[0] == 'tasks': 
+                
+                prop:str = None
+                if self.properties[0][len(self.properties[0])-1: ] == 's':
+                    prop = self.properties[0][ :-1]
+                else:
+                    prop = self.properties[0]
+                
+                if self.properties[0] == 'jobs': 
                     # convert tasks list to task dictionary 
-                    self.project['tasks'] = {task.get('_id'): task for task in self.project.get('tasks')}
+                    self.project[self.properties[0]] = {job.get('_id'): job for job in self.project.get('jobs')}
+                elif self.properties[0] == 'workers': 
+                    # convert workerslist to task dictionary 
+                    self.project[self.properties[0]] = {item.get('_id'): item for item in self.project.get(self.properties[0])}
 
-                    search_[self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/Task.html', 
-                        {"request": request, 'job':  self.project.get(self.properties[0], {}).get(self.properties[1]) }) 
-                search_ [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
-                    {"request": request, self.properties[0]:  self.project.get(self.properties[0], {}).get(self.properties[1]) })
-                return search_.get(self.properties[0])
+                notification.notify(title = "Request Properties", message= f"{prop}" ,timeout=2 )  
+
+                return TEMPLATES.TemplateResponse(f'/components/project/{prop.capitalize()}.html', 
+                    {"request": request, prop: self.project.get(self.properties[0], {}).get(self.properties[1]) })  
+                             
+
+                
         else:
             return search_.get('id')
 
@@ -282,9 +310,11 @@ class ProjectApi:
                 search_[self.properties[0]] = JSONResponse( self.project.get(self.properties[0]) )
                 return search_.get(self.properties[0])
             elif self.properties.__len__() == 2:
-                if self.properties[0] == 'tasks': 
+                if self.properties[0] == 'jobs': 
                     # convert tasks list to task dictionary 
-                    self.project['tasks'] = {task.get('_id'): task for task in self.project.get('tasks')} 
+                    self.project['jobs'] = {job.get('_id'): job for job in self.project.get('jobs')} 
+                    return TEMPLATES.TemplateResponse('/components/project/Job.html', 
+                    {"request": request, 'job': self.project.get(self.properties[0], {}).get(self.properties[1])})
                 search_ [self.properties[0]] = JSONResponse( self.project.get(self.properties[0], {}).get(self.properties[1]) )
                 return search_.get(self.properties[0])
         else:

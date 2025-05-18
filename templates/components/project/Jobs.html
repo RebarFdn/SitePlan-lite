@@ -1,4 +1,4 @@
-<div id="job-console">
+<div id="jobs-index">
 <div class="navbar bg-base-100 shadow-sm">
     <div class="flex-1">
       <a class="btn btn-ghost text-xl" onclick="new_job.showModal()">Jobs</a>
@@ -58,10 +58,11 @@
       </thead>
       <tbody>
         <!-- row 1 -->
-        {% for row in tasks  %}
+        
+        {% for row in project.jobs  %}
         <tr>
           <th><label>{{ row._id }}</label></th>
-          <td class="cursor-pointer" hx-get="/project/{{row.project_id}}/tasks/{{ row._id }}" hx-target="#job-console" hx-trigger="click">{{ row.title }}</td>
+          <td class="cursor-pointer" hx-get="/Project/{{row.project_id}}/jobs/{{ row._id }}" hx-target="#job-console" hx-trigger="click">{{ row.title }}</td>
           <td>{{ row.description }}</td>
           <td>{{ row.projectPhase }}</td>
           <td> {{ row.crew.name }} </td>
@@ -84,6 +85,8 @@
         <td><span class="badge">{{ row.get('progress') }}% </span></td>
         </tr>
         {% endfor %}
+
+        
         <!-- row 1 -->       
         <tr>
           <th></th>
