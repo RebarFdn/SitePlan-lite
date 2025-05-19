@@ -383,6 +383,14 @@ def to_dollars(amount:float=None):
         return 0
     
 
+def to_project_id(id:str=None)->str:
+    if '_' in id:
+        return id.split('_')[0]
+    elif '-' in id:
+        return id.split('-')[0]
+    elif '@' in id:
+        return id.split('@')[0]
+
        
 def generate_id(name:str=None)->str:
         ''' Generates a unique Human readable id, also updates the worker data'''              

@@ -1,0 +1,98 @@
+<div class="navbar bg-base-100 shadow-sm">
+    <div class="flex-1">
+      <a class="btn btn-ghost text-xl" onclick="new_order_modal.showModal()">Purchase Order</a>
+    </div>
+    <div class="navbar-start">
+        <ul class="menu menu-horizontal px-1">
+        <li><label class="input">
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </g>
+            </svg>
+            <input type="search" name="search-project-worker" required placeholder="Search" class="input-sm rounded-md" />
+          </label>
+        </li>
+        <li>
+            <details>
+              <summary>Filter</summary>
+              <ul class="bg-base-100 rounded-t-none p-2">
+                <li><a>Link 1</a></li>
+                <li><a>Link 2</a></li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li><button class="btn" onclick="new_order_modal.showModal()">Create Purchase Order</button></li>        
+        <li><button class="btn" ><span class="fa fa-print"></span>Print Orders</button></li> 
+      </ul>
+    </div>
+  </div>
+  
+<div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
+    <table class="table table-zebra table-xs md:table-lg">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th>Id</th>          
+          <th>Date</th>
+          <th>Title</th>                   
+          <th>State</th>
+          <th>Manage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- row 1 -->
+        {% for row in project.account.records.purchase_orders  %}
+        <tr>
+          <td>
+            <span class="text-sm">{{row._id}}</span>
+          </td>
+          <td>
+            <span class="text-sm">{{row.date}}</span>
+          </td>
+          <td>
+                <div class="font-bold text-sm cursor-pointer" >{{ row.title }}</div>
+               
+          </td>
+            <td>
+            {% if row.resolved %}
+                <div class="badge badge-outline badge-success">Resolved</div>
+            {% else %}            
+            <div class="badge badge-outline badge-error">Unresolved</div>
+            {% endif %}
+        </td>
+          
+        </tr>
+        {% endfor %}
+        <!-- row 1 -->       
+        
+        
+      </tbody>
+     
+    </table>
+   
+  </div>
+  
+<dialog id="new_order_modal" class="modal">
+    <div class="modal-box w-11/12 max-w-5xl">
+      <h3 class="text-lg font-bold">New Materials Purchase Order</h3>
+      <p class="py-4">Click the button below to close</p>
+      <div class="modal-action">
+        <form method="dialog">
+          <!-- if there is a button, it will close the modal -->
+          <button class="btn">Close</button>
+        </form>
+      </div>
+    </div>
+  </dialog>

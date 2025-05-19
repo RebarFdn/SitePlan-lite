@@ -5,7 +5,7 @@ from pathlib import Path
 from starlette.config import Config
 from starlette.datastructures import Secret
 from starlette.templating import Jinja2Templates
-from modules.utils import converTime, convert_timestamp, to_dollars
+from modules.utils import converTime, convert_timestamp, to_dollars, to_project_id
 
 
 # Documents Paths
@@ -57,5 +57,7 @@ env = TEMPLATES.env
 env.filters['to_dollars'] = to_dollars
 env.filters['convert_timestamp'] = convert_timestamp
 env.filters['convert_time'] = converTime
+env.filters['to_project_id'] = to_project_id
+
 
 

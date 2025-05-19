@@ -266,18 +266,18 @@ def project_template(key:str=None):
                 }
     },
                 workers = [],
-                tasks = [],
+                jobs = [],
                 rates = [],
-                daywork = [],
-                inventory = [],            
-                event = {
+                days = [],
+                inventorys = [],            
+                events = {
                     "started": 0,
                     "completed": 0,
                     "paused": [],
                     "restart": [],
                     "terminated": 0
                 },
-                state =  {
+                states =  {
                     "active": False,
                     "completed": False,
                     "paused": False,
@@ -293,7 +293,7 @@ def project_template(key:str=None):
                 "build": None,
                 "unit": None
                 },
-                activity_log = [],
+                activity_logs = [],
                 reports = [],
                 estimates = [],
                 meta_data = None

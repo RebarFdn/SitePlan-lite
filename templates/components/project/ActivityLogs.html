@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         <!-- row 1 -->
-         {% for row in project.activity_log %}
+         {% for row in project.activity_logs %}
         <tr>
           <th>{{ row.id | convert_timestamp }}</th>
           <td>{{ row.title }}</td>

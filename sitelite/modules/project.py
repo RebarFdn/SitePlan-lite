@@ -212,7 +212,10 @@ class ProjectClient:
             pass
         # if self.id is a project id 
         self.project = await get_project(id=self.id)        
-        
+        #for item in self.project.get('days'):
+        #    item['_id'] = item.get('id') 
+        #    await sleep(0.05)
+        #await update_project(data=self.project)
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Home.html', 
@@ -241,14 +244,11 @@ class ProjectClient:
                 else:
                     prop = self.properties[0]
                 
-                if self.properties[0] == 'jobs': 
+                if type(self.project.get(self.properties[0]))  == list: 
                     # convert tasks list to task dictionary 
-                    self.project[self.properties[0]] = {job.get('_id'): job for job in self.project.get('jobs')}
-                elif self.properties[0] == 'workers': 
-                    # convert workerslist to task dictionary 
-                    self.project[self.properties[0]] = {item.get('_id'): item for item in self.project.get(self.properties[0])}
+                    self.project[self.properties[0]] = {item.get('_id') if item.get('_id') else item.get('id'): item for item in self.project.get(self.properties[0])}
 
-                notification.notify(title = "Request Properties", message= f"{prop}" ,timeout=2 )  
+                notification.notify(title = "Request Properties", message= f"property{self.properties[0]}, PROP{prop}" ,timeout=2 )  
 
                 return TEMPLATES.TemplateResponse(f'/components/project/{prop.capitalize()}.html', 
                     {"request": request, prop: self.project.get(self.properties[0], {}).get(self.properties[1]) })  

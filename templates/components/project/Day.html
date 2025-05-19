@@ -1,6 +1,6 @@
 <div class="navbar bg-base-100 shadow-sm">
     <div class="flex-1">
-      <a class="btn btn-ghost text-xl">{{worker.name}}</a>
+      <a class="btn btn-ghost text-xl">{{day.date}}</a>
     </div>
     <div class="navbar-start">
         <ul class="menu menu-horizontal px-1">
@@ -18,12 +18,11 @@
       </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <li><button class="btn btn-info btn-sm" hx-get="/Project/{{worker.id | to_project_id}}/workers/i" hx-target="#workers-console" hx-trigger="click"><span class="fa fa-chevron-left"></span>Back to workers</button>
+        <li><button class="btn btn-info btn-sm" hx-get="/Project/{{day.project_id}}/days/i" hx-target="#days-console" hx-trigger="click"><span class="fa fa-chevron-left"></span>Back to Daywork Index</button>
         </li>
-        <li><button class="btn" ><span class="fa fa-print"></span>Print</button></li>        
+        <li><button class="btn" ><span class="fa fa-print"></span>Print Job</button></li>        
         
       </ul>
-    </div> 
-   
+    </div>
   </div>
-  {{worker}}
+  {{day}}

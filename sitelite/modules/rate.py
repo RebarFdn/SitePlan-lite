@@ -390,7 +390,7 @@ class rateManager:
                 'categories': TEMPLATES.TemplateResponse(page_url('Categories.html'), 
                             {"request": request, "categories": rate_categories()}
                         ),
-                'about': TEMPLATES.TemplateResponse(page_url('aboutRate.html'), 
+                'about': TEMPLATES.TemplateResponse(page_url('About.html'), 
                             {"request": request, "categories": rate_categories()}
                         )
             }

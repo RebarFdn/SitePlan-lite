@@ -1,4 +1,4 @@
-<h2 class="card-title" hx-get="/project/index/i" hx-target="#right-bar" hx-trigger="every 5s">{{ project.name }} Home Page</h2>
+<h2 class="card-title" hx-get="/project/index/i" hx-target="#right-bar" hx-trigger="every 5s">{{ project.name }} Project</h2>
 
 <div class="tabs tabs-lift">
     <label class="tab"> <span class="fa fa-home"></span>
@@ -49,16 +49,17 @@
         <input type="radio" name="my_tabs_4" />
         Daywork
       </label>
-      <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.daywork }}    
+      <div id="days-console" class="tab-content bg-base-100 border-base-300 p-6">
+        {% include 'components/project/Days.html' %}
+            
       </div>
 
     <label class="tab"><span class="fa fa-dollar"></span>
         <input type="radio" name="my_tabs_4" />
         Rates
       </label>
-      <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.rates }}    
+      <div id="rates-console" class="tab-content bg-base-100 border-base-300 p-6">
+        {% include 'components/project/Rates.html' %}   
       </div>
 
     
@@ -67,7 +68,7 @@
         Inventory
       </label>
       <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.inventory }}    
+          {{ project.inventorys }}    
       </div>
 
 
@@ -76,7 +77,7 @@
         Orders
       </label>
       <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.account.records.purchase_orders }}    
+        {% include 'components/project/Orders.html' %}     
       </div>
 
 
@@ -85,7 +86,7 @@
         Event/State
       </label>
       <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.event }}    {{ project.state }}    
+          {{ project.events }}    {{ project.states }}    
       </div>
 
 

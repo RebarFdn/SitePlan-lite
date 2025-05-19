@@ -92,3 +92,18 @@ async def Project_(request:Request): # get, post, put & delete
     else :
         client = ProjectClient( id=request.path_params.get('id'))         
     return await client._jsonapi(request)
+
+
+
+@router.get("/rate/{id}/{property}")
+@router.post("/rate/{id}/{property}")
+@router.put("/rate/{id}/{property}")
+@router.delete("/rate/{id}/{property}")
+async def gppd_rate_(request:Request): # get, post, put & delete
+    ''' '''      
+    prop = request.path_params.get('property')    
+    if prop.__len__() > 1  :
+        pm = rateManager( id=request.path_params.get('id'), properties=[prop]) 
+    else :
+        pm = rateManager( id=request.path_params.get('id'))         
+    return await pm._template(request)
