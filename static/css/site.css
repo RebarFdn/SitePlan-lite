@@ -1888,9 +1888,6 @@
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
-  .w-32 {
-    width: calc(var(--spacing) * 32);
-  }
   .w-48 {
     width: calc(var(--spacing) * 48);
   }
@@ -1899,9 +1896,6 @@
   }
   .w-80 {
     width: calc(var(--spacing) * 80);
-  }
-  .w-4832 {
-    width: calc(var(--spacing) * 4832);
   }
   .max-w-5xl {
     max-width: var(--container-5xl);
