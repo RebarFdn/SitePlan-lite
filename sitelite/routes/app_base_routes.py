@@ -95,15 +95,16 @@ async def Project_(request:Request): # get, post, put & delete
 
 
 
-@router.get("/rate/{id}/{property}")
-@router.post("/rate/{id}/{property}")
-@router.put("/rate/{id}/{property}")
-@router.delete("/rate/{id}/{property}")
+@router.get("/rate/{id}/{filter}/{property}")
+@router.post("/rate/{id}/{filter}/{property}")
+@router.put("/rate/{id}/{filter}/{property}")
+@router.delete("/rate/{id}/{filter}/{property}")
 async def gppd_rate_(request:Request): # get, post, put & delete
-    ''' '''      
+    ''' ''' 
+    filter = request.path_params.get('filter')       
     prop = request.path_params.get('property')    
     if prop.__len__() > 1  :
-        pm = rateManager( id=request.path_params.get('id'), properties=[prop]) 
+        pm = rateManager( id=request.path_params.get('id'), filter=filter, properties=[prop]) 
     else :
-        pm = rateManager( id=request.path_params.get('id'))         
+        pm = rateManager( id=request.path_params.get('id'), filter=filter)         
     return await pm._template(request)

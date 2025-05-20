@@ -7,6 +7,10 @@ from modules.utils import timestamp,  to_dollars, generate_id, load_metadata, se
 from database import Recouch, local_db
 from config import TEMPLATES
 
+from pydantic import BaseModel, Field
+from eaziform import FormModel
+
+
 def page_url(page:str=None)->str:
     return f"/components/rate/{page}"
 
@@ -19,7 +23,6 @@ databases = { # industry rate Databases
 
 # connection to site-projects database 
 db_connection:typing.Coroutine = local_db(db_name=databases.get('local'))  
-
 
 
 @lru_cache
@@ -83,6 +86,53 @@ def rate_model()->dict:
             "category": None
             
             }
+
+
+class Metric(BaseModel):
+    unit:str = None
+    price:float = 0
+    quantity:float = 0
+    total: float = 0
+
+class Imperial(BaseModel):
+    unit:str = None
+    price:float = 0
+    quantity:float = 0
+    total: float = 0
+
+class State(BaseModel):
+    active:bool = False
+    complete:bool = False
+    pause:bool = False
+    terminate:bool = False
+          
+
+class Event(BaseModel):
+    started:str = None # date
+    completed:str = None
+    paused:list = []
+    restart:list = []
+    terminated: str = None
+          
+
+class Output(BaseModel):
+    metric:float = 0
+    imperial:float = 0
+    
+
+
+class Rate(FormModel):
+    _id: str
+    title: str
+    description: str
+    assigned:bool = False
+    assignedto:str = None
+    phase:str = None
+    paid: str = None
+    timestamp:int = 0
+    comments: list = []
+    progress:float = 0
+    category:typing.Any
 
 
 async def all_rates_ref(conn:typing.Coroutine=db_connection)->list:
@@ -355,8 +405,7 @@ class rateManager:
     def __init__(self, id:str=None, filter:str=None, properties:list=[]):
         self.id = id
         self.properties = properties
-        self.filter = filter
-        
+        self.filter = filter        
         
     async def load_data(self):
         self.rate = await get_industry_rate(id=self.id)
@@ -369,8 +418,7 @@ class rateManager:
             if self.filter == 'all' or self.filter == 'None':            
                 return self.rates
             else:                
-                return [rate for rate in self.rates if rate.get("category") == self.filter]
- 
+                return [rate for rate in self.rates if rate.get("category") == self.filter] 
 
     async def _template(self, request:Request):
         if self.id in self.PROPERTIES_INDEX:
@@ -381,8 +429,7 @@ class rateManager:
                             {
                                 "request": request, 
                                 "filter": self.filter,
-                                "filtered": await self.filter_rates(), 
-                                "rates": self.rates, 
+                                "rates": await self.filter_rates(),                               
                                 "categories": {rate.get('category') for rate in self.rates }, 
                                 "rate_categories": list(rate_categories().keys())                            
                             }
@@ -402,7 +449,7 @@ class rateManager:
         await self.load_data()
         search_ = {
             'id': TEMPLATES.TemplateResponse(page_url('Rate.html'), 
-                {"request": request, "rate": self.rate }),
+                {"request": request, "rate": self.rate ,"shared": False}),
             
         }
         if self.properties:

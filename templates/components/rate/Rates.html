@@ -1,45 +1,39 @@
 <div class="navbar bg-base-100 shadow-sm">
-    <div class="flex-1">
-      <a class="btn btn-ghost text-xl" onclick="add_rate_modal.showModal()">Rates</a>
-    </div>
+    
+      <a class="btn btn-ghost text-xl" onclick="add_rate_modal.showModal()">Industry Rates</a>
+   
     <div class="navbar-start">
         <ul class="menu menu-horizontal px-1">
-        <li><label class="input">
-            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <g
-                stroke-linejoin="round"
-                stroke-linecap="round"
-                stroke-width="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </g>
-            </svg>
-            <input type="search" name="search-project-worker" required placeholder="Search" class="input-sm rounded-md" />
-          </label>
-        </li>
-        <li>
-            <details>
-              <summary>Filter</summary>
-              <ul class="bg-base-100 rounded-t-none p-2">
-                <li><a>Link 1</a></li>
-                <li><a>Link 2</a></li>
+          <li>
+            <div class="dropdown">
+              <div tabindex="0" role="button" class="btn m-1">Filter<span>{{filter}}</span></div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                {% for cat in categories %}
+                <li hx-get="/rate/index/{{cat}}/i" hx-target="#main-display" hx-trigger="click"><a>{{cat}}</a></li>
+                {% endfor %}
+                <li><a></a></li>
               </ul>
-            </details>
-          </li>
+            </div>
+            </li>
+        
         </ul>
       </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <li><button class="btn" onclick="add_rate_modal.showModal()">Add Rate To Project</button></li>        
+        <li><label class="input">
+          <span class="fa fa-search"></span>
+            <input type="search" name="search-project-worker" required placeholder="Search" class="input-xs input-info rounded-lg" />
+          </label></li>
+        
+        <li><button class="btn" hx-get="/rate/about/i/i" hx-target="#right-bar" hx-trigger="every 10s"><span class="badge badge-outline badge-info">{{ rates | length}}</span></button></li> 
+        <li><button class="btn" onclick="add_rate_modal.showModal()">Create New Rate</button></li>        
         <li><button class="btn" ><span class="fa fa-print"></span>Print Rates</button></li> 
       </ul>
     </div>
   </div>
   
   <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
+   
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead>
             <tr>
@@ -56,9 +50,9 @@
     
     {% for rate in rates %}
     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">      
-    
+      
     <td class="px-2 py-2 whitespace-wrap text-sm font-medium text-gray-800 dark:text-gray-200 w-48 cursor-pointer" 
-    hx-get="/rate/{{rate._id}}/n" hx-target="#rates-console" hx-trigger="click"
+    hx-get="/rate/{{rate._id}}/n/n" hx-target="#main-display" hx-trigger="click"
     >{{ rate.get('title')  }} </td>
     <td class="px-4 py-2 whitespace-wrap text-sm text-gray-800 dark:text-gray-200">{{ rate.get('description')  }} </td>
     <td class="px-4 py-2 whitespace-wrap text-sm text-gray-800 dark:text-gray-200">{{ rate.get('category')  }} </td>
