@@ -1,6 +1,6 @@
 <div class="navbar bg-base-100 shadow-sm">
     <div class="flex-1">
-      <a class="btn btn-ghost text-xl" onclick="my_modal_4.showModal()">Days</a>
+      <a class="btn btn-ghost text-xl" onclick="add_daywork.showModal()">Days</a>
     </div>
     <div class="navbar-start">
         <ul class="menu menu-horizontal px-1">
@@ -19,7 +19,7 @@
       </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <li><button class="btn" onclick="my_modal_4.showModal()">Add Daywork</button></li>        
+        <li><button class="btn" onclick="add_daywork.showModal()">Add Daywork</button></li>        
         
       </ul>
     </div>
@@ -48,13 +48,13 @@
             <span class="text-sm">{{row.date}}</span>
           </td>
           <td>
-                <div class="font-bold text-sm cursor-pointer" hx-get="/Project/{{row.project_id}}/days/{{ row.id }}" hx-target="#days-console" hx-trigger="click">{{ row.worker_name }}</div>
+                <div class="font-bold text-sm cursor-pointer" onclick="edit_daywork.showModal()">{{ row.worker_name }}</div>
                
           </td>
           <td>           
            {{ row.start }}
           </td>
-          <td>{{ row.end }} <span class="text-xs mx-10">/Project/{{row.project_id}}/days/{{ row.id }}</span></td>
+          <td>{{ row.end }} <span class="text-xs mx-10"></span></td>
           <td><p class="text-sm">{{row.description}}</p></td>
           <td>
             {% if row.payment.paid %}
@@ -75,10 +75,25 @@
     {{ project.days[0] }}  
   </div>
   
-<dialog id="my_modal_4" class="modal">
+<dialog id="add_daywork" class="modal">
   <div class="modal-box w-11/12 max-w-5xl">
-    <h3 class="text-lg font-bold">Add Worker To Project</h3>
+    <h3 class="text-lg font-bold">Add Days Work</h3>
     <p class="py-4">Click the button below to close</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+ 
+<dialog id="edit_daywork" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="text-lg font-bold">Edit Days Work</h3>
+    
+    {% include 'components/project/Day.html' %}
     <div class="modal-action">
       <form method="dialog">
         <!-- if there is a button, it will close the modal -->
