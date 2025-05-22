@@ -1,0 +1,132 @@
+{% macro jobstate ( state ) -%}
+   {% if state.active %}
+   <span class="text-lg text-green-500 font-semibold" style="color: green;">Active</span>
+   {% elif state.complete %}
+   <span class="text-lg text-green-500 font-semibold" style="color: rgba(12, 86, 224, 0.973);">Completed</span>
+   {% elif state.pause %}
+   <span class="text-lg text-green-500 font-semibold" style="color: rgba(250, 214, 9, 0.993);">Paused</span>
+   {% elif state.terminate %}
+   <span class="text-lg text-green-500 font-semibold" style="color: rgba(241, 5, 5, 0.973);">Terminated</span>
+
+   {% endif %}
+{%- endmacro %}
+<div id="job-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
+    <div id="job-home-left" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm m-2">
+        <div class="card w-96 bg-base-100 card-sm shadow-sm">
+            <div class="card-body">
+                <ul class="list bg-base-100 rounded-box shadow-md px-2"
+                    <li><p class="text-lg font-semibold"> <span class="text-sm font-semibold mx-8">Job Id </span>
+                        <span class="badge">{{  job._id }}</span> </p>
+                    </li>
+                    <li> <p> <span class="font-semibold mx-8">Creation Date </span>{{ job.event.created }} </p></li>
+                    <li>  <p> <span class="font-semibold mx-8">Start Date </span>{{ job.event.started | convert_timestamp }} </p></li>
+                    <li><p> <span class="font-semibold mx-8">Crew </span>{{ job.get('crew').get('name') }} </p>
+                    </li>
+                    <li> <p> <span class="font-semibold mx-8">Crew Members</span> <span class="uk-badge font-semibold">{{ crew_members }} </span></p></li>
+                </ul>
+            </div>
+        </div>
+        
+
+    </div>
+    <div id="job-home-right" class="md:col-span-2 bg-gray-100 border-gray-300 rounded-sm m-2">
+        <div class="card w-96 bg-base-100 card-sm shadow-sm">
+            <div class="card-body">
+                <ul class="list bg-base-100 rounded-box shadow-md px-2"        
+                <li>  <p> <span class="font-semibold mx-8">ProjectPhase </span>{{ job.projectPhase  }} </p></li>
+                <li>  <p> <span class="font-semibold mx-8">All Tasks</span> <span class="uk-badge font-semibold">{{ job.tasks | length }} </span></p>
+                     </li>
+                <li><p class="flex flex-row my-2"> 
+                    <span class="font-semibold mx-5">Progress</span> 
+                    <progress class="progress progress-secondary" value="{{ job.progress }}" max="100"></progress> 
+                    <span class="uk-badge font-semibold">{{ job.progress }} % </span>
+                </p>
+                </li>
+            </ul>
+            </div>
+          </div>
+        
+    </div>
+
+</div>
+<div class="divider divider-info">Job Description</div>
+<div class="card lg:card-side bg-base-100 shadow-sm m-2">
+    <div class="card-body p-2">
+            
+      <p class="text-sm">{{ job.description }}  </p>
+      
+    </div>
+  </div>
+  <div class="divider divider-info">Job Costs Settlement</div>
+  <div class="card lg:card-side bg-base-100 shadow-sm mx-2">
+    <div class="card-body">
+     
+        {% if job.get('cost').get('task') > 0 %}
+       
+        <div class="uk-overflow-auto">
+            <table class="uk-table uk-table-small uk-table-responsive">
+            
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Tasks</th>
+                    <th>Contractor</th>
+                    <th>Miscellaneous</th>
+                    <th>Insurance</th>
+                    <th>Overhead</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Charges</th>
+                    <td></td>
+                    <td> {{ job.get('fees').get('contractor')}} <span class="text-lg font-semibold">%</span></td>
+                    <td>{{ job.get('fees').get('misc')}}<span class="text-lg font-semibold">%</span></td>
+                    <td> {{ job.get('fees').get('insurance')}}<span class="text-lg font-semibold">%</span></td>
+                    <td>{{ job.get('fees').get('overhead')}}<span class="text-lg font-semibold">%</span></td>
+                    
+                </tr>
+                <tr>
+                    <th>Fees</th>
+                    <td>{{ job['cost']['task'] | to_dollars }}</td>
+                    <td>{{ job['cost']['contractor'] | to_dollars }}</td>
+                    <td>{{ job['cost']['misc'] | to_dollars }} </td>
+                    <td>{{ job['cost']['insurance'] | to_dollars }} </td>
+                    <td>{{ job['cost']['overhead'] | to_dollars }} </td>
+                    
+                </tr>
+            
+                <tr>
+                    <th>Total Job Cost</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ job['cost']['total']['metric'] | to_dollars }}</td>
+                </tr>
+                <tr>
+                    <th>Payment Settled</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ job['result']['paid'] }}</td>
+                </tr>
+                {% if job['result']['paid'] %}
+                <tr>
+                    <th>Amount Paid </th>
+                    <td>{{ job['result']['paydate'] }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ job['result']['payamount'] | to_dollars }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        </div>
+    {% else %}
+        <p class="text-lg text-center text-gray-500 font-bold">Not Enough Data To Process Costs Settlement</p>
+    {% endif %}
+    </div>
+  </div>

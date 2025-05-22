@@ -1,126 +1,102 @@
 
+<p class="text-lg text-center font-semibold">{{job.title}}</p>
 <div class="navbar bg-base-100 shadow-sm">
   <div>      
-    <header class="text-sm">{{job.title}}</header>
+      <label class="btn btn-ghost" hx-get="/Project/{{job.project_id}}/jobs/i" hx-target="#job-console" hx-trigger="click">
+            <span class="fa fa-chevron-left"></span>Jobs</label>
   </div>
   <!-- Navbar Start -->
   <div class="navbar-start">
     <div class="dropdown">
       <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
       </div>
+      
       <ul
-        tabindex="0"
-        class="menu menu-xs dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-        <li hx-get="/Project/{{job.project_id}}/jobs/i" hx-target="#job-console" hx-trigger="click">
-          <label class="btn btn-ghost" >
-            <span class="fa fa-chevron-left"></span>Back to Jobs</label>
-        </li>
-        <li>
-          <a><span class="fa fa-users"></span> Set State</a>
-          <ul class="p-2">
-            <li><a><span class="fa fa-calculator"></span>Active</a></li>
-            <li><a><span class="fa fa-poo"></span>Completed</a></li>
-            <li><a><span class="fa fa-edit"></span>Paused</a></li>
-            <li><a><span class="fa fa-list-ol"></span>Resumed</a></li>
-            <li><a><span class="fa fa-list-ol"></span>Terminated</a></li>
-          </ul>
-        </li>
-        <li><a><span class="fa fa-dollar"></span>Tasks</a></li>
+         tabindex="0"
+          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+         uk-tab="connect: .switcher-container">
+        <li><a><span class="fa fa-home"></span>Home</a> </li>
+        
+        <li><a><span class="fa fa-list-ol"></span>Tasks</a></li>
         <li><a><span class="fa fa-dollar"></span>Bill</a></li>
-        <li><a><span class="fa fa-wrench"></span>Crew</a> </li>
-        <li><a><span class="fa fa-wrench"></span>Tools</a>
-          <ul class="p-2">
-            <li><a><span class="fa fa-calculator"></span>Add Crew Member</a></li>
-            <li><a><span class="fa fa-poo"></span>Add Task</a></li>
-          </ul></li>
+        <li><a><span class="fa fa-users"></span>Crew</a> </li>
+        
+       
       </ul>
+     
     </div>
     
   </div>
   <!-- Navbar Center -->
   <div class="navbar-center hidden lg:flex">
 
-    <ul class="menu menu-horizontal px-1">
-      <li hx-get="/Project/{{job.project_id}}/jobs/i" hx-target="#job-console" hx-trigger="click">
-        <label class="btn btn-ghost" >
-          <span class="fa fa-chevron-left"></span>Back to Jobs</label>
-      </li>
-      <li>
-        <details>
-          <summary><span class="fa fa-users"></span> Set State</summary>
-          <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-            <li><a><span class="fa fa-calculator"></span>Active</a></li>
-            <li><a><span class="fa fa-poo"></span>Completed</a></li>
-            <li><a><span class="fa fa-edit"></span>Paused</a></li>
-            <li><a><span class="fa fa-list-ol"></span>Resumed</a></li>
-            <li><a><span class="fa fa-list-ol"></span>Terminated</a></li>
-          </ul>
-        </details>
-      </li>
-      <li><a><span class="fa fa-dollar"></span>Tasks</a></li>
+    <ul class="uk-subnav uk-subnav-pill" uk-switcher="connect: .switcher-container">
+      <li><a><span class="fa fa-home"></span>Home</a> </li>
+     
+      <li><a><span class="fa fa-list-ol"></span>Tasks</a></li>
       <li><a><span class="fa fa-dollar"></span>Bill</a></li>
-        <li><a><span class="fa fa-wrench"></span>Crew</a> </li>
-        <li><details class="dropdown">
-          <summary><span class="fa fa-wrench"></span>Tools</summary>
-          <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-            <li><a><span class="fa fa-calculator"></span>Add Crew Member</a></li>
-            <li><a><span class="fa fa-poo"></span>Add Task</a></li>
-          </ul>
-        </details></li>
-        <li> <div class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
-      </div>
-      <ul
-        tabindex="0"
-        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-        <li hx-get="/Project/{{job.project_id}}/jobs/i" hx-target="#job-console" hx-trigger="click">
-          <label class="btn btn-ghost" >
-            <span class="fa fa-chevron-left"></span>Back to Jobs</label>
-        </li>
-        <li>
-          <a hx-get="/rate/index/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-users"></span>Set State</a>
-          <ul class="p-2">
-            <li><a><span class="fa fa-calculator"></span>Active</a></li>
-            <li><a><span class="fa fa-poo"></span>Completed</a></li>
-            <li><a><span class="fa fa-edit"></span>Paused</a></li>
-            <li><a><span class="fa fa-list-ol"></span>Resumed</a></li>
-            <li><a><span class="fa fa-list-ol"></span>Terminated</a></li>
-          </ul>
-        </li>
-        <li><a><span class="fa fa-dollar"></span>Tasks</a></li>
-        <li><a><span class="fa fa-dollar"></span>Bill</a></li>
-        <li><a><span class="fa fa-wrench"></span>Crew</a> </li>
-        
-        
-          <li><details class="dropdown">
-            <summary class="btn m-1"><span class="fa fa-wrench"></span> Tools</summary>
-            <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-              <li><a><span class="fa fa-calculator"></span>Add Crew Member</a></li>
-            <li><a><span class="fa fa-poo"></span>Add Task</a></li>
-           
-            </ul>
-          </details></li>
-      </ul>
-    </div>
-         </li>
+      <li><a><span class="fa fa-users"></span>Crew</a> </li>        
     </ul>
-
   </div>
+        
   <!-- Navbar End -->
   <div class="navbar-end">
+   
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn "><span class="fa fa-wrench"></span>State</div>
+           
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                <li><a><span class="fa fa-calculator"></span>Active</a></li>
+                <li><a><span class="fa fa-poo"></span>Completed</a></li>
+                <li><a><span class="fa fa-edit"></span>Paused</a></li>
+                <li><a><span class="fa fa-list-ol"></span>Resumed</a></li>
+                <li><a><span class="fa fa-list-ol"></span>Terminated</a></li>
+              </ul>
+            </div>
 
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn m-1"><span class="fa fa-print"></span>Print</div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-        <li><a class="tooltip tooltip-info" data-tip="Print job tasks"><span class="fa fa-user"></span>Print Tasks</a></li>
-        <li><a class="tooltip tooltip-info" data-tip="Print This Job!"><span class="fa fa-gear"></span>Print Job</a></li>
-        </ul>        
-    </div>
+      <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn "><span class="fa fa-wrench"></span>Tools</div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+              
+              <li><a class="tooltip tooltip-info" data-tip="Add a crew member to the job crew"><span class="fa fa-calculator"></span>Add Crew</a></li>
+            <li><a class="tooltip tooltip-info" data-tip="Add a new task to the job's task queue"><span class="fa fa-poo"></span>Add Task</a></li>
+              </ul>        
+      </div>
 
+       <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn "><span class="fa fa-print"></span>Print</div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+              <li><a class="tooltip tooltip-info" data-tip="Print job tasks"><span class="fa fa-user"></span>Print Tasks</a></li>
+              <li><a class="tooltip tooltip-info" data-tip="Print This Job!"><span class="fa fa-gear"></span>Print Job</a></li>
+              </ul>        
+          </div>
+     
+
+   
+  </div>
+</div>
+<div class="uk-switcher switcher-container">
+  <div id="job-home">
+    {% include 'components/project/job/Home.html' %}
+
+  </div>
+  <div id="job-tasks">
+   <p class="text-lg">Job Tasks</p> 
+   {% include 'components/project/job/Tasks.html' %}
+  </div>
+  <div id="job-bill">
+    <p class="text-lg">Job BOQ</p> 
+    {{ job.tasks }}
+  </div>
+  <div id="job-crew">
+    <p class="text-lg">Job Crew</p> 
+    {{ job.crew }}
   </div>
 </div>
 
+{% for key, val in job.items() %}
+  <strong>{{ key}} ---- :</strong> <p class="text-xs text-blue-500">{{ val }}</p><br>
+  {% endfor %}
  
-  {{job}}

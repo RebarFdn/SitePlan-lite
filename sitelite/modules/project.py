@@ -210,7 +210,7 @@ class ProjectClient:
             return property_search.get(self.id)
         else:
             pass
-        # if self.id is a project id 
+        # if self.id is a project id, get and load the project
         self.project = await get_project(id=self.id)        
         #for item in self.project.get('days'):
         #    item['_id'] = item.get('id') 
@@ -232,8 +232,7 @@ class ProjectClient:
                     timeout=2 
                 )
                 search_ [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
-                    {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})
-             
+                    {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})             
                 
                 return search_.get(self.properties[0])
             elif self.properties.__len__() == 2:
