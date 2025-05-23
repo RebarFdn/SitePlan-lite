@@ -1,0 +1,14 @@
+<p class="text-lg text-center font-bold">Materials Tools Equipment and Products Suppliers </p>
+<div class="text-center overflow-y-auto h-96 p-5">
+<ul>
+    <li class="text-lg font-bold">Locations </li>
+    {% for loc in locations %}
+    <li 
+    class="text-md mt-2 cursor-pointer"
+    hx-get="/supplier/index/{{loc}}/i" 
+    hx-target="#main-display" 
+    hx-trigger="click"
+    >{{ loc }}</li>
+    {% endfor %}
+</ul>
+</div>

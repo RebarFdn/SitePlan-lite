@@ -1,6 +1,6 @@
-<h1 class="text-lg text-center font-bold my-2">About Industry Rates</h1>
+<p class="md:text-lg text-sm text-center font-bold my-2">About Industry Rates</p>
 <ul class="text-center">
-    <li><h1 class="text-md text-center font-semibold">Rate Categories </h1></li>
+    <li><p class="text-md text-center font-semibold">Rate Categories </p></li>
 {% for cat in categories %}
     <li hx-get="/rate/index/{{cat}}/i" hx-target="#main-display" hx-trigger="click" class="cursor-pointer my-2">{{ cat }}</li>
 {% endfor %}

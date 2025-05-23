@@ -108,3 +108,20 @@ async def gppd_rate_(request:Request): # get, post, put & delete
     else :
         pm = rateManager( id=request.path_params.get('id'), filter=filter)         
     return await pm._template(request)
+
+
+
+
+@router.get("/supplier/{id}/{filter}/{property}")
+@router.post("/supplier/{id}/{filter}/{property}")
+@router.put("/supplier/{id}/{filter}/{property}")
+@router.delete("/supplier/{id}/{filter}/{property}")
+async def gppd_supplier_(request:Request): # get, post, put & delete
+    ''' ''' 
+    filter = request.path_params.get('filter')       
+    prop = request.path_params.get('property')    
+    if prop.__len__() > 1  :
+        pm = supplierManager( id=request.path_params.get('id'), filter=filter, properties=[prop]) 
+    else :
+        pm = supplierManager( id=request.path_params.get('id'), filter=filter)         
+    return await pm._template(request)

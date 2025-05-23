@@ -1,0 +1,106 @@
+<div class="navbar bg-base-100 shadow-sm">
+    
+      <a class="btn btn-ghost text-xl" onclick="add_supplier_modal.showModal()">Suppliers</a>
+   
+    <div class="navbar-start">
+        <ul class="menu menu-horizontal px-1">
+          <li>
+            <div class="dropdown">
+              <div tabindex="0" role="button" class="btn m-1">Filter<span>{{filter}}</span></div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                {% for cat in locations %}
+                <li hx-get="/supplier/index/{{cat}}/i" hx-target="#main-display" hx-trigger="click"><a>{{cat}}</a></li>
+                {% endfor %}
+                <li><a></a></li>
+              </ul>
+            </div>
+            </li>
+        
+        </ul>
+      </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li><label class="input">
+          <span class="fa fa-search"></span>
+            <input type="search" name="search-project-worker" required placeholder="Search" class="input-xs input-info rounded-lg" />
+          </label></li>
+        
+        <li><button class="btn" hx-get="/supplier/about/i/i" hx-target="#right-bar" hx-trigger="every 10s">
+            <span class="badge badge-outline badge-info">{{ filtered | length}}</span></button></li> 
+        <li><button class="btn" onclick="add_supplier_modal.showModal()">Register New Supplier</button></li>        
+        <li><button class="btn" ><span class="fa fa-print"></span>Print Suppliers</button></li> 
+      </ul>
+    </div>
+  </div>
+
+  <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
+     <table  class="uk-table uk-table-small uk-table-responsive" >
+        <thead>
+            <tr>
+                <th>Name </th>
+                <th>TRN</th>
+                <th>Contact</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supplier in filtered %}
+            <tr>
+                <td 
+                class="tooltip tooltip-info cursor-pointer" 
+                data-tip="Go to Supplier {{supplier._id}}"
+                hx-get="/supplier/{{supplier._id}}/n/n" 
+                hx-target="#main-display" 
+                hx-trigger="click">{{ supplier.name }}</td>
+                <td>{{ supplier.taxid }}</td>
+                <td>
+                    <div class="flex flex-col text-xs">
+                        <ul>
+                        {% if supplier.contact.tel %}
+                        <li><strong>Tel.</strong> {{ supplier.contact.tel }}</li>
+                        {% endif %}
+                        {% if supplier.contact.mobile %}
+                        <li><strong>Mobile.</strong> {{ supplier.contact.mobile }}</li>
+                        {% endif %}
+                        {% if supplier.contact.watsapp %}
+                        <li><strong>Watsapp.</strong> {{ supplier.contact.watsapp }}</li>
+                        {% endif %}
+                        {% if supplier.contact.email %}
+                        <li><strong>Email.</strong> {{ supplier.contact.email }}</li>
+                        {% endif %}
+                        </ul>
+
+
+                    </div>
+                   
+                </td>
+                <td>
+                    {% if filter == 'all' %}
+                    {{ supplier.address.city_parish }}
+                    {% else %}
+                    {{ supplier.address.town }}
+                    {% endif %}
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+     </table>
+   
+  </div>
+
+   
+
+ 
+<dialog id="add_supplier_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="text-lg font-bold">Register New Supplier</h3>
+    <p class="py-4">Click the button below to close</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>

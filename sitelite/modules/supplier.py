@@ -206,13 +206,20 @@ class supplierManager:
         if self.id in self.PROPERTIES_INDEX:            
             await self.load_suppliers()
             property_search = {
-                'index': TEMPLATES.TemplateResponse(page_url('suppliersIndex.html'),
+                'index': TEMPLATES.TemplateResponse(page_url('Index.html'),
                     {
                         "request": request,
                         "suppliers": self.suppliers,
                         "filter": self.filter,
                         "locations": {supplier.get("address").get("city_parish") for supplier in self.suppliers },
                         "filtered": await self.filter_suppliers()
+                    }
+                        ),
+                'about': TEMPLATES.TemplateResponse(page_url('About.html'),
+                    {
+                        "request": request,                                               
+                        "locations": {supplier.get("address").get("city_parish") for supplier in self.suppliers },
+                        
                     }
                         )
             }        
