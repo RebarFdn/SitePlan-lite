@@ -110,8 +110,6 @@ async def gppd_rate_(request:Request): # get, post, put & delete
     return await pm._template(request)
 
 
-
-
 @router.get("/supplier/{id}/{filter}/{property}")
 @router.post("/supplier/{id}/{filter}/{property}")
 @router.put("/supplier/{id}/{filter}/{property}")
@@ -124,4 +122,19 @@ async def gppd_supplier_(request:Request): # get, post, put & delete
         pm = supplierManager( id=request.path_params.get('id'), filter=filter, properties=[prop]) 
     else :
         pm = supplierManager( id=request.path_params.get('id'), filter=filter)         
+    return await pm._template(request)
+
+
+@router.get("/employee/{id}/{filter}/{property}")
+@router.post("/employee/{id}/{filter}/{property}")
+@router.put("/employee/{id}/{filter}/{property}")
+@router.delete("/employee/{id}/{filter}/{property}")
+async def gppd_employee_(request:Request): # get, post, put & delete
+    ''' ''' 
+    filter = request.path_params.get('filter')       
+    prop = request.path_params.get('property')    
+    if prop.__len__() > 1  :
+        pm = employeeManager( id=request.path_params.get('id'), filter=filter, properties=[prop]) 
+    else :
+        pm = employeeManager( id=request.path_params.get('id'), filter=filter)         
     return await pm._template(request)

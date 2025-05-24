@@ -1,0 +1,13 @@
+<div id="employee-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
+        <div id="employee-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
+            <ul>
+            {% for key, val in employee.items() %}
+            <li><strong>{{key}}</strong> <p class="text-xs p2">{{val}}</p></li>
+            {% endfor %}
+            </ul>
+            
+        </div>
+        <div id="employee-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
+            {{ projects }}
+        </div>
+    </div>

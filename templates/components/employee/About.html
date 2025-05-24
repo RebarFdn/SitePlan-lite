@@ -1,0 +1,14 @@
+<p class="text-lg text-center font-bold">Employment Categories </p>
+<div class="text-center overflow-y-auto h-96 p-5">
+<ul>
+    <li class="text-lg font-bold">Occupations </li>
+    {% for loc in occupation_index %}
+    <li 
+    class="text-md mt-2 cursor-pointer"
+    hx-get="/employee/index/{{loc}}/i" 
+    hx-target="#main-display" 
+    hx-trigger="click"
+    >{{ loc }}</li>
+    {% endfor %}
+</ul>
+</div>

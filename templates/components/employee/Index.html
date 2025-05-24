@@ -1,0 +1,93 @@
+<div class="navbar bg-base-100 shadow-sm">
+    
+      <a class="btn btn-ghost text-xl" onclick="add_employee_modal.showModal()">Employees</a>
+   
+    <div class="navbar-start">
+        <ul class="menu menu-horizontal px-1">
+          <li>
+            <div class="dropdown">
+              <div tabindex="0" role="button" class="btn m-1">Filter<span>{{filter}}</span></div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                {% for cat in occupation_index %}
+                <li hx-get="/employee/index/{{cat}}/i" hx-target="#main-display" hx-trigger="click"><a>{{cat}}</a></li>
+                {% endfor %}
+                <li><a></a></li>
+              </ul>
+            </div>
+            </li>
+        
+        </ul>
+      </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li><label class="input">
+          <span class="fa fa-search"></span>
+            <input 
+            type="search" 
+            name="search-project-worker" 
+            required placeholder="Search"
+            class="input-xs input-info rounded-lg" 
+            />
+          </label></li>
+        
+        <li><button class="btn" hx-get="/employee/about/i/i" hx-target="#right-bar" hx-trigger="every 10s">
+            <span class="badge badge-outline badge-info">{{ workers | length}}</span></button></li> 
+        <li><button class="btn" onclick="add_employee_modal.showModal()">Register New Employee</button></li>        
+        <li><button class="btn" ><span class="fa fa-print"></span>Print Employees</button></li> 
+      </ul>
+    </div>
+</div>
+
+
+  <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
+     <table  class="uk-table uk-table-small uk-table-responsive" >
+        <thead>
+            <tr>
+                <th></th>
+                <th>Id</th>
+                <th>Name </th>
+                <th>Oc</th>
+                <th>Occupation</th>
+                <th>Rating</th>
+                <th>manage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for worker in workers %}
+            <tr>
+                <td class="text-xs"> <div><img class="size-10 rounded-box" src="{{ worker.value.imgurl }}" alt="{{worker.value.oc}}"/></div></td>
+                <td>{{ worker.id }}</td>
+                <td 
+                class="tooltip tooltip-info cursor-pointer" 
+                data-tip="Go to Supplier {{worker.value.name}} Page"
+                hx-get="/employee/{{worker.id}}/n/n" 
+                hx-target="#main-display" 
+                hx-trigger="click">{{ worker.value.name }}</td>
+                <td>{{ worker.value.oc }}</td>
+                <td>
+                    {{ worker.value.occupation }}
+                </td>
+                <td class="tooltip tooltip-info" data-tip="Click to activate Location and distance tracking">
+                    {{ worker.value.rating }}
+                </td>
+                <td>manage</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+     </table>
+   
+  </div>
+
+
+<dialog id="add_employee_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="text-lg font-bold">Register New Employee</h3>
+    <p class="py-4">Click the button below to close</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button, it will close the modal -->
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>

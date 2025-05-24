@@ -307,11 +307,17 @@ class employeeManager:
         if self.id in self.PROPERTIES_INDEX:            
             await self.load_employees()
             property_search = {
-                'index': TEMPLATES.TemplateResponse(page_url('employeesIndex.html'),
+                'index': TEMPLATES.TemplateResponse(page_url('Index.html'),
                     {
                         "request": request,
                         "workers": await self.filter_employees(),
                         "filter": self.filter,
+                        "occupation_index": list(self.occupation_index())
+                    }
+                        ),
+                'about': TEMPLATES.TemplateResponse(page_url('About.html'),
+                    {
+                        "request": request,                        
                         "occupation_index": list(self.occupation_index())
                     }
                         )

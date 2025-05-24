@@ -1,1 +1,105 @@
-{{ supplier }}
+<p class="text-lg text-center font-bold">{{ supplier.name}}</p>
+<div id="supplier-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
+    <div id="supplier-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
+         <div class="flex flex-col text-xs">
+            
+            <!-- Contact Info -->
+             <ul>
+                <li>
+                    <p id="supplier-taxid" ><strong>Gct Reg.</strong> {{ supplier.taxid }}</p>
+                </li>
+                <li  class="mt-5">Contact</li>
+                <li>
+                    <ul id="supplier-contact">                            
+                {% if supplier.contact.tel %}
+                        <li><strong>Tel.</strong> {{ supplier.contact.tel }}</li>
+                        {% endif %}
+                        {% if supplier.contact.mobile %}
+                        <li><strong>Mobile.</strong> {{ supplier.contact.mobile }}</li>
+                        {% endif %}
+                        {% if supplier.contact.watsapp %}
+                        <li><strong>Watsapp.</strong> {{ supplier.contact.watsapp }}</li>
+                        {% endif %}
+                        {% if supplier.contact.email %}
+                        <li><strong>Email.</strong> {{ supplier.contact.email }}</li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li  class="mt-5">Address</li>
+                <li>
+            <!-- Address Info -->
+                    <ul  id="supplier-address" class="mt-5">                            
+                        {% for key,val in supplier.address.items() %}
+                        <li><strong>{{key}}.</strong> {{ val }}</li>
+                        {% endfor %}                        
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+        <!-- Location Map-->
+          <div id="location-map" class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-64 p-5">
+            <p class="text-lg text-center font-bold text-gray-700">Location Map</p>
+            {% if not supplier.get('location') %}
+             <p>Enter Supplier's Location Co-ordinates.</p>
+            <div class="flex flex-row">
+               
+                <form action="" class="flex flex-row">
+                    <input type="number" step="0.01" placeholder="Latitude" name="lat" class="input input-sm" />
+                    <input type="number" step="0.01" placeholder="Longitude" name="lon" class="input input-sm" />
+                    <input type="submit" class="btn btn-primary btn-sm" value="Update Location" />
+                </form>
+            </div>
+            {% else %}
+            <div id="supplier-location">{{supplier.location }}</div>
+            {% endif %}
+          </div>
+    </div>
+    <div id="projecthome-left-display" class="md:col-span-2 bg-gray-100 border-gray-300 rounded-sm ml-2">
+        <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-5">
+            <ul  id="supplier-account" class="mt-5"> 
+                <li>Account Info.</li>                           
+                {% for key,val in supplier.account.bank.items() %}
+                <li><strong>{{key}}.</strong> {{ val }}</li>
+                {% endfor %}                        
+            </ul>
+            <div class="collapse bg-base-100 border border-base-300">
+                <input type="radio" name="supplier-transactions"/>
+                <div class="collapse-title font-semibold">
+                    <button class="btn btn-primary btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-[1.2em]"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>
+                    Transactions
+                    </button>
+                    
+                </div>
+                <div class="collapse-content text-sm">
+                    <table  class="uk-table uk-table-small uk-table-responsive" >
+                        <thead>
+                            <tr>
+                                <th>Ref</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in supplier.account.transactions %}
+                            <tr>
+                                <td class="tooltip tooltip-info cursor-pointer" 
+                                data-tip="Invoice No. {{item.ref}}">{{ item.ref }}</td>
+                                <td>{{ item.date }}</td>
+                                <td>{{ item.amt | to_dollars }}</td>               
+                            
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+              
+    </div>
+</div>
+
