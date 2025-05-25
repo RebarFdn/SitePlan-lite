@@ -1,5 +1,13 @@
-<p class="text-lg font-bold"><span class="badge badge-outline">employee</span> {% if employee.oc %} 
+
+ 
+  <p class="text-lg font-bold"> 
+    <span class="badge badge-outline">employee</span>-
+    <span class="badge badge-outline cursor-pointer tooltip" data-tip="change employee occupation.">{{employee.occupation}}</span> 
+    {% if employee.oc %} 
     {{ employee.oc}} {% else %}{{ employee.name}}{% endif %}</p>
+
+ 
+
 <div class="tabs tabs-border">
   <input type="radio" name="my_tabs_2" class="tab" aria-label="Home" checked="checked"/>
   <div class="tab-content border-base-300 bg-base-100 p-10">
@@ -17,7 +25,8 @@
             Banking Info
         </label>
         <div class="tab-content bg-base-100 border-base-300 p-6">
-            {{employee.account.bank}}
+            
+            {% include 'components/employee/Bank.html' %}
         </div>
 
         <label class="tab">
@@ -26,7 +35,8 @@
             Payments
         </label>
         <div class="tab-content bg-base-100 border-base-300 p-6">
-             {{employee.account.payments}}
+             
+            {% include 'components/employee/Payments.html' %}
             </div>
 
         <label class="tab">
@@ -35,7 +45,7 @@
             Loans
         </label>
         <div class="tab-content bg-base-100 border-base-300 p-6">
-             {{employee.account.loans}}
+              {% include 'components/employee/Loans.html' %}
             </div>
         </div>
      

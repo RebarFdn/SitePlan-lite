@@ -1,0 +1,7 @@
+{% if employee.account.payments %}
+{{employee.account.payments}}
+{% else %}
+<p class="text-xl text-center text-gray-500 font-bold">
+    There is no paymemt record for the employee! 
+</p>
+{% endif %}

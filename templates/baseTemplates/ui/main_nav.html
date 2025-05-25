@@ -7,25 +7,39 @@
     <div class="navbar-start">
       <div class="dropdown">
         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> 
+          </svg>
         </div>
         <ul
           tabindex="0"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-          <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button" ><span class="fa fa-cubes"></span>Projects</label></li>
+          <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button" >
+            <span class="fa fa-cubes"></span>Projects</label>
+          </li>
           <li>
             <a><span class="fa fa-users"></span> Team</a>
             <ul class="p-2">
               <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
               <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
-              <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-user-times"></span>Workers</a></li>
+              <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-user-times">                
+                </span>Workers</a>
+              </li>
             </ul>
           </li>
-          <li hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click"><a href="#" ><span class="fa fa-dollar"></span>Industry Rates</a></li>
-          <li><a hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-truck"></span>Suppliers</a></li>
+          <li hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click"><a href="#" ><span class="fa fa-dollar">
+            </span>Industry Rates</a>
+          </li>
+          <li><a hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-truck">            
+            </span>Suppliers</a>
+          </li>
           <li><a><span class="fa fa-wrench"></span>Tools</a>
             <ul class="p-2">
-              <li><a href="https://www.google.com/search?client=ubuntu-sn&channel=fs&q=google+calculator&sei=pPsvaIqPBYGEwbkPka3W8Qc" target="_blank"><span class="fa fa-calculator"></span>  Calculator</a></li>
+              <li><a 
+                href="https://www.google.com/search?client=ubuntu-sn&channel=fs&q=google+calculator&sei=pPsvaIqPBYGEwbkPka3W8Qc" 
+                target="_blank">
+                <span class="fa fa-calculator"></span>  Calculator</a>
+              </li>
               <li><a href="http://centryplan.localhost/dropbox" target="_blank"><span class="fa fa-poo"></span> Dropbox</a></li>
               <li><a href="http://centryplan.localhost/estimate" target="_blank"><span class="fa fa-edit"></span> Estimator</a></li>
               <li><a href="http://centryplan.localhost/todos" target="_blank"><span class="fa fa-list-ol"></span> Todos</a></li>
@@ -37,58 +51,120 @@
     </div>
     <div class="navbar-center hidden lg:flex">
       <ul class="menu menu-horizontal px-1">
-        <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button"><span class="fa fa-cubes"></span>Projects</label></li>
+        <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click">
+          <label for="my-drawer" class="uk-button uk-button-default uk-button-small drawer-button">
+          <span class="fa fa-cubes"></span> Projects</label> 
+        </li>
         <li>
-          <details>
+
+          <!--details>
             <summary><span class="fa fa-users"></span> Team</summary>
             <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
               <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
               <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
-              <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-user-times"></span>Workers</a></li>
+              <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click">
+                <span class="fa fa-user-times"></span>Workers</a>
+              </li>
             </ul>
-          </details>
+          </!--details-->
+          <div>
+              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-users"></span></span> Team</button>
+              <div uk-dropdown="pos: bottom-center">
+                  <ul class="uk-nav uk-dropdown-nav">
+                      <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
+                    <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
+                    <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click">
+                      <span class="fa fa-user-times"></span>Workers</a>
+                    </li>
+                  </ul>
+              </div>
+            </div>
+
         </li>
-        <li hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click"><a><span class="fa fa-dollar"></span>Industry Rates</a></li>
-          <li><a hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-truck"></span>Suppliers</a></li>
-          <li><details class="dropdown">
-            <summary><span class="fa fa-wrench"></span>Tools</summary>
-            <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-              <li><a href="https://www.google.com/search?client=ubuntu-sn&channel=fs&q=google+calculator&sei=pPsvaIqPBYGEwbkPka3W8Qc" target="_blank"><span class="fa fa-calculator"></span>  Calculator</a></li>
+        <li >
+          <a class="uk-button uk-button-default uk-button-small"
+          hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click"
+          >
+            <span class="fa fa-dollar">
+          </span> Industry Rates
+        </a>
+        </li>
+          <li><a class="uk-button uk-button-default uk-button-small"
+             hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click">
+            <span class="fa fa-truck"></span>Suppliers</a>
+          </li>
+          <li>
+            
+            <div class="uk-inline">
+              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-wrench"></span> Tools</button>
+              <div uk-dropdown="pos: bottom-center">
+                  <ul class="uk-nav uk-dropdown-nav">
+                       <li><a 
+                  href="https://www.google.com/search?client=ubuntu-sn&channel=fs&q=google+calculator&sei=pPsvaIqPBYGEwbkPka3W8Qc" 
+                  target="_blank"><span class="fa fa-calculator"></span>  Calculator</a>
+                </li>
               <li><a href="http://centryplan.localhost/dropbox" target="_blank"><span class="fa fa-poo"></span> Dropbox</a></li>
               <li><a href="http://centryplan.localhost/estimate" target="_blank"><span class="fa fa-edit"></span> Estimator</a></li>
               <li><a href="http://centryplan.localhost/todos" target="_blank"><span class="fa fa-list-ol"></span> Todos</a></li>
             
-            </ul>
-          </details></li>
+                  </ul>
+              </div>
+            </div>
+
+          </li>
+          
           <li> <div class="dropdown">
         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> 
+          </svg>
         </div>
         <ul
           tabindex="0"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-          <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click"><label for="my-drawer" class="btn btn-ghost drawer-button"><span class="fa fa-cubes"></span>Projects</label></li>
-          <li>
-            <a hx-get="/rate/index/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-users"></span> Team</a>
-            <ul class="p-2">
-              <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
-              <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
-              <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-user-times"></span>Workers</a></li>
-            </ul>
+          <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click">
+            <label for="my-drawer" class="btn btn-ghost drawer-button"><span class="fa fa-cubes"></span>Projects</label>
           </li>
-          <li hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click"><a><span class="fa fa-dollar"></span>Industry Rates</a></li>
-          <li><a hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click"><span class="fa fa-truck"></span>Suppliers</a></li>
+          <li>
+            <div class="uk-inline">
+              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-users"></span></span> Team</button>
+              <div uk-dropdown="pos: bottom-center">
+                  <ul class="uk-nav uk-dropdown-nav">
+                      <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
+                    <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
+                    <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click">
+                      <span class="fa fa-user-times"></span>Workers</a>
+                    </li>
+                  </ul>
+              </div>
+            </div>
+          </li>
+          <li hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click">
+            <a><span class="fa fa-dollar"></span>Industry Rates</a>
+          </li>
+          <li><a hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click">
+            <span class="fa fa-truck"></span>Suppliers</a>
+          </li>
           
-            <li><details class="dropdown">
-              <summary class="btn m-1"><span class="fa fa-wrench"></span> Tools</summary>
-              <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                <li><a href="https://www.google.com/search?client=ubuntu-sn&channel=fs&q=google+calculator&sei=pPsvaIqPBYGEwbkPka3W8Qc" target="_blank"><span class="fa fa-calculator"></span>  Calculator</a></li>
+          <li>
+           
+          <div class="uk-inline">
+              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-wrench"></span> Tools</button>
+              <div uk-dropdown="pos: bottom-center">
+                  <ul class="uk-nav uk-dropdown-nav">
+                       <li><a 
+                  href="https://www.google.com/search?client=ubuntu-sn&channel=fs&q=google+calculator&sei=pPsvaIqPBYGEwbkPka3W8Qc" 
+                  target="_blank"><span class="fa fa-calculator"></span>  Calculator</a>
+                </li>
               <li><a href="http://centryplan.localhost/dropbox" target="_blank"><span class="fa fa-poo"></span> Dropbox</a></li>
               <li><a href="http://centryplan.localhost/estimate" target="_blank"><span class="fa fa-edit"></span> Estimator</a></li>
               <li><a href="http://centryplan.localhost/todos" target="_blank"><span class="fa fa-list-ol"></span> Todos</a></li>
             
-              </ul>
-            </details></li>
+                  </ul>
+              </div>
+          </div>
+           
+          </li>
         </ul>
       </div>
            </li>

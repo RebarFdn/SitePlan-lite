@@ -1,13 +1,108 @@
 <div id="employee-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
         <div id="employee-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
-            <ul>
-            {% for key, val in employee.items() %}
-            <li><strong>{{key}}</strong> <p class="text-xs p2">{{val}}</p></li>
-            {% endfor %}
+            <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-5">
+             <ul>
+                <li class="text-lg font-semibold p-2">Employee Basic Information</li>  
+                <li id="employee-name">
+                    <strong>Name.</strong> {{ employee.name }}
+                </li>
+                <li id="employee-oc">
+                    <strong>Known as.</strong> {{ employee.oc }}
+                </li>
+                <li id="employee-id">
+                    <strong>Employee Id.</strong> {{ employee._id }}
+                </li>
+                <li class="text-md font-semibold py-2">Address</li>
+                 {% if employee.address.lot or 
+                    employee.address.street or 
+                    employee.address.town or 
+                    employee.address.city_parish or
+                    employee.address.country 
+                %}
+                <li>
+            <!-- Address Info -->
+                    <ul  id="employee-address" class="mt-5">                            
+                        {% for key,val in employee.address.items() if val %}
+                        <li><strong>{{key}}.</strong> {{ val }} </li>
+                        {% endfor %}                        
+                    </ul>
+                </li>
+                {% else %}
+                 <li>Address information unavailable!</li>
+                {% endif %}
+
+                <li class="text-md font-semibold py-2">Contact</li>
+                {% if employee.contact.tel or employee.contact.mobile or employee.contact.email or employee.contact.watsapp %}
+                <li>
+                    <ul id="employee-contact">   
+                        {% for key,val in employee.contact.items() if val %} 
+                   
+                        <li><strong>{{ val}} </strong> {{ key }}</li>
+                        
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% else %}
+                <li>Contact information unavailable!</li>
+                {% endif %}
+                <li class="text-md font-semibold py-2">Role</li>
+                <li>
+                    <ul id="employee-role">
+                         <li><strong>Occupation </strong> {{ employee.occupation }}</li>
+                         <li><strong>Skill level / rating </strong> {{ employee.rating }}</li>
+                    </ul>
+                </li>
+                <li class="text-md font-semibold py-2">Identity</li>
+                <li>
+                    <ul id="employee-role">
+                         <li><strong>Id </strong> {{ employee.identity }}</li>
+                         <li><strong>Id Type </strong> {{ employee.id_type }}</li>
+                    </ul>
+                </li>
+               <li class="text-lg font-semibold py-2">Employment Status</li>
+
+
+
+                
             </ul>
-            
+
+            </div>
         </div>
         <div id="employee-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
-            {{ projects }}
+            <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-5">
+                <ul  id="employee-nok" class="mt-5"> 
+                    <li class="text-lg font-semibold p-1">Employee Personal Information</li> 
+                    <li><strong>Bio.</strong> </li>
+                    <li>
+                            <ul  id="employee-bio" >                                
+                                <li><strong>Date of Birth</strong> {{ employee.dob }}</li>
+                                <li><strong>Sex</strong> {{ employee.sex }}</li>
+                                <li><strong>Height</strong> {{ employee.height }}cm</li>
+                                
+                            </ul>
+                            
+                    </li>
+                    <li class="text-md font-semibold p-2">Next of Kin</li>                           
+                    {% for key,val in employee.nok.items() if val %}
+                    
+                    {% if key == "address" or key == "contact" %}
+                    <li><strong>{{key}}.</strong> </li>
+                    <li>
+                            <ul  id="nok-{{key}}" > 
+                                {% for key,val in val.items() if val %}
+                                <li><strong>{{key}}.</strong> {{ val }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                    </li>
+                    {% else %}
+                    <li><strong>{{key}}.</strong> {{ val }}</li>
+                    {% endif %}
+                    
+
+                    {% endfor %}   
+                     <li><strong>Health Issues</strong> </li>                     
+                </ul>
+            </div>
         </div>
     </div>
