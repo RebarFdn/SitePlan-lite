@@ -1,5 +1,11 @@
 {% if employee.account.bank %}
- {{employee.account.bank}}
+ 
+ <ul  id="employee-account-bank" > 
+    <li class="text-md font-semibold py-2">Banking Information</li>
+    {% for key,val in employee.account.bank.items() if val %}
+    <li><strong>{{key}}.</strong> {{ val }}</li>
+    {% endfor %}
+</ul>
 {% else %}
 <p class="text-xl text-center text-gray-500 font-bold">
     The employee has'nt provided any banking information! 
