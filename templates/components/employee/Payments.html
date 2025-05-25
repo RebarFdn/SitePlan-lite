@@ -1,30 +1,12 @@
 {% if employee.account.payments %}
-{{employee.account.payments}}
+
  <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
-    <table class="table table-zebra table-xs md:table-sm">
-      <!-- head -->
-      <thead>
-        <tr>
-            <th>Bill Ref</th>
-          <th>Job Ref</th>          
-          <th>Date</th>
-          <th>Amount</th>
-          
-        </tr>
-      </thead>
-      <tbody>
-        <!-- row 1 -->
-        
-        {% for row in employee.account.payments %}
-        <tr>
-          <td><label>{{ row.bill_ref }}</label></td>
-          <td><label>{{ row.job_ref }}</label></td>
-          <td><label>{{ row.date }}</label></td>
-          
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <ul>
+    {% for item in employee.account.payments %}
+    <li>{{item}}</li>
+    {% endfor %}
+    </ul>
+</div>
 {% else %}
 <p class="text-xl text-center text-gray-500 font-bold">
     There is no paymemt record for the employee! 

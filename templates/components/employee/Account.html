@@ -1,4 +1,38 @@
 
+            <!-- name of each tab group should be unique -->
+<div class="tabs tabs-lift">
+    <label class="tab">
+        <input type="radio" name="my_tabs_4" checked="checked"/>
+        <span class="fa fa-clock"></span> 
+        Banking Information
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6">
+        {% include 'components/employee/Bank.html' %}
+    </div>
+
+    <label class="tab">
+        <input type="radio" name="my_tabs_4"  />
+         <span class="fa fa-clock"></span>  Payment Records
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6">
+         {% include 'components/employee/Payments.html' %}
+    </div>
+
+  <label class="tab">
+    <input type="radio" name="my_tabs_4" />
+    <span class="fa fa-clock"></span>  Loans
+  </label>
+  <div class="tab-content bg-base-100 border-base-300 p-6">
+    {% include 'components/employee/Loans.html' %}
+</div>
+<label class="tab">
+    <input type="radio" name="my_tabs_4" />
+    <span class="fa fa-clock"></span>  Analytics
+  </label>
+  <div class="tab-content bg-base-100 border-base-300 p-6">
+    Analytics
+</div>
+</div>
             <ul>
             {% for key, val in employee.items() %}
             <li><p class="text-xs p-1"><strong>{{key}}</strong> {{val}}</p></li>
