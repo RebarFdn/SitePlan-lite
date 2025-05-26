@@ -1,5 +1,66 @@
+{% macro loanpayment( payments ) -%}
+   {% if payments %}
+    {% if payments |length > 1 %}
+        <table>
+            <thead>
+                
+                <tr></tr></thead>
+            <tbody>
+                {% for item in payments %}
+                <tr>
+                    {% for key, val in item.items() %}
+                    <td><strong>{{key}}</strong> {{ val }}</td>
+                    {% endfor %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% if  payments[0].get('resolved') %}
+        <span class="text-sm font-semibold tooltip" style="color: green;" 
+        data-tip="Repaid {{payments[0].get('amount') | to_dollars }} on {{payments[0].get('date') }}">Repaid</span>
+        {% else %}
+        <div class="text-sm font-semibold" style="color: green;">{{ payments[0] }}</div>
+        {% endif %}
+            
+    {% endif %}
+   {% else %}
+   <span class="text-sm font-semibold" style="color: rgba(241, 5, 5, 0.973);">Unpaid</span>
+   {% endif %}
+{%- endmacro %}
+
 {% if employee.account.loans %}
- {{employee.account.loans}}
+
+ <div class="text-sm overflow-y-auto sm:overflow-x-auto h-96 p-5">
+    <table class="uk-table uk-table-small uk-table-responsive"
+    >
+        <thead>
+            <tr>
+                <th>Ref</th>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Amount</th>
+                <th>RePaid</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in employee.account.loans %}
+            <tr>
+                <td>{{ item.ref }}</td>
+                <td>{{ item.date }}</td>
+                <td>{{ item.about }}</td>
+                <td>{{ item.amount | to_dollars }}</td>
+                <td>{{ loanpayment( item.repayment )}}</td>
+                <td></td>
+                
+            </tr>
+             {% endfor %}
+        </tbody>
+    
+    </table>
+    </div>
 {% else %}
 <p class="text-xl text-center text-gray-500 font-bold">
     There are no loan recorded for the employee! 

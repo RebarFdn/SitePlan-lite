@@ -1,12 +1,81 @@
 {% if employee.account.payments %}
 
- <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
-    <ul>
-    {% for item in employee.account.payments %}
-    <li>{{item}}</li>
-    {% endfor %}
-    </ul>
-</div>
+ 
+ <div class="text-sm overflow-y-auto sm:overflow-x-auto h-96 p-5">
+    <table class="uk-table uk-table-small uk-table-responsive"
+    >
+        <thead>
+            <tr>
+                <th>Ref</th>
+                <th>Date</th>
+                <th>Items</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in employee.account.payments %}
+             {% if item.get('items') %}
+            <tr>
+                <td>{{ item.ref }}</td>
+                <td>{{ item.date | to_date  }}</td>
+                <td>
+                    <div class="overflow-x-auto">
+                    <table class="table table-xs">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Amount</th>
+                           
+                        </tr>
+                        </thead>
+                        <tbody>
+                           
+                             {% for task in  item.get('items') %}
+                            <tr>
+                                <td>{{ task.id }}</td>
+                                <td>{{ task.description }}</td>
+                                <td>{{ task.unit }}</td>
+                                <td>{{ task.amount }}</td>
+                                <td>{{ task.price | to_dollars }}</td>
+                                <td>{{ task.total | to_dollars }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>Deductions</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>{{ item.deductions }}</td>
+                            </tr>
+                            <tr>
+                                <td>Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>{{ item.total | to_dollars }}</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                   
+                  
+                   
+                </td>
+                
+                
+            </tr>
+            {% endif %}
+             {% endfor %}
+        </tbody>
+    
+    </table>
+    </div>
 {% else %}
 <p class="text-xl text-center text-gray-500 font-bold">
     There is no paymemt record for the employee! 

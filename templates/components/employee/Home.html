@@ -1,72 +1,105 @@
 <div id="employee-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
         <div id="employee-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
-            <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-5">
-             <ul>
-                <li class="text-lg font-semibold p-2">Employee Basic Information</li>  
-                <li id="employee-name">
-                    <strong>Name.</strong> {{ employee.name }}
-                </li>
-                <li id="employee-oc">
-                    <strong>Known as.</strong> {{ employee.oc }}
-                </li>
-                <li id="employee-id">
-                    <strong>Employee Id.</strong> {{ employee._id }}
-                </li>
-                <li class="text-md font-semibold py-2">Address</li>
-                 {% if employee.address.lot or 
-                    employee.address.street or 
-                    employee.address.town or 
-                    employee.address.city_parish or
-                    employee.address.country 
-                %}
-                <li>
-            <!-- Address Info -->
-                    <ul  id="employee-address" class="mt-5">                            
-                        {% for key,val in employee.address.items() if val %}
-                        <li><strong>{{key}}.</strong> {{ val }} </li>
-                        {% endfor %}                        
-                    </ul>
-                </li>
-                {% else %}
-                 <li>Address information unavailable!</li>
-                {% endif %}
+           <p class="text-lg font-semibold p-2">Employee Basic Information</p> 
+            <div class="uk-grid-small uk-child-width-expand@s uk-text-left" uk-grid>
+                <div>
+                     <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+                        <ul>
+                             
+                            <li id="employee-name">
+                                <strong>Name.</strong> {{ employee.name }}
+                            </li>
+                            <li id="employee-oc">
+                                <strong>Known as.</strong> {{ employee.oc }}
+                            </li>
+                            <li id="employee-id">
+                                <strong>Employee Id.</strong> {{ employee._id }}
+                            </li>
+                            <li class="text-md font-semibold py-2">Address</li>
+                            {% if employee.address.lot or 
+                                employee.address.street or 
+                                employee.address.town or 
+                                employee.address.city_parish or
+                                employee.address.country 
+                            %}
+                            <li>
+                        <!-- Address Info -->
+                                <ul  id="employee-address" class="mt-5">                            
+                                    {% for key,val in employee.address.items() if val %}
+                                    <li><strong>{{key}}.</strong> {{ val }} </li>
+                                    {% endfor %}                        
+                                </ul>
+                            </li>
+                            {% else %}
+                            <li>Information unavailable!<br>
+                                <a href="#">Update Address</a>
 
-                <li class="text-md font-semibold py-2">Contact</li>
-                {% if employee.contact.tel or employee.contact.mobile or employee.contact.email or employee.contact.watsapp %}
-                <li>
-                    <ul id="employee-contact">   
-                        {% for key,val in employee.contact.items() if val %} 
-                   
-                        <li><strong>{{ val}} </strong> {{ key }}</li>
-                        
-                        {% endfor %}
-                    </ul>
-                </li>
-                {% else %}
-                <li>Contact information unavailable!</li>
-                {% endif %}
-                <li class="text-md font-semibold py-2">Role</li>
-                <li>
-                    <ul id="employee-role">
-                         <li><strong>Occupation </strong> {{ employee.occupation }}</li>
-                         <li><strong>Skill level / rating </strong> {{ employee.rating }}</li>
-                    </ul>
-                </li>
-                <li class="text-md font-semibold py-2">Identity</li>
-                <li>
-                    <ul id="employee-role">
-                         <li><strong>Id </strong> {{ employee.identity }}</li>
-                         <li><strong>Id Type </strong> {{ employee.id_type }}</li>
-                    </ul>
-                </li>
-               <li class="text-lg font-semibold py-2">Employment Status</li>
+                            </li>
+                            {% endif %}
+
+                            <li class="text-md font-semibold py-2">Contact</li>
+                            {% if employee.contact.tel or employee.contact.mobile or employee.contact.email or employee.contact.watsapp %}
+                            <li>
+                                <ul id="employee-contact">   
+                                    {% for key,val in employee.contact.items() if val %} 
+                            
+                                    <li><strong>{{ val}} </strong> {{ key }}</li>
+                                    
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% else %}
+                            <li>Information unavailable!<br>
+                                <a href="#">Update Contact</a></li>
+                            {% endif %}
+                            <li class="text-md font-semibold py-2">Role</li>
+                            <li>
+                                <ul id="employee-role">
+                                    <li><strong>Occupation </strong> {{ employee.occupation }}</li>
+                                    <li><strong>Rating </strong> {{ employee.rating }}</li>
+                                </ul>
+                            </li>
+                            <li class="text-md font-semibold py-2">Identity</li>
+                            <li>
+                                <ul id="employee-role">
+                                    <li><strong>Id </strong> {{ employee.identity }}</li>
+                                    <li><strong>Id Type </strong> {{ employee.id_type }}</li>
+                                </ul>
+                            </li>
+                        <li class="text-lg font-semibold py-2">Employment Status</li>
 
 
 
-                
-            </ul>
+                            
+                        </ul>
 
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-5">
+                    
+                      <div class="card text-center bg-base-100 w-48 shadow-sm">
+                        <figure class="px-2 pt-5">
+                            <img
+                            src="{{ employee.imgurl }}"
+                            alt="{{ employee.oc }}"
+                            class="rounded-xl" />
+                        </figure>
+                        <div class="card-body items-center text-center">
+                            <span class="text-md text-center font-semibold">{{ employee.oc }}</span>
+                            <span class="text-sm text-center">{{ employee.occupation }}</span>
+                            <div class="card-actions flex flex-col">                              
+                            <button class="btn" onclick="e_profile.showModal()">Update Profile</button>
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+               
             </div>
+           
+
         </div>
         <div id="employee-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
             <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-5">
@@ -106,3 +139,21 @@
             </div>
         </div>
     </div>
+
+
+  
+
+
+<dialog id="e_profile" class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Update Employee Profile Image</h3>
+    <fieldset class="fieldset">
+        <legend class="fieldset-legend">Pick a Image</legend>
+        <input type="file" class="file-input" />
+        <label class="label">Max size 2MB</label>
+    </fieldset>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

@@ -56,7 +56,7 @@ TEMPLATES = Jinja2Templates(TEMPLATES_PATH)
 env = TEMPLATES.env
 env.filters['to_dollars'] = to_dollars
 env.filters['convert_timestamp'] = convert_timestamp
-env.filters['convert_time'] = converTime
+env.filters['to_date'] = converTime
 env.filters['to_project_id'] = to_project_id
 
 

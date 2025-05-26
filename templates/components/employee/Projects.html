@@ -1,1 +1,23 @@
-{{projects}}
+ <div class="text-sm overflow-y-auto sm:overflow-x-auto h-96 p-5">
+    <table class="uk-table uk-table-small uk-table-responsive">
+        <thead>
+            <tr>
+                <th>Project Id.</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>{% for item in projects %} 
+            <tr>
+                <td>{{item._id}}</td>
+                <td 
+                class="cursor-pointer tooltip" 
+                data-tip="Go to Project"
+                hx-get="/project/{{item._id}}/n"
+                hx-target="#main-display"
+                hx-trigger="click"
+                >{{item.name}}</td>
+            </tr> 
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>

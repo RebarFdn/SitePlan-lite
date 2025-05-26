@@ -1,5 +1,53 @@
 {% if employee.days %}
-{{employee.days}}
+
+<div class="text-sm overflow-y-auto sm:overflow-x-auto h-96 p-5">
+     <table class="uk-table uk-table-small uk-table-responsive">
+   <thead>
+        <tr>
+          <th>
+           Date
+          </th>          
+          <th>Worker Name</th>
+          <th>Start Time</th>
+          <th>Draw Off</th>
+          <th>Description</th>          
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- row 1 -->
+        {% for row in employee.days  %}
+        <tr>
+          <td>
+            <span class="text-sm">{{row.date}}</span>
+          </td>
+          <td>
+                <div class="font-bold text-sm cursor-pointer" onclick="edit_daywork.showModal()">{{ row.worker_name }}</div>
+               
+          </td>
+          <td>           
+           {{ row.start }}
+          </td>
+          <td>{{ row.end }} <span class="text-xs mx-10"></span></td>
+          <td><p class="text-sm">{{row.description}}</p></td>
+          <td>
+            {% if row.payment.paid %}
+                <div class="badge badge-outline badge-success">Resolved</div>
+            {% else %}            
+            <div class="badge badge-outline badge-error">Unresolved</div>
+            {% endif %}
+        </td>
+          
+        </tr>
+        {% endfor %}
+        <!-- row 1 -->       
+        
+        
+      </tbody>
+     
+    </table>
+    </div>
+
 {% else %}
 <p class="text-xl text-center text-gray-500 font-bold">
     The employee has'nt done any Days work as yet! 
