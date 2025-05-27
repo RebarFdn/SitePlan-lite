@@ -1,0 +1,6 @@
+<p class="text-lg text-center font-semibold p-2">Project Location</p> 
+{% if project.address.coords  %}
+<span><strong>Coordinates</strong> {{ project.address.coords }} </span>
+{% else %}
+Enter Coordinates
+{% endif %}

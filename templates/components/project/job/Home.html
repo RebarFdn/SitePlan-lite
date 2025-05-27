@@ -1,15 +1,5 @@
-{% macro jobstate ( state ) -%}
-   {% if state.active %}
-   <span class="text-lg text-green-500 font-semibold" style="color: green;">Active</span>
-   {% elif state.complete %}
-   <span class="text-lg text-green-500 font-semibold" style="color: rgba(12, 86, 224, 0.973);">Completed</span>
-   {% elif state.pause %}
-   <span class="text-lg text-green-500 font-semibold" style="color: rgba(250, 214, 9, 0.993);">Paused</span>
-   {% elif state.terminate %}
-   <span class="text-lg text-green-500 font-semibold" style="color: rgba(241, 5, 5, 0.973);">Terminated</span>
+{% from 'components/macros.html' import activeState %}
 
-   {% endif %}
-{%- endmacro %}
 <div id="job-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
     <div id="job-home-left" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm m-2">
         <div class="card w-96 bg-base-100 card-sm shadow-sm">
@@ -36,11 +26,15 @@
                 <li>  <p> <span class="font-semibold mx-8">ProjectPhase </span>{{ job.projectPhase  }} </p></li>
                 <li>  <p> <span class="font-semibold mx-8">All Tasks</span> <span class="uk-badge font-semibold">{{ job.tasks | length }} </span></p>
                      </li>
-                <li><p class="flex flex-row my-2"> 
+                <li>
+                    <p class="flex flex-row my-2"> 
                     <span class="font-semibold mx-5">Progress</span> 
                     <progress class="progress progress-secondary" value="{{ job.progress }}" max="100"></progress> 
                     <span class="uk-badge font-semibold">{{ job.progress }} % </span>
-                </p>
+                    </p>
+                </li>
+                <li>
+                    <strong>State</strong> {{activeState(job.state)}}
                 </li>
             </ul>
             </div>

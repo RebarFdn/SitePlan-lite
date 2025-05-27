@@ -49,38 +49,31 @@
       </div>
       
     </div>
+
     <div class="navbar-center hidden lg:flex">
+
       <ul class="menu menu-horizontal px-1">
+
         <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click">
           <label for="my-drawer" class="uk-button uk-button-default uk-button-small drawer-button">
           <span class="fa fa-cubes"></span> Projects</label> 
         </li>
-        <li>
 
-          <!--details>
-            <summary><span class="fa fa-users"></span> Team</summary>
-            <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-              <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
-              <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
-              <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click">
-                <span class="fa fa-user-times"></span>Workers</a>
-              </li>
-            </ul>
-          </!--details-->
-          <div>
-              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-users"></span></span> Team</button>
+        <li>
+          
+              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-users"></span> Team</button>
               <div uk-dropdown="pos: bottom-center">
                   <ul class="uk-nav uk-dropdown-nav">
                       <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
                     <li><a><span class="fa fa-user-circle"></span>Staff</a></li>
-                    <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click">
+                    <li><a hx-get="/employee/index/all/i" hx-target="#main-display" hx-trigger="click" class="uk-animation-fade">
                       <span class="fa fa-user-times"></span>Workers</a>
                     </li>
                   </ul>
               </div>
-            </div>
-
+            
         </li>
+
         <li >
           <a class="uk-button uk-button-default uk-button-small"
           hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click"
@@ -89,13 +82,15 @@
           </span> Industry Rates
         </a>
         </li>
-          <li><a class="uk-button uk-button-default uk-button-small"
+        
+        <li><a class="uk-button uk-button-default uk-button-small"
              hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click">
-            <span class="fa fa-truck"></span>Suppliers</a>
-          </li>
-          <li>
+            <span class="fa fa-truck"></span> Suppliers</a>
+        </li>
+
+        <li>
             
-            <div class="uk-inline">
+            
               <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-wrench"></span> Tools</button>
               <div uk-dropdown="pos: bottom-center">
                   <ul class="uk-nav uk-dropdown-nav">
@@ -109,7 +104,7 @@
             
                   </ul>
               </div>
-            </div>
+            
 
           </li>
           
@@ -122,12 +117,14 @@
         <ul
           tabindex="0"
           class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+
           <li hx-get="/project/index/i" hx-target="#left-bar" trigger="click">
             <label for="my-drawer" class="btn btn-ghost drawer-button"><span class="fa fa-cubes"></span>Projects</label>
           </li>
+          
           <li>
             <div class="uk-inline">
-              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-users"></span></span> Team</button>
+              <button class="uk-button uk-button-default uk-button-small" type="button"><span class="fa fa-users"></span> Team</button>
               <div uk-dropdown="pos: bottom-center">
                   <ul class="uk-nav uk-dropdown-nav">
                       <li><a><span class="fa fa-face-smile"></span>Crews</a></li>
@@ -139,9 +136,11 @@
               </div>
             </div>
           </li>
+
           <li hx-get="/rate/index/all/i" hx-target="#main-display" hx-trigger="click">
             <a><span class="fa fa-dollar"></span>Industry Rates</a>
-          </li>
+          </li>           
+
           <li><a hx-get="/supplier/index/all/i" hx-target="#main-display" hx-trigger="click">
             <span class="fa fa-truck"></span>Suppliers</a>
           </li>
@@ -170,6 +169,7 @@
            </li>
       </ul>
     </div>
+    
     <div class="navbar-end">
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn m-1">User</div>

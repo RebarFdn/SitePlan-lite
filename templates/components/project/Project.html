@@ -1,0 +1,110 @@
+
+<p class="md:text-lg text-sm font-semibold"
+   hx-get="/project/index/i" 
+   hx-target="#right-bar" 
+   hx-trigger="every 8s"
+> 
+    <span class="badge badge-outline">{{project.category}}</span>-
+    <span class="badge badge-outline cursor-pointer tooltip" data-tip="change employee occupation.">Project</span> 
+    {{ project.name }}
+</p>
+<div class="tabs tabs-lift">
+    <label class="tab"> <span class="fa fa-home"></span>
+      <input type="radio" name="my_tabs_4" checked="checked"/>
+     Home
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6 uk-animation-scale-up">
+        {% include 'components/project/Home.html' %}
+    </div>
+  
+    <label class="tab"><span class="fa fa-bank"></span>
+      <input type="radio" name="my_tabs_4" />
+      Account
+    </label>
+    <div class="tab-content bg-base-100 border-base-300 p-6 uk-animation-fade">
+       {% include 'components/project/Account.html' %}
+        
+    </div>
+  
+    <label class="tab"><span class="fa fa-user-times"></span>
+      <input type="radio" name="my_tabs_4" />
+      Workers
+    </label>
+    <div id="workers-console" class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+      {% include 'components/project/Workers.html' %}
+        
+    </div>
+
+    <label class="tab"><span class="fa fa-face-cogs"></span>
+        <input type="radio" name="my_tabs_4" />
+        Jobs
+      </label>
+      <div id="job-console" class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+        {% include 'components/project/Jobs.html' %}
+          
+      </div>
+
+    
+      <label class="tab"><span class="fa fa-history"></span>
+        <input type="radio" name="my_tabs_4" />
+        Daywork
+      </label>
+      <div id="days-console" class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+        {% include 'components/project/Days.html' %}
+            
+      </div>
+
+    <label class="tab"><span class="fa fa-dollar"></span>
+        <input type="radio" name="my_tabs_4" />
+        Rates
+      </label>
+      <div id="rates-console" class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+        {% include 'components/project/Rates.html' %}   
+      </div>
+
+    
+      <label class="tab"><span class="fa fa-cubes"></span>
+        <input type="radio" name="my_tabs_4" />
+        Inventory
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6">
+          {{ project.inventorys }}    
+      </div>
+
+
+    <label class="tab"><span class="fa fa-list-alt"></span>
+        <input type="radio" name="my_tabs_4" />
+        Orders
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+        {% include 'components/project/Orders.html' %}     
+      </div>
+
+
+    <label class="tab"><span class="fa fa-hourglass-start"></span>
+        <input type="radio" name="my_tabs_4" />
+        Event/State
+      </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+          {{ project.events }}    {{ project.states }}    
+      </div>
+
+
+    <label class="tab"><span class="fa fa-list-ul"></span>
+        <input type="radio" name="my_tabs_4" />
+        Logs
+    </label>
+      <div class="tab-content bg-base-100 border-base-300 p-6 uk-animation-slide-left-small">
+        <div id="project-activity-log"> 
+          {% include 'components/project/ActivityLogs.html' %}
+        </div>
+        
+      </div>
+
+
+
+  </div>
+
+
+
+<!--script type="module" src="/static/js/app/app.js"></!--script-->

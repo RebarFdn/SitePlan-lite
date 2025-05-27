@@ -1,0 +1,46 @@
+{% macro loanpayment( payments ) -%}
+   {% if payments %}
+    {% if payments |length > 1 %}
+        <table>
+            <thead>
+                
+                <tr></tr></thead>
+            <tbody>
+                {% for item in payments %}
+                <tr>
+                    {% for key, val in item.items() %}
+                    <td><strong>{{key}}</strong> {{ val }}</td>
+                    {% endfor %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% if  payments[0].get('resolved') %}
+        <span class="text-sm font-semibold tooltip" style="color: green;" 
+        data-tip="Repaid {{payments[0].get('amount') | to_dollars }} on {{payments[0].get('date') }}">Repaid</span>
+        {% else %}
+        <div class="text-sm font-semibold" style="color: green;">{{ payments[0] }}</div>
+        {% endif %}
+            
+    {% endif %}
+   {% else %}
+   <span class="text-sm font-semibold" style="color: rgba(241, 5, 5, 0.973);">Unpaid</span>
+   {% endif %}
+{%- endmacro %}
+
+
+{% macro activeState ( state ) -%}
+   {% if state.active %}
+   <span class="text-md text-green-500 font-semibold" style="color: green;">Active</span>
+   {% elif state.complete %}
+   <span class="text-md text-green-500 font-semibold" style="color: rgba(15, 135, 233, 0.973);">Completed</span>
+   {% elif state.paused %}
+   <span class="text-md text-green-500 font-semibold" style="color: rgba(25, 21, 248, 0.979);">Paused</span>
+   {% elif state.terminate %}
+   <span class="text-md text-green-500 font-semibold" style="color: rgba(241, 5, 5, 0.973);">Terminated</span>
+   {% else %}
+    <span class="text-xs text-gray-500 font-semibold" style="color: rgba(36, 31, 31, 0.973);">Ready</span>
+   {% endif %}
+{%- endmacro %}

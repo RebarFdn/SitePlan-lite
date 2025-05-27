@@ -1,110 +1,116 @@
-<p class="md:text-lg text-sm font-semibold mx-5"  hx-get="/project/index/i" hx-target="#right-bar" hx-trigger="every 10s">{{ project.name }} Project</p>
+{% from 'components/macros.html' import activeState %}
+<div id="project-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
+    <!--left-display-->
+    <div id="project-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
+        <p class="text-lg font-semibold p-2">Project Basic Information</p> 
+       
+        <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+            <ul>
+                             
+                <li id="project-name">
+                    <strong>Name.</strong> {{ project.name }}
+                </li>
+                            
+                            <li id="project-id">
+                                <strong>project Id.</strong> {{ project._id }}
+                            </li>
+                            <li class="text-md font-semibold py-2">Address</li>
+                            {% if project.address.lot or 
+                                project.address.street or 
+                                project.address.town or 
+                                project.address.city_parish or
+                                project.address.country 
+                            %}
+                            <li>
+                        <!-- Address Info -->
+                                <ul  id="project-address" class="mt-5">                            
+                                    {% for key,val in project.address.items() if val if key not in ['coords'] %}
+                                    <li><strong>{{key}}.</strong> {{ val }} </li>
+                                    {% endfor %}                        
+                                </ul>
+                            </li>
+                            {% else %}
+                            <li>Information unavailable!<br>
+                                <a href="#">Update Address</a>
 
-<div class="tabs tabs-lift">
-    <label class="tab"> <span class="fa fa-home"></span>
-      <input type="radio" name="my_tabs_4" checked="checked"/>
-     Home
-    </label>
-    <div class="tab-content bg-base-100 border-base-300 p-6">
-        <div id="project-home" class="grid grid-flow-row grid-row-2 md:grid-cols-4 gap-4"> 
-            <div id="projecthome-left-display" class="md:col-span-2 bg-blue-100 border-blue-200 rounded-sm ml-2">
-               <span id="project-id">{{project._id}}</span> 
-               {{ project.owner }}
+                            </li>
+                            {% endif %}
+
+                            <li class="text-md font-semibold py-2">Owner</li>
+                            <li>
+                                <ul id="project.owner">  
+                                    <li class="text-md font-semibold py-2"><strong>Name</strong> {{ project.owner.name }}</li>
+                                    <li class="text-md font-semibold py-2">Contact</li> 
+                                    {% if project.owner.contact.tel or project.owner.contact.mobile or project.owner.contact.email or project.owner.contact.watsapp %}
+                                     <li>
+                                        <ul>  
+                                        {% for key,val in project.owner.contact.items() if val %}                             
+                                            <li><strong>{{ key}} </strong> {{ val }}</li>
+                                    
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                    {% else %}
+                                    <li>Information unavailable!<br>
+                                        <a href="#">Update Owner Contact</a></li>
+                                    {% endif %}
+
+                                </ul>
+                            </li>
+                            
+                            
+                        <li class="text-lg font-semibold py-2">Project Status</li>
+
+
+
+                            
+                        </ul>
+
+                    </div>
         
-            </div>
-            <div id="projecthome-left-display" class="md:col-span-2 bg-gray-100 border-gray-300 rounded-sm ml-2">
-                {{ project.address }}
-            </div>
+    </div>
+    <!--right-display-->
+    <div id="project-right-display" class="md:col-span-2 bg-gray-100 border-gray-300 rounded-sm ml-2">
+        <span class="text-lg font-semibold p-2">Project Properties</span> 
+              
+        <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+            <ul>                             
+               <li id="project-category"><strong>Category </strong> {{ project.category }}</li>
+                <li id="project-standard"><strong>Standard </strong> {{ project.standard }}</li>
+                                    
+                <li id="project-state"><strong>State </strong> {{activeState(project.states) }}</li>
+                <li id="project-progress"><strong>Progress </strong> 
+
+                            <ul>
+                                {% for key, val in project.progress.items() if val if key not in ['overall', 'unit'] %}  
+                                <li id="project-{{key}}" class="my-2"><strong>{{key}} </strong><span class="uk-badge ml-2"> {{val }}</span>{{project.progress.unit}}</li>                           
+                                {% endfor %}
+
+                            </ul>
+                                    
+                </li>
+                <li><span class="text-lg font-semibold py-2">Administration</span> </li> 
+                <li>
+                    <ul>
+                        <li id="project-lead"><strong>Lead </strong> {{project.admin.leader }}</li>
+                        <li><strong>Staff </strong></li>
+                        <li>
+                            <ul>
+                                {% for key, val in project.admin.staff.items() %}  
+                                <li id="project-{{key}}"><strong>{{key}} </strong> {{val }}</li>                           
+                                {% endfor %}
+
+                            </ul>
+                                    
+                        </li>
+                            
+                    </ul>
+                </li>           
+            </ul>
         </div>
     </div>
-  
-    <label class="tab"><span class="fa fa-bank"></span>
-      <input type="radio" name="my_tabs_4" />
-      Account
-    </label>
-    <div class="tab-content bg-base-100 border-base-300 p-6">
-        {{ project.account }}
-    </div>
-  
-    <label class="tab"><span class="fa fa-user-times"></span>
-      <input type="radio" name="my_tabs_4" />
-      Workers
-    </label>
-    <div id="workers-console" class="tab-content bg-base-100 border-base-300 p-6">
-      {% include 'components/project/Workers.html' %}
-        
-    </div>
+</div>
+ <div id="project-locationmap" class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+    {% include 'components/project/Location.html' %}
 
-    <label class="tab"><span class="fa fa-face-cogs"></span>
-        <input type="radio" name="my_tabs_4" />
-        Jobs
-      </label>
-      <div id="job-console" class="tab-content bg-base-100 border-base-300 p-6">
-        {% include 'components/project/Jobs.html' %}
-          
-      </div>
-
-    
-      <label class="tab"><span class="fa fa-history"></span>
-        <input type="radio" name="my_tabs_4" />
-        Daywork
-      </label>
-      <div id="days-console" class="tab-content bg-base-100 border-base-300 p-6">
-        {% include 'components/project/Days.html' %}
-            
-      </div>
-
-    <label class="tab"><span class="fa fa-dollar"></span>
-        <input type="radio" name="my_tabs_4" />
-        Rates
-      </label>
-      <div id="rates-console" class="tab-content bg-base-100 border-base-300 p-6">
-        {% include 'components/project/Rates.html' %}   
-      </div>
-
-    
-      <label class="tab"><span class="fa fa-cubes"></span>
-        <input type="radio" name="my_tabs_4" />
-        Inventory
-      </label>
-      <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.inventorys }}    
-      </div>
-
-
-    <label class="tab"><span class="fa fa-list-alt"></span>
-        <input type="radio" name="my_tabs_4" />
-        Orders
-      </label>
-      <div class="tab-content bg-base-100 border-base-300 p-6">
-        {% include 'components/project/Orders.html' %}     
-      </div>
-
-
-    <label class="tab"><span class="fa fa-hourglass-start"></span>
-        <input type="radio" name="my_tabs_4" />
-        Event/State
-      </label>
-      <div class="tab-content bg-base-100 border-base-300 p-6">
-          {{ project.events }}    {{ project.states }}    
-      </div>
-
-
-    <label class="tab"><span class="fa fa-list-ul"></span>
-        <input type="radio" name="my_tabs_4" />
-        Logs
-    </label>
-      <div class="tab-content bg-base-100 border-base-300 p-6">
-        <div id="project-activity-log"> 
-          {% include 'components/project/ActivityLogs.html' %}
-        </div>
-        
-      </div>
-
-
-
-  </div>
-
-
-
-<!--script type="module" src="/static/js/app/app.js"></!--script-->
+ </div>

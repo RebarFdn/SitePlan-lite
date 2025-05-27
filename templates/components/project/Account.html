@@ -1,0 +1,43 @@
+
+<div class="flex-1">
+    <a class="btn btn-ghost text-xl" >Account</a>
+</div>
+<div class="uk-grid">
+    <div class="uk-width-1-5@m">
+
+        <ul class="uk-nav uk-nav-default uk-nav-divider bg-blue-200 uk-border-rounded uk-padding-small uk-margin" uk-switcher="connect: #account-nav; animation: uk-animation-fade">
+            <li>
+                <a href="#"><span class="fa fa-clock"></span>Banking Information</a>
+               
+            </li>
+            <li><a href="#"><span class="fa fa-clock"></span> Deposits</a></li>
+            <li><a href="#"><span class="fa fa-clock"></span> Withdrawals</a></li>
+            <li><a href="#"><span class="fa fa-clock"></span> Expences</a></li>
+            <li><a href="#">Invoices</a></li>
+            <li><a href="#">Purchase Orders</a></li>
+            <li><a href="#"><span class="fa fa-clock"></span> Pay Statements</a></li>
+            <li><a href="#"> <span class="fa fa-clock"></span> Pay Bills</a></li>
+        </ul>
+
+    </div>
+    <div class="uk-width-expand@m">
+
+        <div id="account-nav" class="uk-switcher">
+            <div>
+                {% include 'components/project/account/Bank.html' %}
+            </div> 
+
+            <div>
+                 {% include 'components/project/account/Deposit.html' %}
+            </div> 
+            <div>{{ project.account.transactions.withdraw }}</div> 
+            <div>{{ project.account.expences }}</div>
+             <div> {{ project.account.records.invoices }}</div> 
+            <div> {{ project.account.records.purchase_orders }}</div> 
+            <div>{{ project.account.records.salary_statements }}</div>
+            <div> {{ project.account.records.paybills }}</div>
+        </div>
+
+
+    </div>
+</div>
