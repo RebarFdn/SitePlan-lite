@@ -6,9 +6,7 @@ import datetime
 import json
 import typing
 from strgen import StringGenerator
-
-
-
+from pydantic import BaseModel
 
 
 def today()->str:
@@ -56,7 +54,20 @@ def filter_dates(date:str=None, start:str=None, end:str=None):
             return True
         else:
             return False
-    
+
+# ________________________________________ Summation modules _________________
+tally_data:list = [
+    {'ref': 'EXP-1735472655215', 'date': '2024-12-28', 'description': 'Gas for power washer', 'claimant': 'Ian Moncrieffe', 'method': 'cash', 'total': '1500.00'}, 
+    {'ref': 'EXP-1735472708113', 'date': '2024-12-28', 'description': 'refreshments for workers', 'claimant': 'Ian Moncrieffe', 'method': 'cash out', 'total': '1650'}
+    ]
+class AmountTotal(BaseModel):
+    amount:float = None
+    total:float = 0
+
+def tally(items:list):
+    ''' '''
+    return sum([  AmountTotal( **item ).amount if item.get('amount')  else  AmountTotal( **item ).total for item in items])
+
 #----------------------------- ID Generation Service ----------------------------------
 
 class GenerateId:
@@ -551,10 +562,12 @@ def test_delete():
 
 if __name__ == "__main__":
     print('Testing from SitePlan utils')
-    data = {'na': "pete", 'aa': 5 }
-    hd = hash_data(data=data)
-    print(hd)
+
+    print(tally(tally_data))
+    #data = {'na': "pete", 'aa': 5 }
+    #hd = hash_data(data=data)
+    #print(hd)
     
-    vdt = validate_hash_data( hash_key=hd, data=data)
-    print(vdt)
+    #vdt = validate_hash_data( hash_key=hd, data=data)
+    #print(vdt)
 

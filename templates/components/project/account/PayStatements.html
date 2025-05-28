@@ -1,0 +1,74 @@
+
+{% if project.account.records.salary_statements %}
+ <a href="#statement-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Pay Statements </span></a>
+ <div id="statement-result"></div>
+<div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+
+    <table class="uk-table uk-table-small uk-table-responsive font-medium text-gray-800 uppercase">
+        <thead>
+            <tr>                   
+                <th>Date</th>                
+                <th>Job Id</th>
+                <th>Employee</th> 
+                <th>Tasks</th>                   
+                <th>Total</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in project.account.records.salary_statements |reverse %}                      
+
+                <tr>              
+                    <td>{{ d.date | convert_timestamp }}</td>                   
+                    <td>{{ d.jobid }} </td>
+                    <td>{{ d.name }} </td>
+                     <td>{{ d.get('items') | length }} </td>
+                    <td>{{ d.total | to_dollars }}</td>
+                    <td>
+                        <div class="uk-inline">
+                            <button class="uk-button uk-button-default" type="button">Manage</button>
+                            <div uk-dropdown="pos: bottom-right">
+                                <ul class="uk-nav uk-dropdown-nav">
+                                    <li><a 
+                                            href="#" 
+                                            hx-get="/edit_account_deposit/"
+                                            hx-target="#message"
+                                            
+                                            >Edit</a></li>
+                                    <li><a href="#">Tag</a></li>
+                                    <li><a href="#"><button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Delete</button>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                                                    
+                    </td>
+                </tr>
+            {% endfor %}
+                <tr> 
+                    <td>Statements Total to Date</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>{{ project.account.records.salary_statements | tally | to_dollars }}</strong></td>
+
+                    <td></td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<p class="text-lg">You Need To Fund This Project! </p><br>
+<a href="#statement-modal" uk-toggle>Deposit Funds</a>
+{% endif %}
+
+<!-- This is the Deposit modal -->
+<div id="statement-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body rounded-lg">
+        <p class="text-lg text-center font-semibold">Pay Statement</p>
+       
+       
+    </div>
+</div>

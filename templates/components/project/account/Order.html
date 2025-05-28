@@ -1,0 +1,129 @@
+
+{% if project.account.records.purchase_orders %}
+
+ <a href="#order-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Purchase Order</span></a>
+ <div id="order-result"></div>
+<div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+{{ project.account.records.purchase_orders[0] }}
+    <table class="uk-table uk-table-small uk-table-responsive text-gray-800">
+        <thead>
+            <tr>      
+                 
+                <th>Order No.</th>   
+                <th>Date</th>        
+                <th>Title</th>
+                <th>Items</th>
+                <th>Resolved</th>                                  
+                <th>Manage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in project.account.records.purchase_orders |reverse %}                      
+
+                <tr>  
+                    <td>{{ d.id }}</td>
+                    <td>{{ d.date | convert_timestamp }}</td>
+                    <td>{{ d.title }}</td>
+                    <td> 
+                        <div class="collapse bg-base-100 border border-base-300">
+                            <input type="radio" name="my-accordion-1" />
+                            <div class="collapse-title font-semibold">Items</div>
+                            <div class="collapse-content text-sm">
+                                <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-64 p-1">
+                                    <table class="table table-xs">
+                                        <thead>
+                                        <tr>
+                                            {% for key in d.get('items')[0].keys() %}
+                                            <th>{{ key }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in d.get('items') %}
+                                        <tr>
+                                            {% for key2, val2 in item.items() %}
+                                            <td>{{ val2 }}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                        </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                    <td>{{ d.resolved }} </td>
+                   
+                    
+                    <td>
+                        <div class="dropdown dropdown-start">
+                            <div tabindex="0" role="button" class="btn m-1">Manage</div>
+                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                <li><a 
+                                            href="#" 
+                                            hx-get="/project/{{project._id}}/expence/{{d.id}}-{{d.ref}}"
+                                            hx-target="#message"
+                                            
+                                            >Edit</a></li>
+                                    <li><a href="#">Tag</a></li>
+                                    <li><a 
+                                        href="#"><button 
+                                        type="button" 
+                                        class="btn btn-primary btn-sm">Delete</button>
+                                        </a>
+                                    </li>
+                            </ul>
+                        </div>
+                                                    
+                    </td>
+                </tr>
+            {% endfor %}
+               
+        </tbody>
+    </table>
+    
+</div>
+
+{% else %}
+<p class="text-lg">You have'nt create any Purchase orders to  date! </p><br>
+<a href="#order-modal" uk-toggle>Create purchase order</a>
+{% endif %}
+
+<!-- This is the Deposit modal -->
+<div id="order-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body rounded-lg">
+        <p class="text-lg text-center font-semibold">Create Purchase Order </p>
+        <form 
+            hx-post="/project/{{project._id}}/order"
+            hx-target="#order-result"
+            hx-trigger="submit"                        
+            class="uk-grid-small" 
+            uk-grid
+            >
+            <div class="uk-width-1-1">
+                <input class="uk-input" type="date" placeholder="Date" name="date" aria-label="Date">
+            </div>
+            <div class="uk-width-1-2@s">
+                <input class="uk-input" type="text" placeholder="Transaction Type" value="expence" name="type" aria-label="expence">
+            </div>
+            <div class="uk-width-1-4@s">
+                <input class="uk-input" type="text" placeholder="Refference" name="ref" aria-label="Ref">
+            </div>
+            <div class="uk-width-1-4@s">
+                <input class="uk-input" type="number" step="0.01" placeholder="Amount" name="amount" aria-label="$">
+            </div>
+            <div class="uk-width-1-2@s">
+                <input class="uk-input" type="text" placeholder="Recitient" name="recipient" aria-label="Recitient">
+            </div>
+            
+    
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button class="uk-button uk-button-primary rounded-md" type="submit" uk-modal-close>Save Record</button>
+            </p>
+        </form>
+       
+    </div>
+</div>

@@ -1,0 +1,121 @@
+
+{% if project.account.records.invoices %}
+
+ <a href="#invoice-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Purchase Invoices</span></a>
+ <div id="invoice-result"></div>
+<div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+
+    <table class="uk-table uk-table-small uk-table-responsive text-gray-800">
+        <thead>
+            <tr>      
+                <th>Supplier</th>  
+                <th>Invoice No.</th>           
+                <th>Date</th>
+                <th>Items</th>
+                <th>Tax</th>
+                <th>Total</th>
+                                   
+                <th>Manage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in project.account.records.invoices |reverse %}                      
+
+                <tr>  
+                    <td>{{ d.supplier.name }}</td>    
+                    <td>{{ d.invoiceno }}</td>        
+                    <td>{{ d.datetime  }}</td>
+                    <td> 
+                        <div class="dropdown dropdown-start">
+                            <div tabindex="0" role="button" class="btn m-1">Items</div>
+                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                {% for item in d.get('items') %}
+                                <li> <p><strong>No {{item.itemno}}</strong>  {{item.quantity}} {{item.unit}} {{item.description}} Price: {{item.price }}.</p></li>
+                             
+                                {% endfor %}
+                                <li></li>
+                            </ul>
+                        </div>
+
+                    </td>
+                    <td>{{ d.tax | to_dollars }} </td>
+                    <td>{{ d.total | to_dollars }}</td>
+                    
+                    <td>
+                        <div class="dropdown dropdown-start">
+                            <div tabindex="0" role="button" class="btn m-1">Manage</div>
+                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                <li><a 
+                                            href="#" 
+                                            hx-get="/project/{{project._id}}/expence/{{d.id}}-{{d.ref}}"
+                                            hx-target="#message"
+                                            
+                                            >Edit</a></li>
+                                    <li><a href="#">Tag</a></li>
+                                    <li><a 
+                                        href="#"><button 
+                                        type="button" 
+                                        class="btn btn-primary btn-sm">Delete</button>
+                                        </a>
+                                    </li>
+                            </ul>
+                        </div>
+                                                    
+                    </td>
+                </tr>
+            {% endfor %}
+                <tr > 
+                    <td>Total purchases to Date</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>{{ project.account.records.invoices | tally | to_dollars }}</strong></td>
+                    <td></td>
+                </tr>
+        </tbody>
+    </table>
+    
+</div>
+
+{% else %}
+<p class="text-lg">There are no Recorded Invoices to  date! </p><br>
+<a href="#invoice-modal" uk-toggle>Record Purchase Invoice</a>
+{% endif %}
+
+<!-- This is the Deposit modal -->
+<div id="invoice-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body rounded-lg">
+        <p class="text-lg text-center font-semibold">Project account Expence </p>
+        <form 
+            hx-post="/project/{{project._id}}/invoice"
+            hx-target="#invoice-result"
+            hx-trigger="submit"                        
+            class="uk-grid-small" 
+            uk-grid
+            >
+            <div class="uk-width-1-1">
+                <input class="uk-input" type="date" placeholder="Date" name="date" aria-label="Date">
+            </div>
+            <div class="uk-width-1-2@s">
+                <input class="uk-input" type="text" placeholder="Transaction Type" value="expence" name="type" aria-label="expence">
+            </div>
+            <div class="uk-width-1-4@s">
+                <input class="uk-input" type="text" placeholder="Refference" name="ref" aria-label="Ref">
+            </div>
+            <div class="uk-width-1-4@s">
+                <input class="uk-input" type="number" step="0.01" placeholder="Amount" name="amount" aria-label="$">
+            </div>
+            <div class="uk-width-1-2@s">
+                <input class="uk-input" type="text" placeholder="Recitient" name="recipient" aria-label="Recitient">
+            </div>
+            
+    
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button class="uk-button uk-button-primary rounded-md" type="submit" uk-modal-close>Save Record</button>
+            </p>
+        </form>
+       
+    </div>
+</div>

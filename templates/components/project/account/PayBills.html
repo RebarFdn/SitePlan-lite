@@ -1,0 +1,85 @@
+
+{% if project.account.records.paybills  %}
+ <a href="#paybill-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Pay paybills </span></a>
+ <div id="paybill-result"></div>
+<div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+
+    <table class="uk-table uk-table-small uk-table-responsive font-medium text-gray-800 uppercase">
+        <thead>
+            <tr>                   
+                <th>Date</th>                
+                <th>Ref</th>
+                <th>Title</th>                  
+                <th>Items</th>               
+                <th>Total</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in project.account.records.paybills  |reverse %}                      
+                
+                <tr>              
+                    <td>{{ d.date }}</td>                   
+                    <td>{{ d.ref }} </td>
+                    <td><a href="#editpaybill-modal" uk-toggle>{{ d.mainTitle }}</a> {% set paybill = cycler(d, "even") %} </td>
+                    
+                     <td>{{ d.get('items') | length }} </td>
+                    <td>{{ d.total | to_dollars }}</td>
+                    <td>
+                        <div class="uk-inline">
+                            <button class="uk-button uk-button-default" type="button">Manage</button>
+                            <div uk-dropdown="pos: bottom-right">
+                                <ul class="uk-nav uk-dropdown-nav">
+                                    <li><a 
+                                            href="#" 
+                                            hx-get="/edit_account_deposit/"
+                                            hx-target="#message"
+                                            
+                                            >Edit</a></li>
+                                    <li><a href="#">Tag</a></li>
+                                    <li><a href="#"><button type="button" 
+                                        class="btn btn-error btn-sm">Delete</button>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                                                    
+                    </td>
+                </tr>
+            {% endfor %}
+                <tr> 
+                    <td>paybills Total to Date</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>{{ project.account.records.paybills | tally | to_dollars }}</strong></td>
+
+                    <td></td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<p class="text-lg">You Need To Fund This Project! </p><br>
+<a href="#paybill-modal" uk-toggle>Deposit Funds</a>
+{% endif %}
+
+<!-- This is the Deposit modal -->
+<div id="paybill-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body rounded-lg">
+        <p class="text-lg text-center font-semibold">Pay paybill</p>
+       
+       
+    </div>
+</div>
+
+<div id="editpaybill-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body rounded-lg">
+        <p class="text-lg text-center font-semibold">Pay paybill</p>
+     
+    </div>
+</div>
+
+

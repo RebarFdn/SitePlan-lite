@@ -28,14 +28,14 @@
             </div> 
 
             <div>
-                 {% include 'components/project/account/Deposit.html' %}
+                 {% include 'components/project/account/Deposits.html' %}
             </div> 
-            <div>{{ project.account.transactions.withdraw }}</div> 
-            <div>{{ project.account.expences }}</div>
-             <div> {{ project.account.records.invoices }}</div> 
-            <div> {{ project.account.records.purchase_orders }}</div> 
-            <div>{{ project.account.records.salary_statements }}</div>
-            <div> {{ project.account.records.paybills }}</div>
+            <div>{% include 'components/project/account/Withdrawals.html' %}</div> 
+            <div>{% include 'components/project/account/Expences.html' %}</div>
+             <div>{% include 'components/project/account/Invoices.html' %}</div> 
+            <div> {% include 'components/project/account/Orders.html' %}</div> 
+            <div>{% include 'components/project/account/PayStatements.html' %}</div>
+            <div>{% include 'components/project/account/PayBills.html' %}  </div>
         </div>
 
 

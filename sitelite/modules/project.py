@@ -161,7 +161,7 @@ class projectManager:
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Project.html', 
-                {"request": request, "project": self.project }),
+                {"request": request, "project": self.project ,"paybill":{}}),
             'account': TEMPLATES.TemplateResponse(
                 '/components/project/Account.html', 
                 {"request": request, "project": self.project }),

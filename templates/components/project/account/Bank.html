@@ -1,2 +1,15 @@
 <p class="text-lg text-blue-500 font-semibold">Banking </p>
-{{ project.account.bank }}
+
+<div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+    <ul  id="project-account-bank">  
+        {% if project.account.bank.name and project.account.bank.acccount %} 
+            {% for key, val in project.account.bank.items() if val %}                          
+            <li>
+                <strong>{{ key }}</strong> {{ val }}
+            </li>
+            {% endfor %}
+        {% else %}
+        <li>Please Provide Banking Information</li>
+        {% endif %}
+    </ul>
+</div>
