@@ -1,133 +1,114 @@
-<div class="navbar bg-base-100 shadow-sm">
-    <div class="flex-1">
-      <a class="btn btn-ghost text-xl" onclick="my_modal_4.showModal()">Workers</a>
-    </div>
-    <div class="navbar-start">
-        <ul class="menu menu-horizontal px-1">
-        <li><label class="input">
-            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <g
-                stroke-linejoin="round"
-                stroke-linecap="round"
-                stroke-width="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </g>
-            </svg>
-            <input type="search" name="search-project-worker" required placeholder="Search" class="input-sm rounded-md" />
-          </label>
-        </li>
-        <li>
-            <details>
-              <summary>Filter</summary>
-              <ul class="bg-base-100 rounded-t-none p-2">
-                <li><a>Link 1</a></li>
-                <li><a>Link 2</a></li>
-              </ul>
-            </details>
-          </li>
-        </ul>
-      </div>
-    <div class="flex-none">
-      <ul class="menu menu-horizontal px-1">
-        <li><button class="btn" onclick="my_modal_4.showModal()">Add Worker To Project</button></li>        
-        
-      </ul>
-    </div>
-  </div>
 
-  <div class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
-    <table class="table table-zebra table-xs md:table-lg">
-      <!-- head -->
-      <thead>
-        <tr>
-          <th class="hidden md:visible">
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>          
-          <th>Name</th>
-          <th>Occupation</th>
-          <th>Rating</th>
-          <th>Contact</th>          
-          <th>manage</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- row 1 -->
-        {% for row in project.workers  %}
-        <tr>
-          <th class="hidden md:visible">
-            <label>
-              <input type="checkbox" class="checkbox" />
-            </label>
-          </th>
-          <td>
-            <div class="flex items-center gap-3">
-              <div class="avatar">
-                <div class="mask mask-squircle h-12 w-12">
-                  <img
-                    src="{{ row.value.imgurl }}"
-                    alt="{{ row.value.oc }}" />
-                </div>
-              </div>
-              <div>
-                <div class="font-bold cursor-pointer" hx-get="/Project/{{project._id}}/workers/{{ row.id }}" hx-target="#workers-console" hx-trigger="click">{{ row.value.name }}</div>
-                <div class="text-sm opacity-50">{{ row.value.oc }} | {{ row.key }}</div>
-                
-              </div>
+ <span class="btn btn-ghost text-blue-500 text-xl" onclick="my_modal_4.showModal()">Workers</span>
+
+<div class="uk-grid">
+  <div class="uk-width-1-5@m">
+    <ul 
+        class="uk-nav uk-nav-default uk-nav-divider bg-blue-200 uk-border-rounded uk-padding-small uk-margin animation: uk-animation-fade" 
+    >
+    <li>
+      <div class="uk-margin">
+          <form class="uk-search uk-search-default uk-form-small">
+              <span uk-search-icon></span>
+              <input class="uk-search-input rounded" type="search" placeholder="Search" aria-label="Search">
+          </form>
+      </div>
+    </li>
+      <li> 
+
+        <div class="uk-inline">
+            <!--button class="uk-button uk-button-default" type="button"></!--button-->
+           <a class="uk-link-text" href="#">Filter</a>
+            <div uk-dropdown="mode: click">
+             <ul class="uk-nav uk-dropdown-nav">
+                    <li class="uk-active"><a href="#">Active</a></li>
+                    <li><a href="#">Item</a></li>
+                    <li><a href="#">Item</a></li>
+              </ul>
             </div>
-          </td>
-          <td>           
-           {{ row.value.occupation }}
-          </td>
-          <td>
-            <div class="rating rating-sm">
-                {% for rating in range(row.value.rating|int) %}
-                <div class="mask mask-star" aria-label="{{ rating + 1 }} star"></div>
-                {% endfor %}
-              </div>
-          </td>
-          <td><p class="flex flex-col px-2">
-            
-                <label><span class="fa fa-envelope"></span> {{ row.value.email }} </label>
-                <label><span class="fa fa-mobile-phone"></span> {{ row.value.mobile }}</label>
-            </p> 
-        </td>
-          <th>
+        </div>
+      </li>
+        <li><a class="uk-link-text text-lg font-semibold" onclick="my_modal_4.showModal()">Add Worker</a> </li>
            
-            <div class="tooltip">
-                <div class="tooltip-content">
-                  <div class="animate-bounce text-orange-400 -rotate-3 text-xs font-black p-2">Remove {{row.value.oc}}<br> From Project!</div>
-                </div>
-                <button class="btn"><span class="fa fa-trash"></span></button>
-              </div>
-          </th>
-        </tr>
-        {% endfor %}
-        <!-- row 1 -->       
-        
-        
-      </tbody>
-      <!-- foot -->
-      <tfoot>
-        <tr>
-            <th>
-             
-            </th>          
-            <th>Name</th>
-            <th>Occupation</th>
-            <th>Rating</th>
-            <th>Contact</th>          
-            <th></th>
-          </tr>
-      </tfoot>
-    </table>
-   
+    </ul>
+
   </div>
+  <div class="uk-width-expand@m"> 
+
+      <div id="project-workers" class="overflow-y-auto sm:overflow-x-auto h-96 p-5">
+        <table class="uk-table uk-table-small uk-table-responsive font-medium text-gray-800 ">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th>Profile</th>     
+              <th>Name</th>
+              <th>Occupation</th>
+              <th>Rating</th>
+              <th>Contact</th>          
+              <th>manage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- row 1 -->
+            {% for row in project.workers  %}
+            <tr> 
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar">
+                    <div class="mask mask-squircle h-12 w-12">
+                      <img
+                        src="{{ row.value.imgurl }}"
+                        alt="{{ row.value.oc }}" />
+                    </div>
+                  </div>             
+                </div>
+              </td>
+              <td>
+                <div 
+                class="font-bold cursor-pointer" 
+                hx-get="/Project/{{project._id}}/workers/{{ row.id }}" 
+                hx-target="#workers-console" 
+                hx-trigger="click">{{ row.value.name }}
+              </div>
+              </td>
+              <td>           
+              {{ row.value.occupation }}
+              </td>
+              <td>
+                <div class="rating rating-sm">
+                    {% for rating in range(row.value.rating|int) %}
+                    <div class="mask mask-star" aria-label="{{ rating + 1 }} star"></div>
+                    {% endfor %}
+                  </div>
+              </td>
+              <td><p class="flex flex-col px-2">
+                
+                    <label><span class="fa fa-envelope"></span> {{ row.value.email }} </label>
+                    <label><span class="fa fa-mobile-phone"></span> {{ row.value.mobile }}</label>
+                </p> 
+              </td>
+              <td>
+              
+                <div class="tooltip">
+                    <div class="tooltip-content">
+                      <div class="animate-bounce text-orange-400 -rotate-3 text-xs font-black p-2">Remove {{row.value.oc}}<br> From Project!</div>
+                    </div>
+                    <button class="btn"><span class="fa fa-trash"></span></button>
+                  </div>
+              </td>
+            </tr>
+            {% endfor %}
+            <!-- row 1 -->       
+            
+            
+          </tbody>
+          <!-- foot -->
+          
+        </table>
+      
+      </div>
+  </div> 
+</div>
   
 <dialog id="my_modal_4" class="modal">
   <div class="modal-box w-11/12 max-w-5xl">

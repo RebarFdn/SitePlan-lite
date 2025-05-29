@@ -258,8 +258,6 @@ class ProjectClient:
             return search_.get('id')
 
 
-
-
 class ProjectApi:
     """Handles Api requests to the server  
 

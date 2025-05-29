@@ -26,17 +26,7 @@
                     <td>{{ d.invoiceno }}</td>        
                     <td>{{ d.datetime  }}</td>
                     <td> 
-                        <div class="dropdown dropdown-start">
-                            <div tabindex="0" role="button" class="btn m-1">Items</div>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                {% for item in d.get('items') %}
-                                <li> <p><strong>No {{item.itemno}}</strong>  {{item.quantity}} {{item.unit}} {{item.description}} Price: {{item.price }}.</p></li>
-                             
-                                {% endfor %}
-                                <li></li>
-                            </ul>
-                        </div>
-
+                       {{ d.get('items') | length }}
                     </td>
                     <td>{{ d.tax | to_dollars }} </td>
                     <td>{{ d.total | to_dollars }}</td>
