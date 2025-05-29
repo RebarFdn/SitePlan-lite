@@ -1,15 +1,18 @@
 ## Application Data Models
-
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 from uuid import uuid4, UUID
 from typing import List, Any
 from functools import lru_cache
-from modules.utils import generate_id, timestamp
 from pydantic import BaseModel, EmailStr, Field,  SecretStr
 from pydantic_extra_types.country import CountryShortName 
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from eaziform import FormModel
+try:
+    from modules.utils import generate_id, timestamp
+except ImportError:
+    pass
+#from sitelite.modules.utils import generate_id, timestamp
 
 
 class Department(Enum):
@@ -46,6 +49,7 @@ class Contact(BaseModel):
     watsapp: PhoneNumber | None = None
 
 
+## Financial and Accounting Models
 
 class Bank(BaseModel):
     name: str = Field(default=None, min_length=2, max_length=32) 
@@ -70,18 +74,28 @@ class Payment(BaseModel):
     refference:str
 
 
-
 class EmployeeAccount(BaseModel):
     bank: Bank | None = None
     payments: List[Payment]
     loans: List[Loan]
+
 
 class CommercialAccount(BaseModel):
     bank: Bank | None = None
     transactions: list = []
 
 
-
+class DepositModel(BaseModel):
+    id:UUID = Field(default=uuid4())
+    date:date = None
+    type:  str = Field(default="deposit")
+    ref:str = None
+    amount:float = None
+    payee:str = None
+    user:str = Field(default="Ian")
+    
+dep = DepositModel()
+print(dep)
 
 class Identity(BaseModel):
     identity: str | None = None

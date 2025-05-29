@@ -2,10 +2,10 @@
 
 <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
     <ul  id="project-account-bank">  
-        {% if project.account.bank.name and project.account.bank.acccount %} 
-            {% for key, val in project.account.bank.items() if val %}                          
+        {% if project.account.bank.name %} 
+            {% for key, val in project.account.bank.items()%}                          
             <li>
-                <strong>{{ key }}</strong> {{ val }}
+                <strong>{{ key | capitalize }}</strong> {{ val }}
             </li>
             {% endfor %}
         {% else %}

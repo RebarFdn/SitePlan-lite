@@ -184,12 +184,29 @@ class ProjectClient:
     def __init__(self, id:str=None, properties:list=[]):
         self.id = id
         self.properties = properties
+    
+    def property_search(self, prop:str, request:Request):
+        search = {
+            'index': TEMPLATES.TemplateResponse('/components/project/Index.html', 
+                        {"request": request, "projects": await all_projects()}),
+            'phases': JSONResponse( project_phases() ),
+            'model': JSONResponse( project_template() ),
+            'id': TEMPLATES.TemplateResponse(
+                '/components/project/Home.html', 
+                {"request": request, "project": self.project }),
+        }
+        return (search.get(prop))
 
     async def _jsonapi(self, request:Request):
         # Process Create New and Delete Requests
-        if request.method == 'POST':            
-            if self.properties.__len__() > 0 and self.properties[0] == 'logs':
-                await self.create_new_project(request=request)
+        if request.method == 'POST': 
+            if self.id == 'create':
+                async with request.form() as form:
+                    data = form
+                return JSONResponse({ key: val for key, val in form.items()})
+                # await self.create_new_project(request=request) 
+                # self.id = 'index'     
+                
             else:
                 pass
         elif request.method == 'DELETE':
@@ -199,15 +216,10 @@ class ProjectClient:
         else:
             pass
         # Process Get Requests
-        property_search = {
-            'index': TEMPLATES.TemplateResponse('/components/project/Index.html', 
-                        {"request": request, "projects": await all_projects()}),
-            'phases': JSONResponse( project_phases() ),
-            'model': JSONResponse( project_template() )
-        }
+        
         # 
         if self.id in self.PROPERTIES_INDEX:
-            return property_search.get(self.id)
+            return self.property_search(self.id, request)
         else:
             pass
         # if self.id is a project id, get and load the project
@@ -224,13 +236,7 @@ class ProjectClient:
         }
         if self.properties:
             if self.properties.__len__() == 1: 
-                notification.notify(
-                    title = "Request Properties",
-                    message= f"/components/project/{self.properties[0].capitalize()}.html" ,
                 
-                    # displaying time
-                    timeout=2 
-                )
                 search_ [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
                     {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})             
                 
@@ -246,8 +252,6 @@ class ProjectClient:
                 if type(self.project.get(self.properties[0]))  == list: 
                     # convert tasks list to task dictionary 
                     self.project[self.properties[0]] = {item.get('_id') if item.get('_id') else item.get('id'): item for item in self.project.get(self.properties[0])}
-
-                notification.notify(title = "Request Properties", message= f"property{self.properties[0]}, PROP{prop}" ,timeout=2 )  
 
                 return TEMPLATES.TemplateResponse(f'/components/project/{prop.capitalize()}.html', 
                     {"request": request, prop: self.project.get(self.properties[0], {}).get(self.properties[1]) })  
