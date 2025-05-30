@@ -86,6 +86,15 @@ async def projects_index()->list:
     return [{"_id": project.get('id'), "name": project.get('key')} for project in await all_projects()]
 
 
+async def get_project_ids()->list:
+    return [project.get('id') for project in await all_projects()]
+
+def set_prop( prop:str=None ):
+    if prop[len(prop)-1: ] == 's':
+        return prop[ :-1]
+    else:
+        return prop
+
 class projectManager:
     """Handles Client side requests and responses 
 
@@ -183,30 +192,38 @@ class ProjectClient:
 
     def __init__(self, id:str=None, properties:list=[]):
         self.id = id
-        self.properties = properties
+        self.properties = properties   
     
-    def property_search(self, prop:str, request:Request):
-        search = {
+
+    async def _jsonapi(self, request:Request):
+        self._ids:list = await get_project_ids()
+        _search:dict = {
             'index': TEMPLATES.TemplateResponse('/components/project/Index.html', 
                         {"request": request, "projects": await all_projects()}),
             'phases': JSONResponse( project_phases() ),
-            'model': JSONResponse( project_template() ),
-            'id': TEMPLATES.TemplateResponse(
-                '/components/project/Home.html', 
-                {"request": request, "project": self.project }),
+            'model': JSONResponse( project_template() )
+            
         }
-        return (search.get(prop))
-
-    async def _jsonapi(self, request:Request):
+        
         # Process Create New and Delete Requests
         if request.method == 'POST': 
-            if self.id == 'create':
-                async with request.form() as form:
-                    data = form
-                return JSONResponse({ key: val for key, val in form.items()})
+            async with request.form() as form: # Aquire the form data
+                data = form 
+            
+            if self.id == 'create': # checking... if request to create a project                 
+                return JSONResponse({self.id: { key: val for key, val in form.items()}})
                 # await self.create_new_project(request=request) 
-                # self.id = 'index'     
+                # self.id = 'index'   
+            elif self.id in self._ids: # checking... if request to modify a project                
+                self.project = await get_project(id=self.id)  #get and load the project
                 
+                if self.properties:
+                    pp = self.properties
+                    # get instructions from properties
+                    return JSONResponse({ self.id: self.project.get(pp[0]), 'properties':pp })
+                else:
+                    return JSONResponse({ self.id: self.project })
+
             else:
                 pass
         elif request.method == 'DELETE':
@@ -219,35 +236,35 @@ class ProjectClient:
         
         # 
         if self.id in self.PROPERTIES_INDEX:
-            return self.property_search(self.id, request)
+            return _search.get(self.id)
         else:
             pass
-        # if self.id is a project id, get and load the project
-        self.project = await get_project(id=self.id)        
+        # if self.id is a project id, 
+        self.project = await get_project(id=self.id)  # get and load the project     
         #for item in self.project.get('days'):
         #    item['_id'] = item.get('id') 
         #    await sleep(0.05)
         #await update_project(data=self.project)
-        search_ = {
-            'id': TEMPLATES.TemplateResponse(
+
+        _search['id'] = TEMPLATES.TemplateResponse(
                 '/components/project/Home.html', 
-                {"request": request, "project": self.project }),
+                {"request": request, "project": self.project })
             
-        }
+        
         if self.properties:
             if self.properties.__len__() == 1: 
                 
-                search_ [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
+                _search [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
                     {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})             
                 
-                return search_.get(self.properties[0])
+                return _search.get(self.properties[0])
             elif self.properties.__len__() == 2:
                 
-                prop:str = None
-                if self.properties[0][len(self.properties[0])-1: ] == 's':
+                prop:str = set_prop(self.properties[0])
+                """if self.properties[0][len(self.properties[0])-1: ] == 's':
                     prop = self.properties[0][ :-1]
                 else:
-                    prop = self.properties[0]
+                    prop = self.properties[0]"""
                 
                 if type(self.project.get(self.properties[0]))  == list: 
                     # convert tasks list to task dictionary 
@@ -259,7 +276,7 @@ class ProjectClient:
 
                 
         else:
-            return search_.get('id')
+            return _search.get('id')
 
 
 class ProjectApi:
