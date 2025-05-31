@@ -43,9 +43,11 @@ def converTime(timestamp:int=None):
     """Converts a integer timestamp to a human readable format. """    
     return time.ctime(float(timestamp/1000)) 
 
-def convert_timestamp(timestamp:int=None):    
-    date = datetime.datetime.fromtimestamp(int(timestamp/1000))
-    return date.strftime('%Y-%m-%d %H:%M:%S')
+def convert_timestamp(timestamp:int=None): 
+    if type(timestamp) == int:   
+        date = datetime.datetime.fromtimestamp(int(timestamp/1000))
+        return date.strftime('%Y-%m-%d %H:%M:%S')
+    return timestamp
 
 
 def filter_dates(date:str=None, start:str=None, end:str=None):

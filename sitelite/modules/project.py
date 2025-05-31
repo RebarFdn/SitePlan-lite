@@ -2,10 +2,11 @@ from typing import Coroutine, List, Any
 from asyncio import sleep
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse
+from ezchart import ezChart
 from database import Recouch, local_db
 from logger import logger
-from modules.utils import timestamp, load_metadata, set_metadata, generate_id
-from models import Project, project_phases, project_template ,DepositModel
+from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
+from models import Project, project_phases, project_template ,DepositModel, WithdrawalModel, ExpenceModel
 from config import TEMPLATES
 
 import time
@@ -90,66 +91,15 @@ async def get_project_ids()->list:
     return [project.get('id') for project in await all_projects()]
 
 
-# Project accounting utilities 
-async def transact_deposit( project:dict=None, data:dict=None )->dict:
-    """Handle Funds Deposit records on a project's account"""
-    if type(project) == dict:
-        pass
-    elif type(project) == str:
-        project = await get_project(id=project)
-    if data:                       
-        project['account']['transactions']['deposit'].append(data)
-        project['activity_logs'].append(
-            {
-                "id": timestamp(),
-                "title": "Funds Deposit",
-                "description": f"""Account {data.get('type') } with Refference {data.get('ref')} was added to Project  {project.get('_id')}
-                Account Transactions by { data.get('user') }"""
-            }
-            ) 
-        project['account']['updated'] = timestamp()
-        try:
-            await update_project(data=project)
-            return {"_id": project.get('_id'), "account": project.get('account')}
-        except Exception as e:
-                logger().exception(e)
-        finally:                
-                del(project) # clean up
-    else:
-        return {"error": 501, "message": "You did not provide any data for processing."}
+def log_activity(title:str=None, message:str=None, project:dict=None)->None:
+    project['activity_logs'].append(
+        {
+            "id": timestamp(),
+            "title": title,
+            "description": message 
+        }
+    )  
 
-    
-
-
-async def transact_withdrawal( project:dict=None, data:dict=None )->dict:  
-    """Handle Withrawals records on a project's account""" 
-    if type(project) == dict:
-        pass
-    elif type(project) == str:
-        project = await get_project(id=project)         
-    # process withdrawals
-    if data:               
-        project['account']['transactions']['withdraw'].append(data)
-        project['activity_logs'].append(
-                {
-                    "id": timestamp(),
-                    "title": "Funds Withdrawal",
-                    "description": f"""Account {data.get('type') } with Refference {data.get('ref')} was done on Project  {project.get('_id')}
-                        Account Transactions by { data.get('user') }"""
-                })  
-        #processProjectAccountBallance()
-        project['account']['updated'] = timestamp()
-        try:
-            await update_project(data=project)
-            return {"_id": project.get('_id'), "account": project.get('account')}
-        except Exception as e:
-                logger().exception(e)
-        finally:                
-                del(project) # clean up
-    else:
-        return {"error": 501, "message": "You did not provide any data for processing."}
-
-   
 
 # Project specific utilities
 def set_prop( prop:str=None ):
@@ -157,6 +107,133 @@ def set_prop( prop:str=None ):
         return prop[ :-1]
     else:
         return prop
+
+
+# Project accounting utilities 
+async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.TemplateResponse:
+    """Account Statistics Reporting"""
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)
+    account:dict = {
+        "current_balance": 0,
+        "deposits": tally(project['account']['transactions']['deposit']),
+        "withdrawals": tally(project['account']['transactions']['withdraw']),
+        "expences": tally(project['account']['expences']),
+    }
+    account['current_balance'] = account["deposits"] - sum([account["withdrawals"], account["expences"]])
+
+    return TEMPLATES.TemplateResponse(
+        '/components/project/account/Stastics.html', 
+        {"request": request, "project": {"_id": project.get('_id'), "account": account } })
+
+
+
+
+
+
+async def transact_deposit( request:Request, project:dict=None, data:dict=None ):
+    """Handle Funds Deposit records on a project's account"""
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)
+    if data:  
+        data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
+        deposit = DepositModel( **data ) # Validate data
+                                            
+        project['account']['transactions']['deposit'].append(deposit.model_dump())        
+        project['account']['updated'] = timestamp()
+        log_activity( title="Funds Deposit", message = f"""A deposit with refference {data.get('ref')} 
+            was made on  Project  {project.get('_id')} Account . by { data.get('user') }""" ,
+            project=project)  
+        try:
+            await update_project(data=project) # save changes
+             
+            return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Deposits.html', 
+                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
+
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+                del(deposit)
+    else:
+        return {"error": 501, "message": "You did not provide any data for processing."}
+
+
+async def transact_withdrawal( request:Request, project:dict=None, data:dict=None )->dict:  
+    """Handle Withrawals records on a project's account
+    
+        Requires a project.account object or project's id string 
+    """ 
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if data:   
+        data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
+        withdrawal = WithdrawalModel( **data ) # Validate data
+                      
+        project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
+        project['account']['updated'] = timestamp()
+        log_activity( title="Funds Withdrawal", message = f"""A withdrawal with refference {data.get('ref')} 
+            was drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
+            project=project )  
+        #processProjectAccountBallance()
+        
+        try:
+            await update_project(data=project)           
+            return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Withdrawals.html', 
+                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
+
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return {"error": 501, "message": "You did not provide any data for processing."}
+
+
+async def record_expence( request:Request, project:dict=None, data:dict=None )->dict:  
+    """Handle Expence data recording
+    
+        Requires a project.account object or project's id string 
+    """ 
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if data:   
+        data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
+        expence = ExpenceModel( **data ) # Validate data                     
+        project['account']['expences'].append(expence.model_dump())
+        withdrawal = WithdrawalModel(date=expence.date, ref=expence.ref, amount=expence.total, recipient=expence.claimant)
+        project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
+        project['account']['updated'] = timestamp()
+        log_activity( title="Expence Recorded", message = f"""Expence and withdrawal with refference {data.get('ref')} 
+            was recorded and drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
+            project=project )  
+        #processProjectAccountBallance()
+        
+        try:
+            await update_project(data=project)           
+            return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Expences.html', 
+                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
+
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return {"error": 501, "message": "You did not provide any data for processing."}
+   
 
 
 
@@ -284,15 +361,17 @@ class ProjectClient:
                 self.project = await get_project(id=self.id)  #get and load the project
                 
                 if self.properties: # get instructions from properties
-                    if self.properties[0] == 'deposit':
-                        form_data['date'] = timestamp(date=form_data.get('date')) 
-                        deposit = DepositModel( **form_data )
-                        result = await transact_deposit(project=self.project, data=deposit.model_dump())
-                        return TEMPLATES.TemplateResponse(
-                        '/components/project/account/Deposits.html', 
-                        {"request": request, "project": result })
-
-                   
+                    if self.properties[0] == 'deposit':  # Deposit Funds                      
+                        return await transact_deposit(request=request, project=self.project, data=form_data)
+                    elif self.properties[0] == 'withdraw':  # Withdraw Funds                      
+                        return await transact_withdrawal(request=request, project=self.project, data=form_data)
+                    elif self.properties[0] == 'expence':  # Record Expence                      
+                        return await record_expence(request=request, project=self.project, data=form_data)
+                    elif self.properties[0] == 'stats':  # Record Expence                      
+                        return await account_statistics(request=request, project=self.project)
+                    
+                    
+                                           
 
                     else:
                         return JSONResponse(self.project.get(self.properties[0]))

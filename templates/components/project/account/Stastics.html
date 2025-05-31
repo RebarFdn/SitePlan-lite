@@ -1,0 +1,38 @@
+<p class="text-lg text-blue-500 font-semibold">Account Statistics </p>
+    <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+        
+        
+        <div class="stats bg-base-100 border-base-300 border flex flex-row">
+        <div class="stat">
+            <div class="text-md ">Account balance</div>
+            <div class="stat-value text-2xl font-bold">{{project.account.deposits | to_dollars}}</div>
+            <div class="stat-actions">
+            <button class="btn btn-xs btn-success">Add funds</button>
+            </div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title text-md">Current balance</div>
+            <div class="text-2xl font-bold">{{project.account.current_balance | to_dollars}}</div>
+           
+        </div>
+        <div class="stat">
+            <div class="stat-title">Witdrawals</div>
+            <div class="stat-value">{{project.account.withdrawals | to_dollars}}</div>
+            <div class="stat-actions">
+            <button class="btn btn-xs">Withdrawal</button>
+           
+            </div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Expences</div>
+            <div class="stat-value">{{project.account.expences | to_dollars}}</div>
+            <div class="stat-actions">
+            <button class="btn btn-xs">Record Expence</button>
+           
+            </div>
+        </div>
+        </div>
+        
+    </div>

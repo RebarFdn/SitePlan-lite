@@ -9,7 +9,7 @@ from pydantic_extra_types.country import CountryShortName
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from eaziform import FormModel
 try:
-    from modules.utils import generate_id, timestamp
+    from modules.utils import generate_id, timestamp, tally
 except ImportError:
     pass
 #from sitelite.modules.utils import generate_id, timestamp
@@ -93,7 +93,27 @@ class DepositModel(BaseModel):
     amount:float = None
     payee:str = None
     user:str = Field(default="Ian")
-  
+
+class WithdrawalModel(BaseModel):
+    id:str = Field(default=generate_id(name='account withdraw') )
+    date:int = timestamp()
+    type:str = Field(default="withdrawal")
+    ref:str = None
+    amount:float = None
+    recipient:str = None
+    user:str = Field(default="Ian")
+ 
+class ExpenceModel(BaseModel):
+    id:str = Field(default=generate_id(name='account expence') )
+    ref:str = None
+    date:int = timestamp()
+    description:str = Field(default=None)
+    claimant:str = None
+    total:float = None
+    method:str = Field(default="cash")    
+    user:str = Field(default="Ian")
+
+
 
 class Identity(BaseModel):
     identity: str | None = None

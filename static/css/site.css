@@ -40,6 +40,8 @@
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
@@ -1750,6 +1752,13 @@
     width: 100%;
     grid-auto-columns: max-content auto;
   }
+  .stats {
+    position: relative;
+    display: inline-grid;
+    grid-auto-flow: column;
+    overflow-x: auto;
+    border-radius: var(--radius-box);
+  }
   .progress {
     position: relative;
     height: calc(0.25rem * 2);
@@ -2068,6 +2077,34 @@
     grid-row-start: 1;
     min-width: calc(0.25rem * 0);
   }
+  .stat-value {
+    grid-column-start: 1;
+    white-space: nowrap;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+  .stat-desc {
+    grid-column-start: 1;
+    white-space: nowrap;
+    color: var(--color-base-content);
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+    }
+    font-size: 0.75rem;
+  }
+  .stat-title {
+    grid-column-start: 1;
+    white-space: nowrap;
+    color: var(--color-base-content);
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+    }
+    font-size: 0.75rem;
+  }
+  .stat-actions {
+    grid-column-start: 1;
+    white-space: nowrap;
+  }
   .divider {
     display: flex;
     height: calc(0.25rem * 4);
@@ -2345,6 +2382,21 @@
       }
     }
   }
+  .stat {
+    display: inline-grid;
+    width: 100%;
+    column-gap: calc(0.25rem * 4);
+    padding-inline: calc(0.25rem * 6);
+    padding-block: calc(0.25rem * 4);
+    grid-template-columns: repeat(1, 1fr);
+    &:not(:last-child) {
+      border-inline-end: var(--border) dashed currentColor;
+      @supports (color: color-mix(in lab, red, red)) {
+        border-inline-end: var(--border) dashed color-mix(in oklab, currentColor 10%, #0000);
+      }
+      border-block-end: none;
+    }
+  }
   .navbar-end {
     display: inline-flex;
     align-items: center;
@@ -2573,6 +2625,17 @@
   }
   .cursor-pointer {
     cursor: pointer;
+  }
+  .stats-horizontal {
+    grid-auto-flow: column;
+    overflow-x: auto;
+    .stat:not(:last-child) {
+      border-inline-end: var(--border) dashed currentColor;
+      @supports (color: color-mix(in lab, red, red)) {
+        border-inline-end: var(--border) dashed color-mix(in oklab, currentColor 10%, #0000);
+      }
+      border-block-end: none;
+    }
   }
   .grid-flow-row {
     grid-auto-flow: row;
@@ -2814,6 +2877,10 @@
   .text-start {
     text-align: start;
   }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
   .text-lg {
     font-size: var(--text-lg);
     line-height: var(--tw-leading, var(--text-lg--line-height));
@@ -2944,6 +3011,11 @@
     --btn-p: 0.75rem;
     --size: calc(var(--size-field, 0.25rem) * 8);
   }
+  .btn-xs {
+    --fontsize: 0.6875rem;
+    --btn-p: 0.5rem;
+    --size: calc(var(--size-field, 0.25rem) * 6);
+  }
   .card-sm {
     .card-body {
       --card-p: 1rem;
@@ -2996,6 +3068,10 @@
   .btn-secondary {
     --btn-color: var(--color-secondary);
     --btn-fg: var(--color-secondary-content);
+  }
+  .btn-success {
+    --btn-color: var(--color-success);
+    --btn-fg: var(--color-success-content);
   }
   .input-info {
     &, &:focus, &:focus-within {

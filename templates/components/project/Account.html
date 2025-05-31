@@ -7,7 +7,7 @@
 
         <ul class="uk-nav uk-nav-default uk-nav-divider bg-blue-200 uk-border-rounded uk-padding-small uk-margin" uk-switcher="connect: #account-nav; animation: uk-animation-fade">
             <li>
-                <a href="#"><span class="fa fa-clock"></span>Banking Information</a>
+                <a href="#"><span class="fa fa-clock"></span>Accounting Information</a>
                
             </li>
             <li><a href="#"><span class="fa fa-clock"></span> Deposits</a></li>
@@ -30,8 +30,8 @@
             <div id="account-deposits">
                  {% include 'components/project/account/Deposits.html' %}
             </div> 
-            <div>{% include 'components/project/account/Withdrawals.html' %}</div> 
-            <div>{% include 'components/project/account/Expences.html' %}</div>
+            <div id="account-withdrawals">{% include 'components/project/account/Withdrawals.html' %}</div> 
+            <div id="account-expences">{% include 'components/project/account/Expences.html' %}</div>
              <div>{% include 'components/project/account/Invoices.html' %}</div> 
             <div> {% include 'components/project/account/Orders.html' %}</div> 
             <div>{% include 'components/project/account/PayStatements.html' %}</div>
