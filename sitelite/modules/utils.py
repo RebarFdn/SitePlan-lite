@@ -34,9 +34,10 @@ def timestamp(date:str=None)->int:
     """
     if date:
         element = datetime.datetime.strptime(date,"%Y-%m-%d")        
-        return int(datetime.datetime.timestamp(element) * 1000)       
+        return int(datetime.datetime.timestamp(element)) * 1000     
     else:
-        return  int((datetime.datetime.now().timestamp() * 1000))
+        return  int(datetime.datetime.now().timestamp()) * 1000
+
 
 def converTime(timestamp:int=None): 
     """Converts a integer timestamp to a human readable format. """    
@@ -45,6 +46,7 @@ def converTime(timestamp:int=None):
 def convert_timestamp(timestamp:int=None):    
     date = datetime.datetime.fromtimestamp(int(timestamp/1000))
     return date.strftime('%Y-%m-%d %H:%M:%S')
+
 
 def filter_dates(date:str=None, start:str=None, end:str=None):
         day = datetime.datetime.strptime(date, "%Y-%m-%d")

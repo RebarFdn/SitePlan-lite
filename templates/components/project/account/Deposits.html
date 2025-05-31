@@ -64,8 +64,8 @@
     <div class="uk-modal-dialog uk-modal-body rounded-lg">
         <p class="text-lg text-center font-semibold">Project Account Deposit</p>
         <form 
-            hx-post="/project/{{project._id}}/deposit"
-            hx-target="#deposit-result"
+            hx-post="/Project/{{project._id}}/deposit/i"
+            hx-target="#account-deposits"
             hx-trigger="submit"                        
             class="uk-grid-small" 
             uk-grid
@@ -89,7 +89,7 @@
     
             <p class="uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-                <button class="uk-button uk-button-primary rounded-md" type="submit" uk-modal-close>Deposit Funds</button>
+                <button class="uk-button uk-button-primary rounded-md uk-modal-close" type="submit" >Deposit Funds</button>
             </p>
         </form>
        

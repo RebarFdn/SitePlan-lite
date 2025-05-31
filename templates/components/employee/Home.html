@@ -119,15 +119,19 @@
                     {% for key,val in employee.nok.items() if val %}
                     
                     {% if key == "address" or key == "contact" %}
-                    <li><strong>{{key}}.</strong> </li>
-                    <li>
-                            <ul  id="nok-{{key}}" > 
-                                {% for key,val in val.items() if val %}
-                                <li><strong>{{key}}.</strong> {{ val }}</li>
-                                {% endfor %}
-                            </ul>
-                            
-                    </li>
+                        {% if val | upper %}
+                            <li><strong>{{key}}.</strong> {{ val }}</li>
+                        {% else %}
+                        <li><strong>{{key}}.</strong> </li>
+                        <li>
+                                <ul  id="nok-{{key}}" > 
+                                    {% for key2, val2 in val.items() if val %}
+                                    <li><strong>{{key2}}.</strong> {{ val2 }}</li>
+                                    {% endfor %}
+                                </ul>
+                                
+                        </li>
+                        {% endif %}
                     {% else %}
                     <li><strong>{{key}}.</strong> {{ val }}</li>
                     {% endif %}

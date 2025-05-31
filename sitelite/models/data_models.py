@@ -86,16 +86,14 @@ class CommercialAccount(BaseModel):
 
 
 class DepositModel(BaseModel):
-    id:UUID = Field(default=uuid4())
-    date:date = None
-    type:  str = Field(default="deposit")
+    id:str = Field(default=generate_id(name='account deposit') )
+    date:int = timestamp()
+    type:str = Field(default="deposit")
     ref:str = None
     amount:float = None
     payee:str = None
     user:str = Field(default="Ian")
-    
-dep = DepositModel()
-print(dep)
+  
 
 class Identity(BaseModel):
     identity: str | None = None

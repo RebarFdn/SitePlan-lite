@@ -5,7 +5,7 @@ from starlette.responses import HTMLResponse, JSONResponse
 from database import Recouch, local_db
 from logger import logger
 from modules.utils import timestamp, load_metadata, set_metadata, generate_id
-from models import Project, project_phases, project_template 
+from models import Project, project_phases, project_template ,DepositModel
 from config import TEMPLATES
 
 import time
@@ -89,11 +89,77 @@ async def projects_index()->list:
 async def get_project_ids()->list:
     return [project.get('id') for project in await all_projects()]
 
+
+# Project accounting utilities 
+async def transact_deposit( project:dict=None, data:dict=None )->dict:
+    """Handle Funds Deposit records on a project's account"""
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)
+    if data:                       
+        project['account']['transactions']['deposit'].append(data)
+        project['activity_logs'].append(
+            {
+                "id": timestamp(),
+                "title": "Funds Deposit",
+                "description": f"""Account {data.get('type') } with Refference {data.get('ref')} was added to Project  {project.get('_id')}
+                Account Transactions by { data.get('user') }"""
+            }
+            ) 
+        project['account']['updated'] = timestamp()
+        try:
+            await update_project(data=project)
+            return {"_id": project.get('_id'), "account": project.get('account')}
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return {"error": 501, "message": "You did not provide any data for processing."}
+
+    
+
+
+async def transact_withdrawal( project:dict=None, data:dict=None )->dict:  
+    """Handle Withrawals records on a project's account""" 
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if data:               
+        project['account']['transactions']['withdraw'].append(data)
+        project['activity_logs'].append(
+                {
+                    "id": timestamp(),
+                    "title": "Funds Withdrawal",
+                    "description": f"""Account {data.get('type') } with Refference {data.get('ref')} was done on Project  {project.get('_id')}
+                        Account Transactions by { data.get('user') }"""
+                })  
+        #processProjectAccountBallance()
+        project['account']['updated'] = timestamp()
+        try:
+            await update_project(data=project)
+            return {"_id": project.get('_id'), "account": project.get('account')}
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return {"error": 501, "message": "You did not provide any data for processing."}
+
+   
+
+# Project specific utilities
 def set_prop( prop:str=None ):
     if prop[len(prop)-1: ] == 's':
         return prop[ :-1]
     else:
         return prop
+
+
+
 
 class projectManager:
     """Handles Client side requests and responses 
@@ -208,19 +274,28 @@ class ProjectClient:
         # Process Create New and Delete Requests
         if request.method == 'POST': 
             async with request.form() as form: # Aquire the form data
-                data = form 
+                form_data = dict(form) 
             
             if self.id == 'create': # checking... if request to create a project                 
-                return JSONResponse({self.id: { key: val for key, val in form.items()}})
+                return JSONResponse({self.id: { key: val for key, val in form_data.items()}})
                 # await self.create_new_project(request=request) 
                 # self.id = 'index'   
             elif self.id in self._ids: # checking... if request to modify a project                
                 self.project = await get_project(id=self.id)  #get and load the project
                 
-                if self.properties:
-                    pp = self.properties
-                    # get instructions from properties
-                    return JSONResponse({ self.id: self.project.get(pp[0]), 'properties':pp })
+                if self.properties: # get instructions from properties
+                    if self.properties[0] == 'deposit':
+                        form_data['date'] = timestamp(date=form_data.get('date')) 
+                        deposit = DepositModel( **form_data )
+                        result = await transact_deposit(project=self.project, data=deposit.model_dump())
+                        return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Deposits.html', 
+                        {"request": request, "project": result })
+
+                   
+
+                    else:
+                        return JSONResponse(self.project.get(self.properties[0]))
                 else:
                     return JSONResponse({ self.id: self.project })
 
