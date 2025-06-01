@@ -1,6 +1,6 @@
 <p class="text-lg text-blue-500 font-semibold">Account Statistics </p>
+<iframe src="/Project/{{project._id}}/chart/i" title="Account Statistics" width="420" height="280"></iframe>
     <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
-        
         
         <div class="stats bg-base-100 border-base-300 border flex flex-row">
         <div class="stat">
@@ -16,6 +16,11 @@
             <div class="text-2xl font-bold">{{project.account.current_balance | to_dollars}}</div>
            
         </div>
+        
+        </div>
+
+        <div class="stats bg-base-100 border-base-300 border flex flex-row">
+        
         <div class="stat">
             <div class="stat-title">Witdrawals</div>
             <div class="stat-value">{{project.account.withdrawals | to_dollars}}</div>
@@ -34,5 +39,26 @@
             </div>
         </div>
         </div>
+        <div class="stats bg-base-100 border-base-300 border flex flex-row">
+        
+        <div class="stat">
+            <div class="stat-title">Purchases</div>
+            
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Paybills</div>
+            <div class="stat-value">{{project.account.paybills | to_dollars}}</div>
+            
+        </div>
+         
+        </div>
+        <!--p class="text-lg text-blue-500 font-semibold"
+        hx-post="/Project/{{project._id}}/chart/i" 
+        hx-target="#account-chart" 
+        hx-trigger="every 10s"
+        >Chart </!--p-->
+        
+        
         
     </div>

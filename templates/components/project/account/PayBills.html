@@ -1,8 +1,9 @@
 
-{% if project.account.records.paybills  %}
+
  <a href="#paybill-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Pay paybills </span></a>
+ {% if project.account.records.paybills  %}
  <div id="paybill-result"></div>
-<div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+<div id="account-paybills" class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
 
     <table class="uk-table uk-table-small uk-table-responsive font-medium text-gray-800 uppercase">
         <thead>
@@ -62,15 +63,69 @@
 </div>
 
 {% else %}
-<p class="text-lg">You Need To Fund This Project! </p><br>
-<a href="#paybill-modal" uk-toggle>Deposit Funds</a>
+<p class="text-lg">You have'nt created any Paybill as yet! </p><br>
+<a href="#paybill-modal" uk-toggle>Create Your First Paybill</a>
 {% endif %}
 
 <!-- This is the Deposit modal -->
 <div id="paybill-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body rounded-lg">
         <p class="text-lg text-center font-semibold">Pay paybill</p>
-       
+        <form class="uk-form-stacked"
+        
+        >
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-stacked-text">Date</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="form-stacked-text" type="date" placeholder="Bill Date" name="date">
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-stacked-text">Period Start</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="form-stacked-text" type="date" placeholder="Bill Date" name="date_starting">
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-stacked-text">Period Ending</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="form-stacked-text" type="date" placeholder="Bill Date" name="date_ending">
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-stacked-text">Reference</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="form-stacked-text" type="text" placeholder="Bill-01" name="ref" value="{{project.new_billref}}">
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-stacked-text">Title</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="form-stacked-text" type="text" placeholder="Bill Title" name="mainTitle">
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-stacked-text">SubTitle</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="form-stacked-text" type="text" placeholder="Bill SubTitle" name="subTitle"
+                    >
+                </div>
+            </div>
+           
+
+        
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Close</button>
+                <input class="uk-button uk-button-primary uk-modal-close" type="submit" value="Create New Paybill"
+                hx-post="/Project/{{project._id}}/paybill/n"
+                hx-target="#account-paybills"
+                
+                >
+            </p>
+        
+        </form>
+        
        
     </div>
 </div>
@@ -81,5 +136,8 @@
      
     </div>
 </div>
+
+
+
 
 

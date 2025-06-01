@@ -113,7 +113,18 @@ class ExpenceModel(BaseModel):
     method:str = Field(default="cash")    
     user:str = Field(default="Ian")
 
+ 
+class PaybillModel(BaseModel):
+    id:str = Field(default=generate_id(name='pay bill') )
+    ref:str = None
+    date:int = timestamp()
+    description:str = Field(default=None)
+    claimant:str = None
+    total:float = None
+    method:str = Field(default="cash")    
+    user:str = Field(default="Ian")
 
+    
 
 class Identity(BaseModel):
     identity: str | None = None

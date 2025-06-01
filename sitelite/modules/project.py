@@ -1,3 +1,4 @@
+from curses.ascii import HT
 from typing import Coroutine, List, Any
 from asyncio import sleep
 from starlette.requests import Request
@@ -108,6 +109,55 @@ def set_prop( prop:str=None ):
     else:
         return prop
 
+async def piechart(request:Request, project:dict=None):
+    account:dict = {
+        "current_balance": 0,
+        "deposits": tally(project['account']['transactions']['deposit']),
+        "withdrawals": tally(project['account']['transactions']['withdraw']),
+        "expences": tally(project['account']['expences']),
+        "paybills": tally(project['account']['records']['paybills']),
+        "invoices": tally(project['account']['records']['invoices'])
+    }
+    account['current_balance'] = account["deposits"] - sum([account["withdrawals"], account["expences"]])
+    labels = []
+    series = []
+    for key, val in account.items():
+        if key in ['deposits', 'withdrawals']:
+            pass  
+        else:
+            labels.append(key)
+            series.append(val)
+    options = {
+        "chart": {
+                "width": '380',
+                "height": '280',
+                "type": 'pie',
+            },
+        "series": series,
+        "labels": labels,
+        "responsive": [
+            {
+            "breakpoint": 1000,
+            "options": {
+                "plotOptions": {
+                    "bar": {
+                        "horizontal": False
+                    },                
+                    "pie": {
+                        "expandOnClick": False
+                    },
+                    "legend": {
+                        "position": "bottom"
+                    }
+                }
+            }
+            }
+        ]
+
+    }
+    chart = ezChart(options=options )
+    return HTMLResponse(chart.chart())
+
 
 # Project accounting utilities 
 async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.TemplateResponse:
@@ -121,16 +171,24 @@ async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.Tem
         "deposits": tally(project['account']['transactions']['deposit']),
         "withdrawals": tally(project['account']['transactions']['withdraw']),
         "expences": tally(project['account']['expences']),
+        "paybills": tally(project['account']['records']['paybills']),
+        "invoices": tally(project['account']['records']['invoices'])
     }
-    account['current_balance'] = account["deposits"] - sum([account["withdrawals"], account["expences"]])
-
+    account['current_balance'] = account["deposits"] - sum(
+        [account["withdrawals"], 
+         account["expences"],
+         account["paybills"], 
+         account["invoices"],
+         ])
+    
     return TEMPLATES.TemplateResponse(
         '/components/project/account/Stastics.html', 
-        {"request": request, "project": {"_id": project.get('_id'), "account": account } })
-
-
-
-
+        {
+            "request": request, 
+            "project": {"_id": project.get('_id'), 
+                        "account": account
+                        }
+                        })
 
 
 async def transact_deposit( request:Request, project:dict=None, data:dict=None ):
@@ -201,6 +259,42 @@ async def transact_withdrawal( request:Request, project:dict=None, data:dict=Non
 
 async def record_expence( request:Request, project:dict=None, data:dict=None )->dict:  
     """Handle Expence data recording
+    
+        Requires a project.account object or project's id string 
+    """ 
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if data:   
+        data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
+        expence = ExpenceModel( **data ) # Validate data                     
+        project['account']['expences'].append(expence.model_dump())
+        withdrawal = WithdrawalModel(date=expence.date, ref=expence.ref, amount=expence.total, recipient=expence.claimant)
+        project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
+        project['account']['updated'] = timestamp()
+        log_activity( title="Expence Recorded", message = f"""Expence and withdrawal with refference {data.get('ref')} 
+            was recorded and drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
+            project=project )  
+        #processProjectAccountBallance()
+        
+        try:
+            await update_project(data=project)           
+            return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Expences.html', 
+                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
+
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return {"error": 501, "message": "You did not provide any data for processing."}
+   
+
+async def create_paybill( request:Request, project:dict=None, data:dict=None )->dict:  
+    """Creates new paybills
     
         Requires a project.account object or project's id string 
     """ 
@@ -367,11 +461,9 @@ class ProjectClient:
                         return await transact_withdrawal(request=request, project=self.project, data=form_data)
                     elif self.properties[0] == 'expence':  # Record Expence                      
                         return await record_expence(request=request, project=self.project, data=form_data)
-                    elif self.properties[0] == 'stats':  # Record Expence                      
+                    elif self.properties[0] == 'stats':  # Account satatistics                      
                         return await account_statistics(request=request, project=self.project)
                     
-                    
-                                           
 
                     else:
                         return JSONResponse(self.project.get(self.properties[0]))
@@ -407,19 +499,17 @@ class ProjectClient:
         
         if self.properties:
             if self.properties.__len__() == 1: 
-                
-                _search [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
+                if self.properties[0] == 'chart':  # Statistics chart                      
+                    return await piechart(request=request, project=self.project)
+                else:
+                    _search [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
                     {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})             
                 
-                return _search.get(self.properties[0])
+                    return _search.get(self.properties[0])
             elif self.properties.__len__() == 2:
                 
                 prop:str = set_prop(self.properties[0])
-                """if self.properties[0][len(self.properties[0])-1: ] == 's':
-                    prop = self.properties[0][ :-1]
-                else:
-                    prop = self.properties[0]"""
-                
+                                
                 if type(self.project.get(self.properties[0]))  == list: 
                     # convert tasks list to task dictionary 
                     self.project[self.properties[0]] = {item.get('_id') if item.get('_id') else item.get('id'): item for item in self.project.get(self.properties[0])}

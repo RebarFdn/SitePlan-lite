@@ -4,7 +4,7 @@
         <p class="text-lg text-blue-500 font-semibold"
         hx-post="/Project/{{project._id}}/stats/i" 
         hx-target="#account-statistics" 
-        hx-trigger="every 5s"
+        hx-trigger="load delay:2s"
         >Banking </p>
 
     <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
