@@ -3,7 +3,7 @@
  <a href="#paybill-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Pay paybills </span></a>
  {% if project.account.records.paybills  %}
  <div id="paybill-result"></div>
-<div id="account-paybills" class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+<div  class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
 
     <table class="uk-table uk-table-small uk-table-responsive font-medium text-gray-800 uppercase">
         <thead>
@@ -17,15 +17,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for d in project.account.records.paybills  |reverse %}                      
+            {% for bill in project.account.records.paybills  |reverse %}                      
                 
                 <tr>              
-                    <td>{{ d.date }}</td>                   
-                    <td>{{ d.ref }} </td>
-                    <td><a href="#editpaybill-modal" uk-toggle>{{ d.mainTitle }}</a> {% set paybill = cycler(d, "even") %} </td>
+                    <td>{{ bill.date | convert_timestamp }}</td>                   
+                    <td>{{ bill.ref }} </td>
+                    <td><a hx-get="/Project/{{project._id}}/paybill/{{bill.id}}" hx-target="#account-paybills" hx-trigger="click" >{{ bill.mainTitle }}</a> </td>
                     
-                     <td>{{ d.get('items') | length }} </td>
-                    <td>{{ d.total | to_dollars }}</td>
+                     <td>{{ bill.get('items') | length }} </td>
+                    <td>{{ bill.total | to_dollars }}</td>
                     <td>
                         <div class="uk-inline">
                             <button class="uk-button uk-button-default" type="button">Manage</button>
@@ -68,11 +68,13 @@
 {% endif %}
 
 <!-- This is the Deposit modal -->
-<div id="paybill-modal" uk-modal>
+<div id="paybill-modal" class="bg-blue-500" uk-modal>
     <div class="uk-modal-dialog uk-modal-body rounded-lg">
         <p class="text-lg text-center font-semibold">Pay paybill</p>
         <form class="uk-form-stacked"
-        
+            hx-post="/Project/{{project._id}}/paybill/i"
+            hx-target="#account-paybills""
+            hx-trigger="submit" 
         >
             <div class="uk-margin">
                 <label class="uk-form-label" for="form-stacked-text">Date</label>
@@ -95,7 +97,7 @@
             <div class="uk-margin">
                 <label class="uk-form-label" for="form-stacked-text">Reference</label>
                 <div class="uk-form-controls">
-                    <input class="uk-input" id="form-stacked-text" type="text" placeholder="Bill-01" name="ref" value="{{project.new_billref}}">
+                    <input class="uk-input" id="form-stacked-text" type="text" placeholder="Bill-01" name="ref" value="">
                 </div>
             </div>
 
@@ -112,17 +114,94 @@
                     >
                 </div>
             </div>
-           
+            <div class="uk-child-width-expand@s" uk-grid >
 
-        
-            <p class="uk-text-right">
-                <button class="uk-button uk-button-default uk-modal-close" type="button">Close</button>
-                <input class="uk-button uk-button-primary uk-modal-close" type="submit" value="Create New Paybill"
-                hx-post="/Project/{{project._id}}/paybill/n"
-                hx-target="#account-paybills"
-                
-                >
+                 <div class="uk-width-1-3@s">
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">
+                        Contractor's Fee  
+                        <output class="contractor-output" for="contractor"></output>%
+                    </label>
+                    <div class="uk-form-controls">
+                        <input
+                            type="range"
+                            name="contractor"
+                            id="contractor"
+                            min="0"
+                            max="50"
+                            step="1"
+                            value="0" />
+                        
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">
+                        Insurance Fee  
+                        <output class="insurance-output" for="insurance"></output>%
+                    </label>
+                    <div class="uk-form-controls">
+                        <input
+                            type="range"
+                            name="insurance"
+                            id="insurance"
+                            min="0"
+                            max="20"
+                            step="1"
+                            value="0" />
+                        
+                    </div>
+                </div>
+                </div>
+                <!-------------------->
+                 <div class="uk-width-1-3@s">              
+
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">
+                        Miscellaneous Fee  
+                        <output class="misc-output" for="misc"></output>%
+                    </label>
+                    <div class="uk-form-controls">
+                        <input
+                            type="range"
+                            name="misc"
+                            id="misc"
+                            min="0"
+                            max="20"
+                            step="1"
+                            value="0" />
+                        
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="form-stacked-text">
+                        Overhead Fee  
+                        <output class="overhead-output" for="overhead"></output>%
+                    </label>
+                    <div class="uk-form-controls">
+                        <input
+                            type="range"
+                            name="overhead"
+                            id="overhead"
+                            min="0"
+                            max="20"
+                            step="1"
+                            value="0" />
+                        
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+            </div>
+             <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button class="uk-button uk-button-primary rounded-md uk-modal-close" type="submit" >Create Paybill</button>
             </p>
+            
         
         </form>
         
@@ -139,5 +218,24 @@
 
 
 
+{% block extra_scripts %}
+<script type="module">
+    function updateField(field){
+        const attr = document.querySelector(`#${field}`);
+        const output = document.querySelector(`.${field}-output`);
+        output.textContent = attr.value;
+
+        attr.addEventListener("input", () => {
+        output.textContent = attr.value;
+        });
+    };
+    updateField("contractor");
+    updateField("insurance");
+    updateField("misc");
+    updateField("overhead");
+  
+</script>
+
+{% endblock %} 
 
 

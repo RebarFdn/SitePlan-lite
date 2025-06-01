@@ -4,7 +4,7 @@ from enum import Enum
 from uuid import uuid4, UUID
 from typing import List, Any
 from functools import lru_cache
-from pydantic import BaseModel, EmailStr, Field,  SecretStr
+from pydantic import BaseModel, EmailStr, Field,  SecretStr, AliasChoices
 from pydantic_extra_types.country import CountryShortName 
 from pydantic_extra_types.phone_numbers import PhoneNumber
 from eaziform import FormModel
@@ -81,7 +81,7 @@ class EmployeeAccount(BaseModel):
 
 
 class CommercialAccount(BaseModel):
-    bank: Bank | None = None
+    bank: Bank = Bank() 
     transactions: list = []
 
 
@@ -113,18 +113,104 @@ class ExpenceModel(BaseModel):
     method:str = Field(default="cash")    
     user:str = Field(default="Ian")
 
+
+# Account Paybill related models
+class BillFees(BaseModel):
+    contractor:int = Field(default=0)
+    insurance:int = Field(default=0)
+    misc:int = Field(default=0)
+    overhead:int = Field(default=0)
+    unit:str = Field(default="%")
+
+
+class BillExpence(BaseModel):
+    contractor:float = Field(default=0.001)
+    insurance:float = Field(default=0.001)
+    misc:float = Field(default=0.001)
+    overhead:float = Field(default=0.001)
+    total:float = Field(default=0.001)
+
  
 class PaybillModel(BaseModel):
-    id:str = Field(default=generate_id(name='pay bill') )
-    ref:str = None
-    date:int = timestamp()
-    description:str = Field(default=None)
-    claimant:str = None
-    total:float = None
-    method:str = Field(default="cash")    
+    id:str = Field(default=generate_id(name='pay bill') ) # Bill internal id
+    ref:str = Field(default=None)   # Bill to job refference no
+    project_id:str = Field(default=None) # Current project _id
+    date:int = Field(default=timestamp())  # Paybill generation date
+    date_starting:int = Field(default=timestamp()) # Work period starting
+    date_ending:int = Field(default=timestamp())   # Work period ending
+    mainTitle:str = Field(default=None) # Bill heading
+    subTitle:str = Field(default=None)  # Bill sub headings
+    itemsTotal:float = Field(default=0.001)   # Bill items total
+    total:float = Field(default=0.001)   # Bill Total
+    items:list = []    
+    days_work:list = []
     user:str = Field(default="Ian")
+    expence:BillExpence = BillExpence()
+    fees:BillFees = BillFees()
 
+
+class Supplier(BaseModel):
+    id: str = Field(default=None, validation_alias=AliasChoices('id', '_id'))
+    name:str = Field(default=None)     
+    taxid: str = Field(default=None)
     
+
+
+class InvoiceItem(BaseModel):
+    itemno:int = Field(default=0)  
+    description:str = Field(default=None) 
+    quantity:float = Field(default=0.01) 
+    unit:str = Field(default=None) 
+    price:float = Field(default=0.01) 
+
+
+class InvoiceModel(BaseModel):
+    supplier:Supplier = Supplier()
+    invoiceno:str = Field(default=None) 
+    date:int = Field(default=timestamp()) 
+    items:list = []
+    tax:float = Field(default=0.001) 
+    total:float = Field(default=0.001) 
+    billed:bool = Field(default=False) 
+
+
+class InventoryItem(BaseModel):   
+    ref:str=None
+    name:str
+    amt:int
+    unit:str
+    stocking_date:str = None
+    supplier:Supplier
+
+
+class Inventory(BaseModel): 
+    id:UUID = uuid4()
+    name:str
+    items:list = []
+    dispenced:list = []
+    
+    @property
+    def stocking(self)->list:
+        stocking_:list = [item.get('amt') for item in self.items ]
+        return stocking_
+    
+    @property
+    def stock(self):        
+        return sum(self.stocking)
+    
+    @property
+    def stock_usage(self)->int:           
+        store = 0
+        if len(self.dispenced) > 0:
+            for item in self.dispenced:
+                store += item[1]                
+        else: pass
+        return store
+    
+    @property
+    def available_stock(self):       
+        return self.stock - self.stock_usage
+
 
 class Identity(BaseModel):
     identity: str | None = None
@@ -223,13 +309,13 @@ class EmployeeModel(BaseModel):
     role: Roles | None = None
 
 
-class Supplier(BaseModel):
-    _id: str  | None = None
-    name:str      
-    taxid: str | None = None
-    account: CommercialAccount | None = None
-    address: Address | None = None
-    contact: Contact | None = None
+class MaterialSupplier(BaseModel):
+    id: str = Field(default=None )
+    name:str = Field(default=None)     
+    taxid: str = Field(default=None)
+    account:CommercialAccount = CommercialAccount()
+    address:Address = Address()
+    contact: Contact = Contact()
 
 
 class ProjectClient(BaseModel):

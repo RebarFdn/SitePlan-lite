@@ -7,7 +7,7 @@ from ezchart import ezChart
 from database import Recouch, local_db
 from logger import logger
 from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
-from models import Project, project_phases, project_template ,DepositModel, WithdrawalModel, ExpenceModel
+from models import Project, project_phases, project_template ,DepositModel, WithdrawalModel, ExpenceModel, BillFees , PaybillModel
 from config import TEMPLATES
 
 import time
@@ -191,7 +191,7 @@ async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.Tem
                         })
 
 
-async def transact_deposit( request:Request, project:dict=None, data:dict=None ):
+async def transact_deposit( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Handle Funds Deposit records on a project's account"""
     if type(project) == dict:
         pass
@@ -222,7 +222,7 @@ async def transact_deposit( request:Request, project:dict=None, data:dict=None )
         return {"error": 501, "message": "You did not provide any data for processing."}
 
 
-async def transact_withdrawal( request:Request, project:dict=None, data:dict=None )->dict:  
+async def transact_withdrawal( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Handle Withrawals records on a project's account
     
         Requires a project.account object or project's id string 
@@ -257,7 +257,7 @@ async def transact_withdrawal( request:Request, project:dict=None, data:dict=Non
         return {"error": 501, "message": "You did not provide any data for processing."}
 
 
-async def record_expence( request:Request, project:dict=None, data:dict=None )->dict:  
+async def record_expence( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Handle Expence data recording
     
         Requires a project.account object or project's id string 
@@ -293,7 +293,7 @@ async def record_expence( request:Request, project:dict=None, data:dict=None )->
         return {"error": 501, "message": "You did not provide any data for processing."}
    
 
-async def create_paybill( request:Request, project:dict=None, data:dict=None )->dict:  
+async def create_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:  
     """Creates new paybills
     
         Requires a project.account object or project's id string 
@@ -305,22 +305,27 @@ async def create_paybill( request:Request, project:dict=None, data:dict=None )->
     # process withdrawals
     if data:   
         data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
-        expence = ExpenceModel( **data ) # Validate data                     
-        project['account']['expences'].append(expence.model_dump())
-        withdrawal = WithdrawalModel(date=expence.date, ref=expence.ref, amount=expence.total, recipient=expence.claimant)
-        project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
-        project['account']['updated'] = timestamp()
-        log_activity( title="Expence Recorded", message = f"""Expence and withdrawal with refference {data.get('ref')} 
-            was recorded and drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
-            project=project )  
-        #processProjectAccountBallance()
-        
+        data['date_starting'] = timestamp(date=data.get('date_starting'))
+        data['date_ending'] = timestamp(date=data.get('date_ending'))
+        data["project_id"] = project.get('_id')
+        fees = BillFees( **data ) # Validate data  
+        data['fees'] = fees
+        paybill = PaybillModel(**data)                   
+        project['account']['records']['paybills'].append(paybill.model_dump())
+        log_activity( title="New Paybill", message = f"""Paybill {data.get('ref')} 
+            was created for {project.get('_id')} by { data.get('user') }""",
+            project=project )
         try:
             await update_project(data=project)           
             return TEMPLATES.TemplateResponse(
-                        '/components/project/account/Expences.html', 
-                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
-
+                '/components/project/account/PayBills.html', 
+                {
+                    "request": request, 
+                    "project": {
+                        "_id": project.get('_id'), 
+                        "account": project.get('account')
+                    } 
+                })
         except Exception as e:
                 logger().exception(e)
         finally:                
@@ -328,8 +333,61 @@ async def create_paybill( request:Request, project:dict=None, data:dict=None )->
     else:
         return {"error": 501, "message": "You did not provide any data for processing."}
    
+async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> TEMPLATES.TemplateResponse:
+    """Retreive a paybill object by given bill id """
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if bill_id:
+        paybill = [bill for bill in project.get('account', {}).get('records', {}).get('paybills') if bill.get('id') == bill_id] 
+        if paybill:
+            try:                      
+                return TEMPLATES.TemplateResponse(
+                '/components/project/account/PayBill.html', 
+                {
+                    "request": request, 
+                    "paybill": paybill
+                })
+            except Exception as e:
+                    logger().exception(e)
+            finally:                
+                    del(project) # clean up
+    else:
+        return {"error": 501, "message": "Your Request was not processed."}
 
 
+
+async def update_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
+    """Retreive a paybill object by given bill id """
+
+async def delete_paybill( request:Request, project:dict=None, bill_id:str=None )-> TEMPLATES.TemplateResponse:
+    """Deletes a paybill object by given bill id """
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if bill_id: 
+
+        try:
+            await update_project(data=project)           
+            return TEMPLATES.TemplateResponse(
+                '/components/project/account/PayBills.html', 
+                {
+                    "request": request, 
+                    "project": {
+                        "_id": project.get('_id'), 
+                        "account": project.get('account')
+                    } 
+                })
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return {"error": 501, "message": "Your Request was not processed."}
 
 
 class projectManager:
@@ -461,8 +519,9 @@ class ProjectClient:
                         return await transact_withdrawal(request=request, project=self.project, data=form_data)
                     elif self.properties[0] == 'expence':  # Record Expence                      
                         return await record_expence(request=request, project=self.project, data=form_data)
-                    elif self.properties[0] == 'stats':  # Account satatistics                      
-                        return await account_statistics(request=request, project=self.project)
+                    elif self.properties[0] == 'paybill':  # Record Expence                      
+                        return await create_paybill( request=request, project=self.project, data=form_data )
+                    
                     
 
                     else:
@@ -501,15 +560,18 @@ class ProjectClient:
             if self.properties.__len__() == 1: 
                 if self.properties[0] == 'chart':  # Statistics chart                      
                     return await piechart(request=request, project=self.project)
+                elif self.properties[0] == 'stats':  # Account satatistics                      
+                        return await account_statistics(request=request, project=self.project)
                 else:
                     _search [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
                     {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})             
                 
                     return _search.get(self.properties[0])
-            elif self.properties.__len__() == 2:
-                
+            elif self.properties.__len__() == 2:                
                 prop:str = set_prop(self.properties[0])
-                                
+                if self.properties[0] == 'paybill':
+                    return await get_paybill( request=request, project=self.project, bill_id=self.properties[1] )  
+                            
                 if type(self.project.get(self.properties[0]))  == list: 
                     # convert tasks list to task dictionary 
                     self.project[self.properties[0]] = {item.get('_id') if item.get('_id') else item.get('id'): item for item in self.project.get(self.properties[0])}

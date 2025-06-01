@@ -2083,15 +2083,6 @@
     font-size: 2rem;
     font-weight: 800;
   }
-  .stat-desc {
-    grid-column-start: 1;
-    white-space: nowrap;
-    color: var(--color-base-content);
-    @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
-    }
-    font-size: 0.75rem;
-  }
   .stat-title {
     grid-column-start: 1;
     white-space: nowrap;
@@ -2626,17 +2617,6 @@
   .cursor-pointer {
     cursor: pointer;
   }
-  .stats-horizontal {
-    grid-auto-flow: column;
-    overflow-x: auto;
-    .stat:not(:last-child) {
-      border-inline-end: var(--border) dashed currentColor;
-      @supports (color: color-mix(in lab, red, red)) {
-        border-inline-end: var(--border) dashed color-mix(in oklab, currentColor 10%, #0000);
-      }
-      border-block-end: none;
-    }
-  }
   .grid-flow-row {
     grid-auto-flow: row;
   }
@@ -2777,6 +2757,9 @@
   }
   .bg-blue-300 {
     background-color: var(--color-blue-300);
+  }
+  .bg-blue-500 {
+    background-color: var(--color-blue-500);
   }
   .bg-gray-50 {
     background-color: var(--color-gray-50);
