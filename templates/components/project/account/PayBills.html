@@ -13,6 +13,7 @@
                 <th>Title</th>                  
                 <th>Items</th>               
                 <th>Total</th>
+                <th>Manage</th>
                 
             </tr>
         </thead>
@@ -27,25 +28,14 @@
                      <td>{{ bill.get('items') | length }} </td>
                     <td>{{ bill.total | to_dollars }}</td>
                     <td>
-                        <div class="uk-inline">
-                            <button class="uk-button uk-button-default" type="button">Manage</button>
-                            <div uk-dropdown="pos: bottom-right">
-                                <ul class="uk-nav uk-dropdown-nav">
-                                    <li><a 
-                                            href="#" 
-                                            hx-get="/edit_account_deposit/"
-                                            hx-target="#message"
-                                            
-                                            >Edit</a></li>
-                                    <li><a href="#">Tag</a></li>
-                                    <li><a href="#"><button type="button" 
-                                        class="btn btn-error btn-sm">Delete</button>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                                                    
+                        <span
+                        class="tooltip cursor-pointer"                       
+                        data-tip="Delete paybill?"
+                        hx-delete="/Project/{{project._id}}/paybill/{{bill.id}}"
+                        hx-confirm="Are you shure you want to delete Paybill {{bill.mainTitle}}?"
+                        hx-target="#account-paybills"
+                        hx-trigger="click"
+                        ><span class="fa fa-trash"></span></span>
                     </td>
                 </tr>
             {% endfor %}
@@ -68,8 +58,8 @@
 {% endif %}
 
 <!-- This is the Deposit modal -->
-<div id="paybill-modal" class="bg-blue-500" uk-modal>
-    <div class="uk-modal-dialog uk-modal-body rounded-lg">
+<div id="paybill-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body bg-blue-500 rounded-lg">
         <p class="text-lg text-center font-semibold">Pay paybill</p>
         <form class="uk-form-stacked"
             hx-post="/Project/{{project._id}}/paybill/i"

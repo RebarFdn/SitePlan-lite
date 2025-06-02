@@ -3,7 +3,7 @@ from config import LOG_PATH
 
 def logger():
     # Create and configure logger
-    logging.basicConfig(filename=LOG_PATH,
+    logging.basicConfig(filename=LOG_PATH /'logs.log',
                     format='%(asctime)s %(message)s',
                     filemode='w') 
     # Creating an object

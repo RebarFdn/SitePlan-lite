@@ -370,22 +370,24 @@ async def delete_paybill( request:Request, project:dict=None, bill_id:str=None )
         project = await get_project(id=project)         
     # process withdrawals
     if bill_id: 
-
-        try:
-            await update_project(data=project)           
-            return TEMPLATES.TemplateResponse(
-                '/components/project/account/PayBills.html', 
-                {
-                    "request": request, 
-                    "project": {
-                        "_id": project.get('_id'), 
-                        "account": project.get('account')
-                    } 
-                })
-        except Exception as e:
-                logger().exception(e)
-        finally:                
-                del(project) # clean up
+        paybill = [bill for bill in project.get('account', {}).get('records', {}).get('paybills') if bill.get('id') == bill_id] 
+        if paybill:
+            project['account']['records']['paybills'].remove(paybill[0])
+            try:
+                await update_project(data=project)           
+                return TEMPLATES.TemplateResponse(
+                    '/components/project/account/PayBills.html', 
+                    {
+                        "request": request, 
+                        "project": {
+                            "_id": project.get('_id'), 
+                            "account": project.get('account')
+                        } 
+                    })
+            except Exception as e:
+                    logger().exception(e)
+            finally:                
+                    del(project) # clean up
     else:
         return {"error": 501, "message": "Your Request was not processed."}
 
@@ -532,9 +534,22 @@ class ProjectClient:
             else:
                 pass
         elif request.method == 'DELETE':
-            await delete_project(id=self.id) 
-            await sleep(0.5)           
-            self.id = 'index'                
+            if self.properties:
+                self.project = await get_project(id=self.id) 
+                if self.properties.__len__() == 1:
+                    pass
+                elif self.properties.__len__() == 2:
+                    if self.properties[0] == 'paybill':  # Delete Paybill                      
+                        return await delete_paybill( request=request, project=self.project, bill_id=self.properties[1] )
+                    # other deletions
+                   
+                    
+
+            else:
+                if self.id in self._ids: #  request to delete project
+                    await delete_project(id=self.id) 
+                    await sleep(0.5)           
+                    self.id = 'index'                
         else:
             pass
         # Process Get Requests
