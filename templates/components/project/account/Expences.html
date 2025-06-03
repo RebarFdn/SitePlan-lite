@@ -26,24 +26,14 @@
                     <td>{{ d.total | to_dollars }}</td>
                      <td>{{ d.claimant }} </td>
                     <td>
-                        <div class="dropdown dropdown-start">
-                            <div tabindex="0" role="button" class="btn m-1">Manage</div>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                <li><a 
-                                            href="#" 
-                                            hx-get="/project/{{project._id}}/expence/{{d.id}}-{{d.ref}}"
-                                            hx-target="#message"
-                                            
-                                            >Edit</a></li>
-                                    <li><a href="#">Tag</a></li>
-                                    <li><a 
-                                        href="#"><button 
-                                        type="button" 
-                                        class="btn btn-primary btn-sm">Delete</button>
-                                        </a>
-                                    </li>
-                            </ul>
-                        </div>
+                          <span
+                        class="tooltip cursor-pointer"                       
+                        data-tip="Delete record?"
+                        hx-delete="/Project/{{project._id}}/expence/{{d.id}}"
+                        hx-confirm="Are you shure you want to delete expence {{d.ref}}?"
+                        hx-target="#account-expences"
+                        hx-trigger="click"
+                        ><span class="fa fa-trash"></span></span>
                                                     
                     </td>
                 </tr>
@@ -78,7 +68,7 @@
             uk-grid
             >
             <div class="uk-width-1-4@s">
-                <input class="uk-input" type="text" placeholder="Refference" name="ref" aria-label="Ref">
+                <input class="uk-input" type="text" placeholder="Refference" name="ref" aria-label="Ref" required>
             </div>
             <div class="uk-width-1-1">
                 <input class="uk-input" type="date" placeholder="Date" name="date" aria-label="Date">

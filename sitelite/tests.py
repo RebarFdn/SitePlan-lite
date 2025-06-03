@@ -1,5 +1,21 @@
-from models import BillExpence , BillFees , PaybillModel, InvoiceModel, Supplier
+#from models import BillExpence , BillFees , PaybillModel, InvoiceModel, Supplier
 
+from modules.site_db import SiteDb
+
+trip = {
+    "tid": "77997",
+    "venue":"Florida",
+    "name": "T Lewis"
+}
+db = SiteDb(db_name='trips')
+items = db.save_item(trip)
+print(items)
+
+#print(db)
+#db.reset_repo()
+#print(db)
+
+"""
 paybill = dict(
     ref = "Bill-01",   # Bill to job refference no
     project_id = "DV0765", # Current project _id
@@ -30,3 +46,4 @@ print({
     #"expence": expence,
     "bill": InvoiceModel(supplier=sup)
     })
+"""

@@ -23,21 +23,14 @@
                     <td>{{ d.payee }} </td>
                     <td>{{ d.amount | to_dollars }}</td>
                     <td>
-                        <div class="dropdown dropdown-start">
-                            <div tabindex="0" role="button" class="btn m-1">Manage</div>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                <li><a 
-                                            href="#" 
-                                            hx-get="/edit_account_deposit/{{id}}_{{d.id}}-{{d.ref}}"
-                                            hx-target="#message"
-                                            
-                                            >Edit</a></li>
-                                    <li><a href="#">Tag</a></li>
-                                    <li><a href="#"><button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Delete</button>
-                                        </a>
-                                    </li>
-                            </ul>
-                        </div>
+                         <span
+                        class="tooltip cursor-pointer"                       
+                        data-tip="Delete deposit?"
+                        hx-delete="/Project/{{project._id}}/deposit/{{d.id}}"
+                        hx-confirm="Are you shure you want to delete deposit {{d.ref}}?"
+                        hx-target="#account-deposits"
+                        hx-trigger="click"
+                        ><span class="fa fa-trash"></span></span>
                                                     
                     </td>
                 </tr>

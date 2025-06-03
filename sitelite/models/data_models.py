@@ -165,6 +165,7 @@ class InvoiceItem(BaseModel):
 
 
 class InvoiceModel(BaseModel):
+    inv_id: str = Field(default=generate_id(name='purchase invoice'))
     supplier:Supplier = Supplier()
     invoiceno:str = Field(default=None) 
     date:int = Field(default=timestamp()) 

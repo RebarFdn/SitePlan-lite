@@ -39,17 +39,6 @@ def timestamp(date:str=None)->int:
         return  int(datetime.datetime.now().timestamp()) * 1000
 
 
-def converTime(timestamp:int=None): 
-    """Converts a integer timestamp to a human readable format. """    
-    return time.ctime(float(timestamp/1000)) 
-
-def convert_timestamp(timestamp:int=None): 
-    if type(timestamp) == int:   
-        date = datetime.datetime.fromtimestamp(int(timestamp/1000))
-        return date.strftime('%Y-%m-%d %H:%M:%S')
-    return timestamp
-
-
 def filter_dates(date:str=None, start:str=None, end:str=None):
         day = datetime.datetime.strptime(date, "%Y-%m-%d")
         period_start = datetime.datetime.strptime(start, "%Y-%m-%d")
@@ -59,14 +48,90 @@ def filter_dates(date:str=None, start:str=None, end:str=None):
         else:
             return False
 
+
+def converTime(timestamp:int=None): 
+    """Converts a integer timestamp to a human readable format. """    
+    return time.ctime(float(timestamp/1000)) 
+
+def convert_timestamp(timestamp:int=None): 
+    if type(timestamp) == int:   
+        date = datetime.datetime.fromtimestamp(int(timestamp/1000))
+        return date.strftime('%Y-%m-%d')
+    return timestamp
+
+# unit converter 
+
+def convert_unit(unit:str=None, value:float=None):
+    if value:
+        value = float(value)
+    else: value = 0.01
+    unitvalue = {
+        # metric units
+        "m": {"unit": 'ft', "value": value * 3.28084},
+        "m2": {"unit": 'ft2', "value": value * 10.7639},
+        "m3": {"unit": 'ft3', "value": value * 35.3147},
+        # imperial units
+        "ft": {"unit": 'm', "value": value * 0.3048},
+        "ft2": {"unit": 'm2', "value": value * 0.092903},
+        "ft3": {"unit": 'm3', "value": value * 0.0283168},
+        # Unit measure
+        "Each": {"unit": 'Each', "value": value * 1 },
+        "each": {"unit": 'each', "value": value * 1 },
+        "ea": {"unit": 'ea', "value": value * 1 },
+        "doz": {"unit": 'doz', "value": value * 1 },
+        "Day": {"unit": 'Day', "value": value * 1 },
+        "day": {"unit": 'day', "value": value * 1 },
+        "Daily": {"unit": 'Daily', "value": value * 1 },
+        "hr": {"unit": 'hr', "value": value * 1 },
+        "length": {"unit": 'length', "value": value * 1 },
+        "Length": {"unit": 'length', "value": value * 1 },
+        # Weight and Mass units
+        "gm": {"unit": 'oz', "value": value * 0.035274 },
+        "kg": {"unit": 'lb', "value": value * 2.20462 },
+        "oz": {"unit": 'gm', "value": value * 28.3495 },
+        "lb": {"unit": 'kg', "value": value * 0.453592 },
+    }
+
+    return unitvalue.get(unit)
+
+
+def convert_price_by_unit(unit:str=None, value:float=None):
+    unitvalue = {
+        # metric units
+        "m": {"unit": 'ft', "value": value / 3.28084},
+        "m2": {"unit": 'ft2', "value": value / 10.7639},
+        "m3": {"unit": 'ft3', "value": value / 35.3147},
+        # imperial units
+        "ft": {"unit": 'm', "value": value / 0.3048},
+        "ft2": {"unit": 'm2', "value": value / 0.092903},
+        "ft3": {"unit": 'm3', "value": value / 0.0283168},
+        # Unit measure
+        "Each": {"unit": 'Each', "value": value * 1 },
+        "each": {"unit": 'each', "value": value * 1 },
+        "ea": {"unit": 'ea', "value": value * 1 },
+        "doz": {"unit": 'doz', "value": value * 1 },
+        "Day": {"unit": 'Day', "value": value * 1 },
+        "day": {"unit": 'day', "value": value * 1 },
+        "Daily": {"unit": 'Daily', "value": value * 1 },
+        "hr": {"unit": 'hr', "value": value * 1 },
+        "length": {"unit": 'length', "value": value * 1 },
+        "Length": {"unit": 'length', "value": value * 1 },
+        # Weight and Mass units
+        "gm": {"unit": 'oz', "value": value / 0.035274 },
+        "kg": {"unit": 'lb', "value": value / 2.20462 },
+        "oz": {"unit": 'gm', "value": value / 28.3495 },
+        "lb": {"unit": 'kg', "value": value / 0.453592 },
+    }
+
+    return unitvalue.get(unit)
+
+
 # ________________________________________ Summation modules _________________
-tally_data:list = [
-    {'ref': 'EXP-1735472655215', 'date': '2024-12-28', 'description': 'Gas for power washer', 'claimant': 'Ian Moncrieffe', 'method': 'cash', 'total': '1500.00'}, 
-    {'ref': 'EXP-1735472708113', 'date': '2024-12-28', 'description': 'refreshments for workers', 'claimant': 'Ian Moncrieffe', 'method': 'cash out', 'total': '1650'}
-    ]
+
 class AmountTotal(BaseModel):
     amount:float = None
     total:float = 0
+
 
 def tally(items:list):
     ''' '''
@@ -566,12 +631,13 @@ def test_delete():
 
 if __name__ == "__main__":
     print('Testing from SitePlan utils')
-
-    print(tally(tally_data))
+   
     #data = {'na': "pete", 'aa': 5 }
     #hd = hash_data(data=data)
     #print(hd)
     
     #vdt = validate_hash_data( hash_key=hd, data=data)
     #print(vdt)
+
+    #print(convert_price_by_unit('kg', 306.58))
 

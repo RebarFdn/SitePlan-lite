@@ -7,7 +7,8 @@ from ezchart import ezChart
 from database import Recouch, local_db
 from logger import logger
 from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
-from models import Project, project_phases, project_template ,DepositModel, WithdrawalModel, ExpenceModel, BillFees , PaybillModel
+from models import (Project, project_phases, project_template ,DepositModel, WithdrawalModel, 
+ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel)
 from config import TEMPLATES
 
 import time
@@ -211,7 +212,17 @@ async def transact_deposit( request:Request, project:dict=None, data:dict=None )
              
             return TEMPLATES.TemplateResponse(
                         '/components/project/account/Deposits.html', 
-                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
+                        {
+                            "request": request, 
+                            "project": {
+                                "_id": project.get('_id'), 
+                                "account": {
+                                    "transactions": {
+                                        "deposit": project.get('account', {}).get('transactions', {}).get('deposit')
+                                        }
+                                }
+                            } 
+                        })
 
         except Exception as e:
                 logger().exception(e)
@@ -219,7 +230,69 @@ async def transact_deposit( request:Request, project:dict=None, data:dict=None )
                 del(project) # clean up
                 del(deposit)
     else:
-        return {"error": 501, "message": "You did not provide any data for processing."}
+        return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Deposits.html', 
+                        {
+                            "request": request, 
+                            "project": {
+                                "_id": project.get('_id'), 
+                                "account": {
+                                    "transactions": {
+                                        "deposit": project.get('account', {}).get('transactions', {}).get('deposit')
+                                        }
+                                }
+                            } 
+                        })
+
+
+async def update_deposit(request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
+    pass
+
+async def delete_deposit(request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process deposit
+    if id: 
+        deposit = [doc for doc in project.get('account', {}).get('transactions', {}).get('deposit') if doc.get('id') == id] 
+        if deposit:
+            project['account']['transactions']['deposit'].remove(deposit[0])
+            try:
+                await update_project(data=project) 
+                return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Deposits.html', 
+                        {
+                            "request": request, 
+                            "project": {
+                                "_id": project.get('_id'), 
+                                "account": {
+                                    "transactions": {
+                                        "deposit": project.get('account', {}).get('transactions', {}).get('deposit')
+                                        }
+                                }
+                            } 
+                        })
+
+            except Exception as e:
+                    logger().exception(e)
+            finally:                
+                    del(project) # clean up
+                    del(deposit)
+    else:
+        return TEMPLATES.TemplateResponse(
+            '/components/project/account/Deposits.html', 
+            {
+                "request": request, 
+                "project": {
+                    "_id": project.get('_id'), 
+                    "account": {
+                        "transactions": {
+                            "deposit": project.get('account', {}).get('transactions', {}).get('deposit')
+                        }
+                    }
+                } 
+            })
 
 
 async def transact_withdrawal( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
@@ -234,8 +307,7 @@ async def transact_withdrawal( request:Request, project:dict=None, data:dict=Non
     # process withdrawals
     if data:   
         data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
-        withdrawal = WithdrawalModel( **data ) # Validate data
-                      
+        withdrawal = WithdrawalModel( **data ) # Validate data                      
         project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
         project['account']['updated'] = timestamp()
         log_activity( title="Funds Withdrawal", message = f"""A withdrawal with refference {data.get('ref')} 
@@ -246,15 +318,78 @@ async def transact_withdrawal( request:Request, project:dict=None, data:dict=Non
         try:
             await update_project(data=project)           
             return TEMPLATES.TemplateResponse(
-                        '/components/project/account/Withdrawals.html', 
-                        {"request": request, "project": {"_id": project.get('_id'), "account": project.get('account')} })
+                '/components/project/account/Withdrawals.html', 
+                {
+                    "request": request, 
+                    "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                        "transactions": {
+                            "withdraw": project.get('account', {}).get('transactions', {}).get('withdraw')
+                        }
+                    }
+                        
+                    } 
+                })
 
         except Exception as e:
                 logger().exception(e)
         finally:                
                 del(project) # clean up
     else:
-        return {"error": 501, "message": "You did not provide any data for processing."}
+        return TEMPLATES.TemplateResponse(
+            '/components/project/account/Withdrawals.html', 
+            {"request": request, "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                        "transactions": {
+                            "withdraw": project.get('account', {}).get('transactions', {}).get('withdraw')
+                        }
+                    }
+                        
+                    }  })
+
+async def delete_withdrawal(request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if id: 
+        withdrawal = [doc for doc in project.get('account', {}).get('transactions', {}).get('withdraw') if doc.get('id') == id] 
+        if withdrawal:
+            project['account']['transactions']['withdraw'].remove(withdrawal[0])
+            try:
+                await update_project(data=project) 
+                return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Withdrawals.html', 
+                        {"request": request, "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                        "transactions": {
+                            "withdraw": project.get('account', {}).get('transactions', {}).get('withdraw')
+                        }
+                    }
+                        
+                    }  })
+
+            except Exception as e:
+                    logger().exception(e)
+            finally:                
+                    del(project) # clean up
+                    del(withdrawal)
+    else:
+        return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Withdrawals.html', 
+                        {"request": request, "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                        "transactions": {
+                            "withdraw": project.get('account', {}).get('transactions', {}).get('withdraw')
+                        }
+                    }
+                        
+                    }  })
 
 
 async def record_expence( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
@@ -272,6 +407,7 @@ async def record_expence( request:Request, project:dict=None, data:dict=None )->
         expence = ExpenceModel( **data ) # Validate data                     
         project['account']['expences'].append(expence.model_dump())
         withdrawal = WithdrawalModel(date=expence.date, ref=expence.ref, amount=expence.total, recipient=expence.claimant)
+        withdrawal.user=None
         project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
         project['account']['updated'] = timestamp()
         log_activity( title="Expence Recorded", message = f"""Expence and withdrawal with refference {data.get('ref')} 
@@ -292,6 +428,172 @@ async def record_expence( request:Request, project:dict=None, data:dict=None )->
     else:
         return {"error": 501, "message": "You did not provide any data for processing."}
    
+async def delete_expence(request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process expence
+    if id: 
+        expence = [doc for doc in project.get('account', {}).get('expences', []) if doc.get('id') == id] 
+        if expence:
+            # Remove withdrawal refferenec , Check for if refs in account withdrawals and remove 
+            withdraw_ref = [doc for doc in project.get('account', {}).get('transactions', {}).get('withdraw') if doc.get('ref') == expence[0].get('ref')] 
+            if  withdraw_ref:
+                project['account']['transactions']['withdraw'].remove(withdraw_ref[0])
+            project['account']['expences'].remove(expence[0])
+            try:
+                await update_project(data=project) 
+                return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Expences.html', 
+                        {
+                            "request": request, 
+                            "project": {
+                                "_id": project.get('_id'), 
+                                "account": { "expences": project.get('account',{}).get('expences', [])}
+                            } })
+
+
+            except Exception as e:
+                    logger().exception(e)
+            finally:                
+                    del(project) # clean up
+                    del(expence)
+    else:
+        return TEMPLATES.TemplateResponse(
+                        '/components/project/account/Expences.html', 
+                        {
+                            "request": request, 
+                            "project": {
+                                "_id": project.get('_id'), 
+                                "account": { "expences": project.get('account',{}).get('expences', [])}
+                            } })
+
+
+async def record_invoice( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
+    """Handle Purchase data recording
+    
+        Requires a project.account object or project's id string 
+    """ 
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if data:   
+        data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
+        invoice = InvoiceModel( **data ) # Validate data 
+        in_data = invoice.model_dump()
+        # get load items                     
+        project['account']['records']['invoices'].append(in_data)
+        withdrawal = WithdrawalModel(date=invoice.date, ref=invoice.invoiceno, amount=invoice.total, recipient=invoice.supplier.name)
+        withdrawal.user=None
+        project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
+        project['account']['updated'] = timestamp()
+        log_activity( title="Invoice Recorded", message = f"""invoice and withdrawal with refference {invoice.invoiceno } 
+            was recorded and drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
+            project=project )  
+        #processProjectAccountBallance()
+        
+        try:
+            await update_project(data=project)           
+            return TEMPLATES.TemplateResponse(
+                '/components/project/account/Expences.html', 
+                {
+                    "request": request, 
+                    "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                            "records": {
+                                "invoices": project.get('account', {}).get('records', {}).get('invoices')
+                            }
+                        }
+                    } 
+                })
+
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(project) # clean up
+    else:
+        return TEMPLATES.TemplateResponse(
+                '/components/project/account/Expences.html', 
+                {
+                    "request": request, 
+                    "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                            "records": {
+                                "invoices": project.get('account', {}).get('records', {}).get('invoices')
+                            }
+                        }
+                    } 
+                })
+
+
+async def delete_invoice( request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
+    """Handle deletion of invoice data recording
+    
+        Requires a project.account object or project's id string 
+    """ 
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)         
+    # process withdrawals
+    if id: 
+        invoice = [doc for doc in project.get('account', {}).get('records', {}).get('invoices') if doc.get('inv_id') == id] 
+        if invoice:
+            # Remove withdrawal refferenec , Check for if refs in account withdrawals and remove 
+            withdraw_ref = [doc for doc in project.get('account', {}).get('transactions', {}).get('withdraw') if doc.get('ref') == invoice[0].get('invoiceno') and invoice[0].get('supplier').get('name') == doc.get('recipient')] 
+            if  withdraw_ref:
+                log_activity( title="Invoice Deleted", message = f"""invoice and withdrawal with refference {invoice[0].get('invoiceno') } 
+                    was deleted from Project  {project.get('_id')} Account .""",
+                    project=project 
+                )    
+                project['account']['transactions']['withdraw'].remove(withdraw_ref[0])
+            
+            project['account']['records']['invoices'].remove(invoice[0])
+
+            project['account']['updated'] = timestamp()
+              
+            try:
+                await update_project(data=project)           
+                return TEMPLATES.TemplateResponse(
+                    '/components/project/account/Invoices.html', 
+                    {
+                        "request": request, 
+                        "project": {
+                            "_id": project.get('_id'), 
+                            "account": {
+                                "records": {
+                                    "invoices": project.get('account', {}).get('records', {}).get('invoices')
+                                }
+                            }
+                        } 
+                    })
+
+            except Exception as e:
+                    logger().exception(e)
+            finally:                
+                    del(project) # clean up
+    else:
+        return TEMPLATES.TemplateResponse(
+                '/components/project/account/Invoices.html', 
+                {
+                    "request": request, 
+                    "project": {
+                        "_id": project.get('_id'), 
+                        "account": {
+                            "records": {
+                                "invoices": project.get('account', {}).get('records', {}).get('invoices')
+                            }
+                        }
+                    } 
+                })
+   
+
+
 
 async def create_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:  
     """Creates new paybills
@@ -357,8 +659,6 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
     else:
         return {"error": 501, "message": "Your Request was not processed."}
 
-
-
 async def update_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Retreive a paybill object by given bill id """
 
@@ -370,8 +670,13 @@ async def delete_paybill( request:Request, project:dict=None, bill_id:str=None )
         project = await get_project(id=project)         
     # process withdrawals
     if bill_id: 
-        paybill = [bill for bill in project.get('account', {}).get('records', {}).get('paybills') if bill.get('id') == bill_id] 
+        paybill:list = [bill for bill in project.get('account', {}).get('records', {}).get('paybills') if bill.get('id') == bill_id] 
         if paybill:
+            # Remove withdrawal refferenec , Check for if refs in account withdrawals and remove 
+            withdraw_ref = [doc for doc in project.get('account', {}).get('transactions', {}).get('withdraw') if doc.get('ref') == paybill[0].get('ref')] 
+            if  withdraw_ref:
+                project['account']['transactions']['withdraw'].remove(withdraw_ref[0])
+            # delete paybill
             project['account']['records']['paybills'].remove(paybill[0])
             try:
                 await update_project(data=project)           
@@ -382,7 +687,8 @@ async def delete_paybill( request:Request, project:dict=None, bill_id:str=None )
                         "project": {
                             "_id": project.get('_id'), 
                             "account": project.get('account')
-                        } 
+                        } ,
+                        
                     })
             except Exception as e:
                     logger().exception(e)
@@ -521,9 +827,11 @@ class ProjectClient:
                         return await transact_withdrawal(request=request, project=self.project, data=form_data)
                     elif self.properties[0] == 'expence':  # Record Expence                      
                         return await record_expence(request=request, project=self.project, data=form_data)
-                    elif self.properties[0] == 'paybill':  # Record Expence                      
-                        return await create_paybill( request=request, project=self.project, data=form_data )
+                    elif self.properties[0] == 'invoice':  # Record Invoice                      
+                        return await record_invoice( request=request, project=self.project, data=form_data )
                     
+                    elif self.properties[0] == 'paybill':  # Record Paybill                      
+                        return await create_paybill( request=request, project=self.project, data=form_data )                   
                     
 
                     else:
@@ -541,6 +849,15 @@ class ProjectClient:
                 elif self.properties.__len__() == 2:
                     if self.properties[0] == 'paybill':  # Delete Paybill                      
                         return await delete_paybill( request=request, project=self.project, bill_id=self.properties[1] )
+                    elif self.properties[0] == 'deposit':  # Delete Paybill                      
+                        return await delete_deposit( request=request, project=self.project, id=self.properties[1] )
+                    elif self.properties[0] == 'withdraw':  # Delete witdrawal                     
+                        return await delete_withdrawal( request=request, project=self.project, id=self.properties[1] )
+                    elif self.properties[0] == 'expence':  # Delete expence                     
+                        return await delete_expence( request=request, project=self.project, id=self.properties[1] )
+                    elif self.properties[0] == 'invoice':  # Delete expence                     
+                        return await delete_invoice( request=request, project=self.project, id=self.properties[1] )
+                    
                     # other deletions
                    
                     
@@ -577,16 +894,20 @@ class ProjectClient:
                     return await piechart(request=request, project=self.project)
                 elif self.properties[0] == 'stats':  # Account satatistics                      
                         return await account_statistics(request=request, project=self.project)
+                elif self.properties[0] == 'withdraw':  # Withdraw Funds                      
+                    return await transact_withdrawal(request=request, project=self.project)
+                            
+
                 else:
                     _search [self.properties[0]] = TEMPLATES.TemplateResponse(f'/components/project/{self.properties[0].capitalize()}.html', 
-                    {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})             
-                
+                    {"request": request, 'project': {'_id':self.id, self.properties[0]:  self.project.get(self.properties[0], {})}})
                     return _search.get(self.properties[0])
+                
             elif self.properties.__len__() == 2:                
                 prop:str = set_prop(self.properties[0])
                 if self.properties[0] == 'paybill':
                     return await get_paybill( request=request, project=self.project, bill_id=self.properties[1] )  
-                            
+                
                 if type(self.project.get(self.properties[0]))  == list: 
                     # convert tasks list to task dictionary 
                     self.project[self.properties[0]] = {item.get('_id') if item.get('_id') else item.get('id'): item for item in self.project.get(self.properties[0])}

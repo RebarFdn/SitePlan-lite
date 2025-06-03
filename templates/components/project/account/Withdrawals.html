@@ -2,7 +2,11 @@
 {% if project.account.transactions.withdraw %}
 
  <a href="#withdraw-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Withdrawals</span></a>
- <div id="withdraw-result"></div>
+ <p id="withdraw-result" 
+        hx-get="/Project/{{project._id}}/withdraw/i"
+        hx-target="#account-withdrawals"
+        hx-trigger="load delay:5s"                 
+    ></p>
 <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
 
     <table class="uk-table uk-table-small uk-table-responsive text-gray-800">
@@ -21,27 +25,21 @@
                 <tr>              
                     <td>{{ d.date | convert_timestamp }}</td>
                     <td>{{ d.ref }} </td>
-                    <td>{{ d.recipient.name }} </td>
+                    <td>{% if d.recipient.name %} {{ d.recipient.name }} {% else %}{{ d.recipient }} {% endif %} </td>
                     <td>{{ d.amount | to_dollars }}</td>
                     <td>
-                        <div class="dropdown dropdown-start">
-                            <div tabindex="0" role="button" class="btn m-1">Manage</div>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                <li><a 
-                                            href="#" 
-                                            hx-get="/project/{{project._id}}/withdraw/{{d.id}}-{{d.ref}}"
-                                            hx-target="#message"
-                                            
-                                            >Edit</a></li>
-                                    <li><a href="#">Tag</a></li>
-                                    <li><a 
-                                        href="#"><button 
-                                        type="button" 
-                                        class="btn btn-primary btn-sm">Delete</button>
-                                        </a>
-                                    </li>
-                            </ul>
-                        </div>
+                        {% if d.user %}
+                        <span
+                            class="tooltip cursor-pointer"                       
+                            data-tip="Delete withdrawal?"
+                            hx-delete="/Project/{{project._id}}/withdraw/{{d.id}}"
+                            hx-confirm="Are you shure you want to delete withdrawal transaction {{d.ref}}?"
+                            hx-target="#account-withdrawals"
+                            hx-trigger="click"
+                            ><span class="fa fa-trash"></span>
+                        </span>
+                        {% endif %}
+                                                    
                                                     
                     </td>
                 </tr>
