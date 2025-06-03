@@ -6,9 +6,11 @@ from starlette.responses import HTMLResponse, JSONResponse
 from ezchart import ezChart
 from database import Recouch, local_db
 from logger import logger
+from modules.supplier import supplier_name_index
 from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
 from models import (Project, project_phases, project_template ,DepositModel, WithdrawalModel, 
 ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel)
+from modules.site_db import SiteDb
 from config import TEMPLATES
 
 import time
@@ -19,7 +21,8 @@ _databases:dict = { # Project Databases
             "local":"lite-projects", 
             "local_partitioned": False,
             "slave":"lite-projects", 
-            "slave_partitioned": False            
+            "slave_partitioned": False ,
+            "invoice_db": "temp_invoice"           
             }
 # connection to site-projects database 
 db_connection:Coroutine = local_db(db_name=_databases.get('local'))   
@@ -349,6 +352,7 @@ async def transact_withdrawal( request:Request, project:dict=None, data:dict=Non
                         
                     }  })
 
+
 async def delete_withdrawal(request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
     if type(project) == dict:
         pass
@@ -427,7 +431,8 @@ async def record_expence( request:Request, project:dict=None, data:dict=None )->
                 del(project) # clean up
     else:
         return {"error": 501, "message": "You did not provide any data for processing."}
-   
+
+
 async def delete_expence(request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
     if type(project) == dict:
         pass
@@ -470,6 +475,7 @@ async def delete_expence(request:Request, project:dict=None, id:str=None )-> TEM
                             } })
 
 
+
 async def record_invoice( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Handle Purchase data recording
     
@@ -480,11 +486,20 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
     elif type(project) == str:
         project = await get_project(id=project)         
     # process withdrawals
-    if data:   
+    if data: 
+        supplier_data = [ item for item in await supplier_name_index() if item.get('name') == data.get('name')] 
+        if supplier_data:
+            supplier = Supplier( **supplier_data[0] )
+        else:
+            supplier = Supplier( **data )
+        data['supplier'] = supplier
         data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
         invoice = InvoiceModel( **data ) # Validate data 
         in_data = invoice.model_dump()
-        # get load items                     
+        # get load items 
+        db = SiteDb(db_name=_databases.get('invoice_db')) # Temporary invoice items store
+        invoice_items = await db.get_items() # retreive items 
+        in_data['items'] = invoice_items                   
         project['account']['records']['invoices'].append(in_data)
         withdrawal = WithdrawalModel(date=invoice.date, ref=invoice.invoiceno, amount=invoice.total, recipient=invoice.supplier.name)
         withdrawal.user=None
@@ -515,6 +530,7 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
                 logger().exception(e)
         finally:                
                 del(project) # clean up
+                await db.reset_repo() # resets the invoice items store
     else:
         return TEMPLATES.TemplateResponse(
                 '/components/project/account/Expences.html', 
@@ -530,6 +546,52 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
                     } 
                 })
 
+
+async def save_invoice_item(request:Request, data:dict=None )-> TEMPLATES.TemplateResponse:
+    db = SiteDb(db_name=_databases.get('invoice_db'))
+    if data:
+        try:            
+            inv_item = InvoiceItem( **data )
+            invoices = await db.save_item(inv_item.model_dump())
+            return TEMPLATES.TemplateResponse(
+                    '/components/project/account/InvoiceItems.html', 
+                    {
+                        "request": request, 
+                        "invoices": invoices
+                    })
+        except Exception as e:
+                logger().exception(e)
+        finally:                
+                del(db) # clean up
+    else:
+        invoices =  await db.get_items()
+        return TEMPLATES.TemplateResponse(
+            '/components/project/account/InvoiceItems.html', 
+            {
+                "request": request, 
+                "invoices": invoices
+            })
+
+
+async def get_invoice_items(request:Request )-> TEMPLATES.TemplateResponse:
+    db = SiteDb(db_name=_databases.get('invoice_db'))
+    invoices =  await db.get_items()
+    suppliers = await supplier_name_index()
+    try:
+        return TEMPLATES.TemplateResponse(
+            '/components/project/account/InvoiceItems.html', 
+            {
+                "request": request, 
+                "invoices": invoices,
+                
+            })
+        
+    except Exception as e:
+        logger().exception(e)
+    finally:                
+        del(db) # clean up
+        del(invoices)
+  
 
 async def delete_invoice( request:Request, project:dict=None, id:str=None )-> TEMPLATES.TemplateResponse:
     """Handle deletion of invoice data recording
@@ -593,8 +655,6 @@ async def delete_invoice( request:Request, project:dict=None, id:str=None )-> TE
                 })
    
 
-
-
 async def create_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:  
     """Creates new paybills
     
@@ -634,7 +694,8 @@ async def create_paybill( request:Request, project:dict=None, data:dict=None )->
                 del(project) # clean up
     else:
         return {"error": 501, "message": "You did not provide any data for processing."}
-   
+
+
 async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> TEMPLATES.TemplateResponse:
     """Retreive a paybill object by given bill id """
     if type(project) == dict:
@@ -658,6 +719,7 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
                     del(project) # clean up
     else:
         return {"error": 501, "message": "Your Request was not processed."}
+
 
 async def update_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Retreive a paybill object by given bill id """
@@ -763,17 +825,11 @@ class projectManager:
             pass
         # if self.id is a project id 
         self.project = await get_project(id=self.id)
-        notification.notify(
-            title = "HEADING HERE",
-            message=" DESCRIPTION HERE" ,
-          
-            # displaying time
-            timeout=2 
-        )
+        suppliers = await supplier_name_index()
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Project.html', 
-                {"request": request, "project": self.project ,"paybill":{}}),
+                {"request": request, "project": self.project ,"suppliers":suppliers }),
             'account': TEMPLATES.TemplateResponse(
                 '/components/project/Account.html', 
                 {"request": request, "project": self.project }),
@@ -791,7 +847,7 @@ class ProjectClient:
         Returns Json 
     """
     id:str = None
-    PROPERTIES_INDEX:list = ['index', 'phases', 'model']
+    PROPERTIES_INDEX:list = ['index', 'phases', 'model', 'invoice_items']
 
     def __init__(self, id:str=None, properties:list=[]):
         self.id = id
@@ -804,7 +860,8 @@ class ProjectClient:
             'index': TEMPLATES.TemplateResponse('/components/project/Index.html', 
                         {"request": request, "projects": await all_projects()}),
             'phases': JSONResponse( project_phases() ),
-            'model': JSONResponse( project_template() )
+            'model': JSONResponse( project_template() ),
+            'invoice_items': await get_invoice_items(request=request)
             
         }
         
@@ -817,6 +874,8 @@ class ProjectClient:
                 return JSONResponse({self.id: { key: val for key, val in form_data.items()}})
                 # await self.create_new_project(request=request) 
                 # self.id = 'index'   
+            elif self.id == 'invoice_item':
+                return await save_invoice_item(request=request, data=form_data )
             elif self.id in self._ids: # checking... if request to modify a project                
                 self.project = await get_project(id=self.id)  #get and load the project
                 

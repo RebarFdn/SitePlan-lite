@@ -3,16 +3,16 @@
 from modules.site_db import SiteDb
 
 trip = {
-    "tid": "77997",
-    "venue":"Florida",
+    "tid": "96544",
+    "venue":"Jamaica",
     "name": "T Lewis"
 }
 db = SiteDb(db_name='trips')
-items = db.save_item(trip)
-print(items)
+#items = db.get__items() #db.save_item(trip)
+#items = db.delete__item(prop='name', resource="T Lewis")
+#print(items)
 
 #print(db)
-#db.reset_repo()
 #print(db)
 
 """

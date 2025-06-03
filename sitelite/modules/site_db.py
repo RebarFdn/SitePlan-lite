@@ -16,7 +16,7 @@ class SiteDb:
 
             self.db = TinyDB( self.db_path / f"{db_name}.json")
 
-    def get__items(self) ->list:
+    async def get_items(self) ->list:
         """Returns all the documents in the requested database.
 
         Returns:
@@ -25,7 +25,7 @@ class SiteDb:
         return self.db.all()
         
         
-    def get__item(self, doc_id:str=None) ->list:
+    async def get_item(self, prop:str=None, resource:str=None) ->list:
         """Returns all the documents in the requested database.
 
         Args:
@@ -35,19 +35,38 @@ class SiteDb:
         Returns:
             list: list of documents
         """
-        return self.db.all()
+        Item = Query()
+        item = self.db.search(Item[prop] == resource)
+        return item
     
-
-    def save_item(self, data:dict=None)->list:  
+    def doc_count(self)->int:
+        return len(self.db.all())
+    
+    async def save_item(self, data:dict=None)->list:  
         if data:
             try:
                 self.db.insert(data)        
                 return self.db.all()              
             except Exception as e:
                 return [str(e)]
-            
+
     
-    def reset_repo(self)->None:
+    async def delete_item(self, prop:str=None, resource:str=None) ->list:
+        """Removes the documents from requested database.
+
+        Args:
+            doc_id (str, optional): the document unique id as stored 
+                in the database. Defaults to None.
+
+        Returns:
+            list: list of documents
+        """
+        Item = Query()
+        self.db.remove(Item[prop] == resource)
+        return self.db.all()
+           
+    
+    async def reset_repo(self)->None:
         """ Creates or overwrites the temporary file directory
         """        
         try: 
