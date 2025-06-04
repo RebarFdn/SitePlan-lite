@@ -2562,6 +2562,9 @@
   .w-52 {
     width: calc(var(--spacing) * 52);
   }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
+  }
   .w-80 {
     width: calc(var(--spacing) * 80);
   }
@@ -3061,6 +3064,11 @@
       --input-color: var(--color-info);
     }
   }
+  .input-primary {
+    &, &:focus, &:focus-within {
+      --input-color: var(--color-primary);
+    }
+  }
   .hover\:bg-gray-100 {
     &:hover {
       @media (hover: hover) {
@@ -3194,6 +3202,11 @@
         height: 100%;
         object-fit: cover;
       }
+    }
+  }
+  .\@md\:flex-row {
+    @container (width >= 28rem) {
+      flex-direction: row;
     }
   }
   .dark\:divide-gray-700 {

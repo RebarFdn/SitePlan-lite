@@ -24,7 +24,7 @@
                 <tr>  
                     <td>{{ d.supplier.name }}</td>    
                     <td>{{ d.invoiceno }}</td>        
-                    <td>{{ d.datetime  }}</td>
+                    <td>{{ d.date | convert_timestamp  }}</td>
                     <td> 
                        {{ d.get('items') | length }}
                     </td>
@@ -88,7 +88,7 @@
                             <div class="uk-margin">
                                 <label class="uk-form-label" for="form-horizontal-text">Invoice Number</label>
                                 <div class="uk-form-controls">
-                                    <input class="uk-input" type="text" placeholder="Invoice no." name="invoiceno" aria-label="Invoice No.">
+                                    <input id="invoiceno" class="uk-input" type="text" placeholder="Invoice no." name="invoiceno" aria-label="Invoice No.">
                                 </div>
                             </div>                
                         </div>
@@ -104,9 +104,11 @@
                         <div class="uk-width-1-2@s">                
                             <div class="uk-margin">
                                 <label class="uk-form-label" for="form-horizontal-text">Select Supplier</label>                    
-                                <select class="uk-select" aria-label="Select">
-                                    <option>Option 01</option>
-                                    <option>Option 02</option>
+                                <select class="uk-select" aria-label="Select" name="name">
+                                    <option>Supplier</option>
+                                    {% for supplier in suppliers %}
+                                    <option>{{supplier}}</option>
+                                    {% endfor %}
                                 </select>
                     
                             </div>                
@@ -145,17 +147,17 @@
                         
                             </p>
                     </form>
-       
+      
                 </div>
             </div>
             <div>
                 <p 
-                class="text-lg text-center font-semibold" 
+                class="text-lg text-center font-semibold cursor-pointer" 
                 hx-get="/Project/invoice_items/i/i" 
                 hx-target="#invoice-items" 
-                hx-trigger="every 5s"
+                hx-trigger="click"
                 >Items</p>
-                <div id="invoice-items" class="uk-card uk-card-default uk-card-body">
+                <div id="invoice-items" >
                     Invoice Items
                     
                 </div>

@@ -6,10 +6,10 @@ from starlette.responses import HTMLResponse, JSONResponse
 from ezchart import ezChart
 from database import Recouch, local_db
 from logger import logger
-from modules.supplier import supplier_name_index
+from modules.supplier import supplier_name_index, get_supplier, update_supplier, get_supplier_key_index
 from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
 from models import (Project, project_phases, project_template ,DepositModel, WithdrawalModel, 
-ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel)
+ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel,  SupplierInvoiceRecord)
 from modules.site_db import SiteDb
 from config import TEMPLATES
 
@@ -107,6 +107,12 @@ def log_activity(title:str=None, message:str=None, project:dict=None)->None:
 
 
 # Project specific utilities
+
+
+def doc_count()->int:
+    db = SiteDb(db_name=_databases.get('invoice_db'))
+    return db.doc_count() 
+
 def set_prop( prop:str=None ):
     if prop[len(prop)-1: ] == 's':
         return prop[ :-1]
@@ -179,10 +185,8 @@ async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.Tem
         "invoices": tally(project['account']['records']['invoices'])
     }
     account['current_balance'] = account["deposits"] - sum(
-        [account["withdrawals"], 
-         account["expences"],
-         account["paybills"], 
-         account["invoices"],
+        [account["withdrawals"],        
+         account["paybills"],          
          ])
     
     return TEMPLATES.TemplateResponse(
@@ -487,11 +491,22 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
         project = await get_project(id=project)         
     # process withdrawals
     if data: 
-        supplier_data = [ item for item in await supplier_name_index() if item.get('name') == data.get('name')] 
+        index = await get_supplier_key_index()
+        id = index.get(data.get('name'))
+        if id:
+            supplier_data = await get_supplier(id=id ) 
+        else:
+            # create supplier or
+            supplier_data = None
+
         if supplier_data:
-            supplier = Supplier( **supplier_data[0] )
+            supplier = Supplier( **supplier_data )
+            transaction =  SupplierInvoiceRecord( **data )
+            supplier_data['account']['transactions'].append(transaction.model_dump())
+            await update_supplier(data=supplier_data)
         else:
             supplier = Supplier( **data )
+            # create a new supplier here
         data['supplier'] = supplier
         data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
         invoice = InvoiceModel( **data ) # Validate data 
@@ -513,7 +528,7 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
         try:
             await update_project(data=project)           
             return TEMPLATES.TemplateResponse(
-                '/components/project/account/Expences.html', 
+                '/components/project/account/Invoices.html', 
                 {
                     "request": request, 
                     "project": {
@@ -533,7 +548,7 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
                 await db.reset_repo() # resets the invoice items store
     else:
         return TEMPLATES.TemplateResponse(
-                '/components/project/account/Expences.html', 
+                '/components/project/account/Invoices.html', 
                 {
                     "request": request, 
                     "project": {
@@ -550,7 +565,8 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
 async def save_invoice_item(request:Request, data:dict=None )-> TEMPLATES.TemplateResponse:
     db = SiteDb(db_name=_databases.get('invoice_db'))
     if data:
-        try:            
+        try: 
+            data['itemno'] = doc_count()           
             inv_item = InvoiceItem( **data )
             invoices = await db.save_item(inv_item.model_dump())
             return TEMPLATES.TemplateResponse(
@@ -825,7 +841,7 @@ class projectManager:
             pass
         # if self.id is a project id 
         self.project = await get_project(id=self.id)
-        suppliers = await supplier_name_index()
+        suppliers = [ item.get('name') for item in await supplier_name_index()]
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Project.html', 

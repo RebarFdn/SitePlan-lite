@@ -98,6 +98,12 @@ async def get_supplier( id:str=None, conn:typing.Coroutine=db_connection)->dict:
     finally: del(r)
 
 
+async def get_supplier_key_index()->dict:
+    index =  await supplier_name_index()
+    return {item.get('name').strip(): item.get('_id') for item in index }
+    
+       
+
 
 async def save_supplier(data:dict, user:str=None, conn:typing.Coroutine=db_connection):    
     if data.get("_id"):

@@ -1,13 +1,5 @@
 <div class="overflow-y-auto h-96 p-5 m-2">
     {% if invoices %}
-    <ul>
-         {% for item in invoices %}
-         <li>{{ item }}</li>
-         {% endfor %}
-    </ul>
-    {% else %}
-    <p class="text-center text-gray-500">Items not included </p>
-   <div class="flex flex-row">
      <form 
                     hx-post="/Project/invoice_item/c/r"
                     hx-target="#invoice-items"
@@ -15,69 +7,76 @@
                     class="uk-grid-small" 
                     uk-grid
                     >
-                        <div class="uk-width-1-2@s">
-                            <div class="uk-margin">
-                                <label class="uk-form-label" for="form-horizontal-text">Description</label>
-                                <div class="uk-form-controls">
-                                    <input class="uk-input" type="text" placeholder="Description" name="description" aria-label="Description">
-                                </div>
-                            </div>                
-                        </div>
-                        <div class="uk-width-1-2@s">                
-                            <div class="uk-margin">
-                                <label class="uk-form-label" for="form-horizontal-text">Invoice Number</label>
-                                <div class="uk-form-controls">
-                                    <input class="uk-input" type="text" placeholder="Invoice no." name="invoiceno" aria-label="Invoice No.">
-                                </div>
-                            </div>                
-                        </div>
-                        
-                        <div class="uk-width-1-2@s">
-                            <div class="uk-margin">
-                                <label class="uk-form-label" for="form-horizontal-text">Unit</label>
-                                <div class="uk-form-controls">
-                                    <input class="uk-input" type="text" placeholder="Unit" name="unit" aria-label="Unit">
-                                </div>
-                            </div>                
-                        </div>
-                        <div class="uk-width-1-2@s">                
-                            <div class="uk-margin">
-                                <label class="uk-form-label" for="form-horizontal-text">Select Unit</label>                    
-                                <select class="uk-select" aria-label="Unit">
-                                    <option>Option 01</option>
-                                    <option>Option 02</option>
-                                </select>
-                    
-                            </div>                
-                        </div>     
+                        <div class="flex flex-col">
+                            <div class="flex @md:flex-row">                               
+                                <div><input id="invoiceno-output" type="text" placeholder="Invoice No." name="invoiceno" value="" class="input input-xs" /></div>                        
+                                <div class="w-64" ><input type="text" placeholder="Unit" name="unit" class="input input-xs input-primary" /></div>
+                                 
+                                 <input type="text" placeholder="Description" name="description" class="input input-xs input-primary" />
+                            </div>
+                            
 
-                        <div class="uk-width-1-2@s">
-                            <div class="uk-margin">
-                                <label class="uk-form-label" for="form-horizontal-text">Amount</label>
-                                <div class="uk-form-controls">
-                                    <input class="uk-input" type="number" step="0.01" placeholder="Amount" name="quantity" aria-label="Amount">
-                                </div>
-                            </div>                
+                            <div class="flex @md:flex-row">
+                           
+                                <input class="input input-xs input-primary" type="number" step="0.01" placeholder="Amount" name="quantity" aria-label="Amount">
+                                <input class="input input-xs input-primary" type="number" step="0.01" placeholder="Price" name="price" aria-label="Price">
+                                <button class="btn btn-primary btn-xs">Add</button>
+                            </div>
                         </div>
-                        <div class="uk-width-1-2@s">                
-                            <div class="uk-margin">
-                                <label class="uk-form-label" for="form-horizontal-text">Total</label>
-                                <div class="uk-form-controls">
-                                    <input class="uk-input" type="number" step="0.01" placeholder="Price" name="price" aria-label="Price">
-                                </div>
-                            </div>                
-                        </div>   
-                        
-                        <div class="uk-width-1-2@s">                
-                            <div class="uk-margin">
-                                <button class="uk-button uk-button-primary rounded-md" type="submit">Save Item</button>
-                        
-                            </div>                
-                        </div>                   
-           
-    
-                    </form>
-       
-   </div>
+                   
+                </form>
+    <ul>
+         {% for item in invoices %}
+         <li>{{ item }}</li>
+         {% endfor %}
+    </ul>
+    {% else %}
+    <span class="text-center text-gray-500 text-bold">Add Item </span>
+                <form 
+                    hx-post="/Project/invoice_item/c/r"
+                    hx-target="#invoice-items"
+                    hx-trigger="submit"                        
+                    class="uk-grid-small" 
+                    uk-grid
+                    >
+                        <div class="flex flex-col">
+                            <div class="flex @md:flex-row">                               
+                                <div><input id="invoiceno-output" type="text" placeholder="Invoice No." name="invoiceno" value="" class="input input-xs" /></div>                        
+                                <div class="w-64" ><input type="text" placeholder="Unit" name="unit" class="input input-xs input-primary" /></div>
+                                 
+                                 <input type="text" placeholder="Description" name="description" class="input input-xs input-primary" />
+                            </div>
+                            
+
+                            <div class="flex @md:flex-row">
+                           
+                                <input class="input input-xs input-primary" type="number" step="0.01" placeholder="Amount" name="quantity" aria-label="Amount">
+                                <input class="input input-xs input-primary" type="number" step="0.01" placeholder="Price" name="price" aria-label="Price">
+                                <button class="btn btn-primary btn-xs">Add</button>
+                            </div>
+                        </div>
+                   
+                </form>
+ 
     {% endif %}
 </div>
+
+
+{% block extra_scripts %}
+
+<script type="module">
+    function updateInputField(field){
+        const attr = document.querySelector(`#${field}`);
+        const output = document.querySelector(`#${field}-output`);
+        output.value = attr.value;
+
+        attr.addEventListener("input", () => {
+        output.value = attr.value;
+        });
+    };
+   updateInputField("invoiceno")
+  
+   
+  
+</script>
+{% endblock %}

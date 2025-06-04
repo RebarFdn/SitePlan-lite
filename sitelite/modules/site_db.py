@@ -40,7 +40,7 @@ class SiteDb:
         return item
     
     def doc_count(self)->int:
-        return len(self.db.all())
+        return len(self.db.all()) + 1
     
     async def save_item(self, data:dict=None)->list:  
         if data:

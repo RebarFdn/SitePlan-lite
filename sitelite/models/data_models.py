@@ -13,11 +13,6 @@ try:
 except ImportError:
     pass
 #from sitelite.modules.utils import generate_id, timestamp
-from modules.site_db import SiteDb
-
-def doc_count()->int:
-        db = SiteDb(db_name="temp_invoice")
-        return db.doc_count() + 1
 
 
 class Department(Enum):
@@ -159,12 +154,16 @@ class Supplier(BaseModel):
     name:str = Field(default=None)     
     taxid: str = Field(default=None)
 
-    
+class SupplierInvoiceRecord(BaseModel):
+    inv_id: str = Field(default=None)   
+    invoiceno:str = Field(default= None) 
+    date:Any = Field(default=None)    
+    total:float = Field(default=0.001) 
 
 
 class InvoiceItem(BaseModel):
     iid:str = Field(default=generate_id(name='invoice item'))
-    itemno:int = Field(default=doc_count())  
+    itemno:int = Field(default=0)  
     description:str = Field(default=None) 
     quantity:float = Field(default=0.01) 
     unit:str = Field(default=None) 
