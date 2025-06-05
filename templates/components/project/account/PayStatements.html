@@ -60,11 +60,12 @@
 </div>
 
 {% else %}
-<p class="text-lg">You Need To Fund This Project! </p><br>
-<a href="#statement-modal" uk-toggle>Deposit Funds</a>
+<p class="text-lg">Records Unavailable!</p><br>
+ <p class="text-sm">You Need To create and settle a paybill<br> pay statements will appear here.</p><br>
+<a href="#statement-modal" uk-toggle>Record Statement</a>
 {% endif %}
 
-<!-- This is the Deposit modal -->
+<!-- This is the statement modal -->
 <div id="statement-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body rounded-lg">
         <p class="text-lg text-center font-semibold">Pay Statement</p>

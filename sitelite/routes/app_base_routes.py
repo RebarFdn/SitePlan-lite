@@ -37,8 +37,6 @@ async def register_user(request:Request):
         html_form = RegisterUser().html_form(header=header, post='/register', form=form)
 
 
-
-
 @router.get("/project/{id}/{property}")
 @router.post("/project/{id}/{property}")
 @router.put("/project/{id}/{property}")

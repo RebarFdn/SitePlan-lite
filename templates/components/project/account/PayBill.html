@@ -1,4 +1,63 @@
-<div>
-    <p>Project Paybill</p>
-    {{paybill}}
-</div>
+
+<span class="text-md text-blue-500 font-semibold p-1">Job Paybill - {{paybill.mainTitle}}</span>
+
+
+    <ul class="uk-subnav uk-subnav-pill" uk-switcher>
+        <li><a href="#">Bill Home</a></li>
+        <li><a href="#">Bill Items</a></li>
+        <li><a href="#">Days Work</a></li>
+        
+    </ul>
+
+    <div class="uk-switcher uk-margin">
+        <div id="bill-home">
+            <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+                <div class="uk-child-width-expand@s uk-text-left" uk-grid>
+                    <div>
+                        
+                        <ul>
+                            <li><strong>Project</strong> {{paybill.project_id}}</li>
+                            <li><strong>Bill Id.</strong> {{paybill.id}}</li>
+                            <li><strong>Bill Refference.</strong> {{paybill.ref}}</li>
+                            <li><strong>Date</strong> {{paybill.date | convert_timestamp}}</li>
+                            <li><strong>Period start</strong> {{paybill.date_starting | convert_timestamp}}</li>
+                            <li><strong>Period end</strong> {{paybill.date_ending | convert_timestamp}}</li>
+                            
+
+                        </ul>
+                        
+                    </div>
+                    <div>
+                        
+                    
+                        <ul>
+                                <li><strong>Bill Costs</strong></li>
+                                {% for key, val in paybill.expence.items() %}
+                                <li><strong>{{ key | capitalize }}</strong> {{val | to_dollars }}</li>
+                                {% endfor %}
+                                <li><strong>Bill Items Total</strong> {{paybill.itemsTotal | to_dollars}}</li>
+                                <li><strong>Bill Total</strong> {{paybill.total | to_dollars}}</li>
+                            </ul>
+                    
+                    </div>
+                    <div>
+                        
+                    
+                            <ul>
+                                <li><strong>Fees</strong></li>
+                                {% for key, val in paybill.fees.items() if key not in ['unit'] %}
+                                <li><strong>{{ key | capitalize }}</strong> {{val}}%</li>
+                                {% endfor %}
+                            </ul>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bill-items">{{paybill.get('items')}}</div>
+        <div id="bill-days">{{paybill.days_work}}</div>
+        
+    </div>
+    
+  

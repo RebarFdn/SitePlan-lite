@@ -1,7 +1,7 @@
 
 {% if project.account.records.invoices %}
 
- <a href="#invoice-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold">Purchase Invoices</span></a>
+ <a href="#invoice-modal" uk-toggle><span class="text-lg text-blue-500 font-semibold tooltip tooltip-info" data-tip="Record purchase invoice ">Purchase Invoices</span></a>
  <div id="invoice-result"></div>
 <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
 
@@ -26,7 +26,11 @@
                     <td>{{ d.invoiceno }}</td>        
                     <td>{{ d.date | convert_timestamp  }}</td>
                     <td> 
+                        {% if d.get('items') | length > 0 %}
                        {{ d.get('items') | length }}
+                       {% else %}
+                       <span class="badge badge-info badge-sm">record</span>
+                       {% endif %}
                     </td>
                     <td>{{ d.tax | to_dollars }} </td>
                     <td>{{ d.total | to_dollars }}</td>
@@ -151,14 +155,14 @@
                 </div>
             </div>
             <div>
-                <p 
-                class="text-lg text-center font-semibold cursor-pointer" 
+                <!--button 
+                class="btn btn-primary btn-sm" 
                 hx-get="/Project/invoice_items/i/i" 
                 hx-target="#invoice-items" 
                 hx-trigger="click"
-                >Items</p>
+                >Items</!--button-->
                 <div id="invoice-items" >
-                    Invoice Items
+                    {% include 'components/project/account/InvoiceItems.html' %}
                     
                 </div>
             </div>

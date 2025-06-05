@@ -1,4 +1,4 @@
-<h1 class="text-lg text-center font-bold">Project Activity Logs</h1>
+<p class="text-lg text-center font-semibold my-2 p-2">Project Activity Logs</p>
 
 <div class="overflow-y-auto h-96">
     <table class="table table-xs">
@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         <!-- row 1 -->
-         {% for row in project.activity_logs %}
+         {% for row in project.activity_logs | reverse %}
         <tr>
           <th>{{ row.id | convert_timestamp }}</th>
           <td>{{ row.title }}</td>

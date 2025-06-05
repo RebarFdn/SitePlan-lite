@@ -184,10 +184,7 @@ async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.Tem
         "paybills": tally(project['account']['records']['paybills']),
         "invoices": tally(project['account']['records']['invoices'])
     }
-    account['current_balance'] = account["deposits"] - sum(
-        [account["withdrawals"],        
-         account["paybills"],          
-         ])
+    account['current_balance'] = account["deposits"] - account["withdrawals"]
     
     return TEMPLATES.TemplateResponse(
         '/components/project/account/Stastics.html', 
@@ -727,7 +724,7 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
                 '/components/project/account/PayBill.html', 
                 {
                     "request": request, 
-                    "paybill": paybill
+                    "paybill": paybill[0]
                 })
             except Exception as e:
                     logger().exception(e)
@@ -845,7 +842,7 @@ class projectManager:
         search_ = {
             'id': TEMPLATES.TemplateResponse(
                 '/components/project/Project.html', 
-                {"request": request, "project": self.project ,"suppliers":suppliers }),
+                {"request": request, "project": self.project ,"suppliers":suppliers, "invoices": [] }),
             'account': TEMPLATES.TemplateResponse(
                 '/components/project/Account.html', 
                 {"request": request, "project": self.project }),
