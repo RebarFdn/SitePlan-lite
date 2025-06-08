@@ -1,15 +1,27 @@
+<div class="uk-child-width-expand@s uk-text-center" uk-grid>
+    <div class="uk-width-auto@m">
+        <span class="text-md text-blue-500 font-semibold p-1">Job Paybill - {{paybill.mainTitle}}</span>
+    </div>
 
-<span class="text-md text-blue-500 font-semibold p-1">Job Paybill - {{paybill.mainTitle}}</span>
+    <div class="uk-width-expand@m">  
+
+        <ul class="menu menu-horizontal bg-base-200 rounded-box" uk-switcher="connect: .paybill-properties">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Items</a></li>
+            <li><a href="#">Dayswork</a></li>
+            <li><a href="#">Add</a></li>
+            <li><a href="#">Workers</a></li>
+            <li><a href="#">Process</a></li>
+        </ul>
+    </div>
+   
+</div>
 
 
-    <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-        <li><a href="#">Bill Home</a></li>
-        <li><a href="#">Bill Items</a></li>
-        <li><a href="#">Days Work</a></li>
-        
-    </ul>
 
-    <div class="uk-switcher uk-margin">
+    
+
+    <div class="uk-switcher uk-margin paybill-properties">
         <div id="bill-home">
             <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
                 <div class="uk-child-width-expand@s uk-text-left" uk-grid>
@@ -55,8 +67,28 @@
                 </div>
             </div>
         </div>
-        <div id="bill-items">{{paybill.get('items')}}</div>
-        <div id="bill-days">{{paybill.days_work}}</div>
+        <div id="bill-items">
+            {% if paybill.get('items') %}
+            {{paybill.get('items')}}
+            {% else %}
+            <span class="text-lg text-gray-500 text-center">Load active, completed or paused Jobs only! </span>
+            {% endif %}
+        </div>
+        <div id="bill-days">
+            {% if paybill.days_work %}
+            {{paybill.days_work}}
+            
+            {% else %}
+            <span class="text-lg text-gray-500 text-center">There are no day work records! </span>
+            {% endif %}
+        </div>
+        
+        <div id="add-item">
+            {% include 'components/project/account/UnpaidTasks.html' %}
+            
+        </div>
+        <div id="workers">Bill workers</div>
+        <div id="bill-process"> Process bill</div>
         
     </div>
     

@@ -4,8 +4,11 @@
      
     <ul>
          {% for item in invoices %}
-         <li>{{ item }}</li>
-         {% endfor %}
+            <li><strong>{{ item.iid }}</strong> < ------ > {{ item.quantity }} {{ item.unit }} {{ item.description }} @ {{ item.price }} per {{item.unit }} </li>
+               
+                </ul>
+            </li>
+        {% endfor %}
     </ul>
     {% else %}
     <span class="text-center text-gray-500 text-bold">Add Item </span>

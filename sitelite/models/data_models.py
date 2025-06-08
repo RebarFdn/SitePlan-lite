@@ -7,7 +7,12 @@ from functools import lru_cache
 from pydantic import BaseModel, EmailStr, Field,  SecretStr, AliasChoices
 from pydantic_extra_types.country import CountryShortName 
 from pydantic_extra_types.phone_numbers import PhoneNumber
-from eaziform import FormModel
+
+try:
+    from eaziform import FormModel
+except ImportError:
+    from models.eaziform import FormModel
+
 try:
     from modules.utils import generate_id, timestamp, tally
 except ImportError:
@@ -30,15 +35,16 @@ class Roles(Enum):
     STAFF = 'STAFF'
     WORKER = 'WORKER'
 
-
+# Address and Location 
 class Address(BaseModel):
-    lot: str | None = None
-    street: str = Field(default=None, min_length=2, max_length=12) 
-    town: str = Field(default=None, min_length=2, max_length=12)
+    lot: str = Field( default= None)
+    street: str = Field(default=None, min_length=2, max_length=36) 
+    town: str = Field(default=None, min_length=2, max_length=36)
     city_parish: str = Field(default=None, min_length=5, max_length=20)
-    country:CountryShortName | None = None
-    zip: str | None = Field(default=None, min_length=3, max_length=6)
+    country:str = Field(default= None)
+    zip: str = Field(default=None, min_length=3, max_length=6)
 
+# Contact and Communication
 
 class Contact(BaseModel):
     """Usage Contact(tel="+18762982925")
@@ -47,6 +53,22 @@ class Contact(BaseModel):
     mobile: PhoneNumber | None = None
     email: EmailStr | None = None
     watsapp: PhoneNumber | None = None
+
+# Measured Quantity Models
+
+class MetricModel(BaseModel):
+    unit:str = Field(default=None)
+    price:float = Field(default=0.001)
+    quantity:float = Field(default=0.001)
+    total:float = Field(default=0.001)
+
+
+class ImperialModel(BaseModel):
+    unit:str = Field(default=None)
+    price:float = Field(default=0.001)
+    quantity:float = Field(default=0.001)
+    total:float = Field(default=0.001)
+
 
 
 ## Financial and Accounting Models
@@ -60,7 +82,7 @@ class Bank(BaseModel):
 
 class Loan(BaseModel):
     id: str = Field(default_factory=lambda: uuid4().hex)
-    date: date = None
+    date:int = Field(default=None) 
     amount:float = Field(default=None, max_digits=4)
     borrower: str = Field(default=None, min_length=2, max_length=32)
     refference:str = Field(default=None, min_length=2, max_length=8)
@@ -94,6 +116,7 @@ class DepositModel(BaseModel):
     payee:str = None
     user:str = Field(default="Ian")
 
+
 class WithdrawalModel(BaseModel):
     id:str = Field(default=generate_id(name='account withdraw') )
     date:int = timestamp()
@@ -103,6 +126,7 @@ class WithdrawalModel(BaseModel):
     recipient:str = None
     user:str = Field(default="Ian")
  
+
 class ExpenceModel(BaseModel):
     id:str = Field(default=generate_id(name='account expence') )
     ref:str = None
@@ -130,7 +154,27 @@ class BillExpence(BaseModel):
     overhead:float = Field(default=0.001)
     total:float = Field(default=0.001)
 
- 
+
+class UnpaidTaskModel(BaseModel):
+    id:str = Field(default=None, validation_alias=AliasChoices('id', '_id'))
+    job_id:str = Field(default=None)
+    title:str = Field(default=None)
+    metric:MetricModel = MetricModel()
+    imperial:ImperialModel = ImperialModel()
+    assignedto:Any
+    progress: int =  Field(default=0)
+
+    @property
+    def set_quantity_percent(self)->None:
+        if self.progress > 0:
+            percent = self.progress / 100
+            self.metric.quantity = self.metric.quantity * percent
+            self.metric.total = self.metric.quantity * self.metric.price
+            self.imperial.quantity = self.imperial.quantity * percent
+            self.imperial.total = self.imperial.quantity * self.imperial.price
+
+
+
 class PaybillModel(BaseModel):
     id:str = Field(default=generate_id(name='pay bill') ) # Bill internal id
     ref:str = Field(default=None)   # Bill to job refference no
@@ -154,6 +198,7 @@ class Supplier(BaseModel):
     name:str = Field(default=None)     
     taxid: str = Field(default=None)
 
+
 class SupplierInvoiceRecord(BaseModel):
     inv_id: str = Field(default=None)   
     invoiceno:str = Field(default= None) 
@@ -162,6 +207,7 @@ class SupplierInvoiceRecord(BaseModel):
 
 
 class InvoiceItem(BaseModel):
+    invoiceno:str = Field(default=None) 
     iid:str = Field(default=generate_id(name='invoice item'))
     itemno:int = Field(default=0)  
     description:str = Field(default=None) 
@@ -180,10 +226,7 @@ class InvoiceModel(BaseModel):
     total:float = Field(default=0.001) 
     billed:bool = Field(default=False) 
 
-   
-
-
-
+ 
 class InventoryItem(BaseModel):   
     ref:str=None
     name:str

@@ -39,7 +39,7 @@
                          <span
                         class="tooltip cursor-pointer"                       
                         data-tip="Delete record?"
-                        hx-delete="/Project/{{project._id}}/invoice/{{d.id}}"
+                        hx-delete="/Project/{{project._id}}/invoice/{{d.inv_id}}"
                         hx-confirm="Are you shure you want to delete invoice {{d.invoiceno}}?"
                         hx-target="#account-invoices"
                         hx-trigger="click"
@@ -69,7 +69,7 @@
 <!-- This is the Deposit modal -->
 <div id="invoice-modal" class="uk-modal-container" uk-modal>
     <div class="uk-modal-dialog uk-modal-body rounded-lg">
-        <p class="text-lg text-center font-semibold">Project account Expence </p>
+        <p class="text-lg text-center font-semibold">Purchase Invoice </p>
         <div class="uk-child-width-expand@s uk-text-center" uk-grid>
             <div>
                 <div class="uk-card uk-card-default uk-card-body">
@@ -136,7 +136,8 @@
                         </div>   
                         <div class="uk-width-1-2@s">
                             <div class="uk-margin">
-                                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                                <a href="/Project/{{project._id}}/reset_invoice/c"
+                                class="uk-button uk-button-default uk-modal-close" type="button">Cancel</a>
                             </div>                
                         </div>
                         <div class="uk-width-1-2@s">                

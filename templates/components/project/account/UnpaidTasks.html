@@ -1,0 +1,46 @@
+<div id="unpaid-tasks">
+    <p class="text-md text-center font-semibold text-blue-500">Unpaid Tasks</p>
+     <div class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+    <table class="uk-table uk-table-small uk-table-responsive">
+        <thead>
+            <tr>
+                <td>Select</td>
+                <td>Id</td>
+                <td>Title</td>
+                <td>Progress</td>
+                <td>Pay out</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in unpaid_tasks %}
+            <tr>
+                <td>   <div class="uk-margin ">
+            
+                        <label><input 
+                            class="uk-radio uk-primary" 
+                            type="radio" 
+                            name="task"
+                            hx-post="/Project/{{paybill.project_id}}/billtask/{{paybill.id}}_{{task.id}}"
+
+                            > Select</label>
+                    
+                    </div>
+                </td>
+                 <td>{{ task.id}}</td>
+                <td>{{ task.title}}</td>
+                <td>{{ task.progress}}%</td>
+                <td>{{ task.metric.total | to_dollars }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+     
+   <p class="text-xs">{{unpaid_tasks}} <span class="badge badge-primary badge-sm">unpaid tasks</span></p>
+    <p class="text-xs text-blue-500">Paybill 
+        <span class="badge badge-primary badge-sm">{{paybill.id}}</span> Project
+        <span class="badge badge-primary badge-sm">{{paybill.project_id}}</span>
+    </p>
+
+    </div>
+   
+</div>

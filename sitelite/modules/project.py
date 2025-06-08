@@ -1,4 +1,4 @@
-from curses.ascii import HT
+
 from typing import Coroutine, List, Any
 from asyncio import sleep
 from starlette.requests import Request
@@ -9,7 +9,7 @@ from logger import logger
 from modules.supplier import supplier_name_index, get_supplier, update_supplier, get_supplier_key_index
 from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
 from models import (Project, project_phases, project_template ,DepositModel, WithdrawalModel, 
-ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel,  SupplierInvoiceRecord)
+ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel, UnpaidTaskModel, SupplierInvoiceRecord)
 from modules.site_db import SiteDb
 from config import TEMPLATES
 
@@ -107,8 +107,10 @@ def log_activity(title:str=None, message:str=None, project:dict=None)->None:
 
 
 # Project specific utilities
-
-
+async def reset_invoice_db()->None:
+    db = SiteDb(db_name=_databases.get('invoice_db'))
+    await db.reset_repo()
+    
 def doc_count()->int:
     db = SiteDb(db_name=_databases.get('invoice_db'))
     return db.doc_count() 
@@ -119,6 +121,14 @@ def set_prop( prop:str=None ):
     else:
         return prop
 
+def notice(title:str=None, message:str=None)->None:
+    notification.notify(
+        title=title, 
+        message=message, 
+        app_name='SiteLite',        
+        timeout=20 
+        )
+     
 async def piechart(request:Request, project:dict=None):
     account:dict = {
         "current_balance": 0,
@@ -475,6 +485,24 @@ async def delete_expence(request:Request, project:dict=None, id:str=None )-> TEM
                                 "account": { "expences": project.get('account',{}).get('expences', [])}
                             } })
 
+def can_record_invoice(project:dict=None, data:dict=None)->bool:
+    """Check in the project repository if invoice is existing
+
+    Args:
+        project (dict, optional): The Project repository. Defaults to None.
+        data (dict, optional): Invoice record to be saved Defaults to None.
+
+    Returns:
+        bool: True if it exist False if not
+    """
+    invoice = [ item for item in project['account']['records']['invoices'] if item.get('invoiceno') == data.get('invoiceno').strip() ]
+    notice(title='Invoice Check', message=f"We found {invoice}")
+    if invoice:
+        
+        return False
+    else:
+        
+        return True
 
 
 async def record_invoice( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
@@ -487,52 +515,61 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
     elif type(project) == str:
         project = await get_project(id=project)         
     # process withdrawals
+    invoices = project['account']['records']['invoices']
+    suppliers = [ item.get('name') for item in await supplier_name_index()]          
     if data: 
-        index = await get_supplier_key_index()
-        id = index.get(data.get('name'))
-        if id:
-            supplier_data = await get_supplier(id=id ) 
-        else:
-            # create supplier or
-            supplier_data = None
+        if can_record_invoice(project=project, data=data):# check if the invoice was already saved
+            
+            index = await get_supplier_key_index()
+            id = index.get(data.get('name'))
+            if id:
+                supplier_data = await get_supplier(id=id ) 
+            else:
+                # create supplier or
+                supplier_data = None
 
-        if supplier_data:
-            supplier = Supplier( **supplier_data )
-            transaction =  SupplierInvoiceRecord( **data )
-            supplier_data['account']['transactions'].append(transaction.model_dump())
-            await update_supplier(data=supplier_data)
+            if supplier_data:
+                supplier = Supplier( **supplier_data )
+                transaction =  SupplierInvoiceRecord( **data )
+                supplier_data['account']['transactions'].append(transaction.model_dump())
+                await update_supplier(data=supplier_data)
+            else:
+                supplier = Supplier( **data )
+                # create a new supplier here
+            data['supplier'] = supplier
+            data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
+            invoice = InvoiceModel( **data ) # Validate data 
+            in_data = invoice.model_dump()
+            # get load items 
+            db = SiteDb(db_name=_databases.get('invoice_db')) # Temporary invoice items store
+            invoice_items =  [item for item in await db.get_items()if item.get('invoiceno') == invoice.invoiceno] # retreive items 
+            in_data['items'] = invoice_items   
+
+            invoices.append(in_data)
+            withdrawal = WithdrawalModel(date=invoice.date, ref=invoice.invoiceno, amount=invoice.total, recipient=invoice.supplier.name)
+            withdrawal.user=None
+            project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
+            project['account']['updated'] = timestamp()
+            log_activity( title="Invoice Recorded", message = f"""invoice and withdrawal with refference {invoice.invoiceno } 
+                was recorded and drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
+                project=project )  
+            #processProjectAccountBallance()
+            
+            await update_project(data=project) 
         else:
-            supplier = Supplier( **data )
-            # create a new supplier here
-        data['supplier'] = supplier
-        data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
-        invoice = InvoiceModel( **data ) # Validate data 
-        in_data = invoice.model_dump()
-        # get load items 
-        db = SiteDb(db_name=_databases.get('invoice_db')) # Temporary invoice items store
-        invoice_items = await db.get_items() # retreive items 
-        in_data['items'] = invoice_items                   
-        project['account']['records']['invoices'].append(in_data)
-        withdrawal = WithdrawalModel(date=invoice.date, ref=invoice.invoiceno, amount=invoice.total, recipient=invoice.supplier.name)
-        withdrawal.user=None
-        project['account']['transactions']['withdraw'].append(withdrawal.model_dump())
-        project['account']['updated'] = timestamp()
-        log_activity( title="Invoice Recorded", message = f"""invoice and withdrawal with refference {invoice.invoiceno } 
-            was recorded and drawn from Project  {project.get('_id')} Account . by { data.get('user') }""",
-            project=project )  
-        #processProjectAccountBallance()
-        
+            pass
         try:
-            await update_project(data=project)           
+           
             return TEMPLATES.TemplateResponse(
                 '/components/project/account/Invoices.html', 
                 {
                     "request": request, 
+                    "suppliers": suppliers,
                     "project": {
                         "_id": project.get('_id'), 
                         "account": {
                             "records": {
-                                "invoices": project.get('account', {}).get('records', {}).get('invoices')
+                                "invoices": invoices
                             }
                         }
                     } 
@@ -542,17 +579,18 @@ async def record_invoice( request:Request, project:dict=None, data:dict=None )->
                 logger().exception(e)
         finally:                
                 del(project) # clean up
-                await db.reset_repo() # resets the invoice items store
-    else:
+                await reset_invoice_db() # resets the invoice items store
+    else:        
         return TEMPLATES.TemplateResponse(
                 '/components/project/account/Invoices.html', 
                 {
                     "request": request, 
+                    "suppliers": suppliers,
                     "project": {
                         "_id": project.get('_id'), 
                         "account": {
                             "records": {
-                                "invoices": project.get('account', {}).get('records', {}).get('invoices')
+                                "invoices": invoices
                             }
                         }
                     } 
@@ -589,7 +627,7 @@ async def save_invoice_item(request:Request, data:dict=None )-> TEMPLATES.Templa
 async def get_invoice_items(request:Request )-> TEMPLATES.TemplateResponse:
     db = SiteDb(db_name=_databases.get('invoice_db'))
     invoices =  await db.get_items()
-    suppliers = await supplier_name_index()
+    
     try:
         return TEMPLATES.TemplateResponse(
             '/components/project/account/InvoiceItems.html', 
@@ -633,11 +671,13 @@ async def delete_invoice( request:Request, project:dict=None, id:str=None )-> TE
             project['account']['updated'] = timestamp()
               
             try:
+                suppliers = [ item.get('name') for item in await supplier_name_index()]
                 await update_project(data=project)           
                 return TEMPLATES.TemplateResponse(
                     '/components/project/account/Invoices.html', 
                     {
                         "request": request, 
+                        "suppliers":suppliers,
                         "project": {
                             "_id": project.get('_id'), 
                             "account": {
@@ -709,6 +749,19 @@ async def create_paybill( request:Request, project:dict=None, data:dict=None )->
         return {"error": 501, "message": "You did not provide any data for processing."}
 
 
+async def get_unpaid_tasks(project:dict=None)->list:
+    #return [job.get('tasks') for job in project.get('jobs') ]
+    tasks = []
+    for job in project.get('jobs'):
+        if job.get("progress") > 0:
+            for task in job.get('tasks'):
+                if task.get('progress') > 0:
+                    unpaid_task = UnpaidTaskModel( **task )
+                    unpaid_task.set_quantity_percent
+                    tasks.append(unpaid_task)#unpaid_task.model_dump())
+    return tasks
+
+
 async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> TEMPLATES.TemplateResponse:
     """Retreive a paybill object by given bill id """
     if type(project) == dict:
@@ -719,12 +772,14 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
     if bill_id:
         paybill = [bill for bill in project.get('account', {}).get('records', {}).get('paybills') if bill.get('id') == bill_id] 
         if paybill:
+            unpaid_tasks = await get_unpaid_tasks(project=project)
             try:                      
                 return TEMPLATES.TemplateResponse(
                 '/components/project/account/PayBill.html', 
                 {
                     "request": request, 
-                    "paybill": paybill[0]
+                    "paybill": paybill[0],
+                    "unpaid_tasks": unpaid_tasks
                 })
             except Exception as e:
                     logger().exception(e)
@@ -732,6 +787,30 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
                     del(project) # clean up
     else:
         return {"error": 501, "message": "Your Request was not processed."}
+
+
+async def add_bill_item(request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
+    if type(project) == dict:
+        pass
+    elif type(project) == str:
+        project = await get_project(id=project)  
+
+    unpaid_tasks = await get_unpaid_tasks(project=project)
+    try:                      
+        return TEMPLATES.TemplateResponse(
+            '/components/project/account/PayBill.html', 
+            {
+                "request": request,                
+                "unpaid_tasks": unpaid_tasks
+            })
+    except Exception as e:
+        logger().exception(e)
+        return {"error": 501, "message": "Your Request was not processed."}
+    finally:                
+        del(project) # clean up
+   
+        
+
 
 
 async def update_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
@@ -968,6 +1047,8 @@ class ProjectClient:
                         return await account_statistics(request=request, project=self.project)
                 elif self.properties[0] == 'withdraw':  # Withdraw Funds                      
                     return await transact_withdrawal(request=request, project=self.project)
+                elif self.properties[0] == 'reset_invoice':
+                    await reset_invoice_db()
                             
 
                 else:
