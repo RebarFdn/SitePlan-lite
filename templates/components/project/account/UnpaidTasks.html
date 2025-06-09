@@ -21,6 +21,8 @@
                             type="radio" 
                             name="task"
                             hx-post="/Project/{{paybill.project_id}}/billtask/{{paybill.id}}_{{task.id}}"
+                            hx-target="#add-item" 
+                            hx-trigger="click" 
 
                             > Select</label>
                     

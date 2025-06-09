@@ -68,11 +68,7 @@
             </div>
         </div>
         <div id="bill-items">
-            {% if paybill.get('items') %}
-            {{paybill.get('items')}}
-            {% else %}
-            <span class="text-lg text-gray-500 text-center">Load active, completed or paused Jobs only! </span>
-            {% endif %}
+            {% include 'components/project/account/PaybillItems.html' %}
         </div>
         <div id="bill-days">
             {% if paybill.days_work %}

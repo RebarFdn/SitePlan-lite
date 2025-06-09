@@ -758,6 +758,7 @@ async def get_unpaid_tasks(project:dict=None)->list:
                 if task.get('progress') > 0:
                     unpaid_task = UnpaidTaskModel( **task )
                     unpaid_task.set_quantity_percent
+                    unpaid_task.calculate_total
                     tasks.append(unpaid_task)#unpaid_task.model_dump())
     return tasks
 
@@ -772,13 +773,17 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
     if bill_id:
         paybill = [bill for bill in project.get('account', {}).get('records', {}).get('paybills') if bill.get('id') == bill_id] 
         if paybill:
+            current_bill = PaybillModel( **paybill[0] )
+            current_bill.calculate_items_total
+            current_bill.calculate_expence
+            current_bill.calculate_total
             unpaid_tasks = await get_unpaid_tasks(project=project)
             try:                      
                 return TEMPLATES.TemplateResponse(
                 '/components/project/account/PayBill.html', 
                 {
                     "request": request, 
-                    "paybill": paybill[0],
+                    "paybill": current_bill.model_dump(), #paybill[0],
                     "unpaid_tasks": unpaid_tasks
                 })
             except Exception as e:
@@ -789,25 +794,39 @@ async def get_paybill( request:Request, project:dict=None, bill_id:str=None )-> 
         return {"error": 501, "message": "Your Request was not processed."}
 
 
-async def add_bill_item(request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
+async def add_bill_item(request:Request, project:dict=None, iid:str=None )-> TEMPLATES.TemplateResponse:
     if type(project) == dict:
         pass
     elif type(project) == str:
         project = await get_project(id=project)  
-
+    ids:list = iid.split('_')
     unpaid_tasks = await get_unpaid_tasks(project=project)
-    try:                      
-        return TEMPLATES.TemplateResponse(
-            '/components/project/account/PayBill.html', 
-            {
-                "request": request,                
-                "unpaid_tasks": unpaid_tasks
-            })
-    except Exception as e:
-        logger().exception(e)
-        return {"error": 501, "message": "Your Request was not processed."}
-    finally:                
-        del(project) # clean up
+    task = [task for task in unpaid_tasks if task.id == ids[1]]
+    paybill = [bill for bill in project.get('account').get('records').get('paybills') if bill.get('id') == ids[0]] 
+        
+    if task:
+        if paybill:
+            found_item = [item for item in paybill[0].get('items') if item.get('id') == task[0].id ]
+            if found_item:
+                notice(title='Check Paybill Item', message=f"Item with Id {task[0].id} was already added to the Bill.")
+            else:
+
+                paybill[0]['items'].append(task[0].model_dump())
+                await update_project(data=project)
+                # log the event
+        try:                      
+            return TEMPLATES.TemplateResponse(
+                '/components/project/account/UpaidTasks.html', 
+                {
+                    "request": request,  
+                    "paybill": paybill[0],              
+                    "unpaid_tasks": unpaid_tasks
+                })
+        except Exception as e:
+            logger().exception(e)
+            return {"error": 501, "message": "Your Request was not processed."}
+        finally:                
+            del(project) # clean up
    
         
 
@@ -983,6 +1002,9 @@ class ProjectClient:
                     
                     elif self.properties[0] == 'paybill':  # Record Paybill                      
                         return await create_paybill( request=request, project=self.project, data=form_data )                   
+                    elif self.properties[0] == 'billtask':  # Add item to paybill                      
+                        return await add_bill_item( request=request, project=self.project, iid=self.properties[1] )  
+                                  
                     
 
                     else:

@@ -1,0 +1,64 @@
+<div>
+{% if paybill.get('items') %}
+
+    <div  class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+
+    <table class="uk-table uk-table-small uk-table-responsive font-medium text-gray-800">
+        <thead>
+            <tr>                   
+                <th>Id</th>                
+                <th>Title</th>                  
+                
+                <th>Payout</th> 
+                <th>Metric </th>
+                <th>Imperial</th>             
+                <th>Total</th>
+                <th>Manage</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in paybill.get('items')  | reverse %}                      
+                
+                <tr>              
+                    <td>{{ item.id }}</td>                   
+                    
+                    <td><a hx-get="/Project/{{paybill.project_id}}/billtask/{{paybill.id}}_{{item.id}}" 
+                        hx-target="#account-paybills" 
+                        hx-trigger="click" >{{ item.title }} </a> </td>
+                   
+                    <td>{{ item.progress }}% </td>
+                     <td>{{ item.metric.quantity }} {{ item.metric.unit }} at {{ item.metric.price | to_dollars }}/{{ item.metric.unit }} </td>
+                    <td>{{ item.imperial.quantity }} {{ item.imperial.unit }} at {{ item.imperial.price | to_dollars }}/{{ item.imperial.unit }} </td>
+                     <td>{{ item.metric.total | to_dollars }}</td>
+                    <td>
+                        <span
+                        class="tooltip cursor-pointer"                       
+                        data-tip="Delete bill Item?"
+                        hx-delete="/Project/{{paybill.project_id}}/billtask/{{paybill.id}}_{{item.id}}"
+                        hx-confirm="Are you shure you want to delete Paybill {{item.title}}?"
+                        hx-target="#account-paybills"
+                        hx-trigger="click"
+                        ><span class="fa fa-trash"></span></span>
+                    </td>
+                </tr>
+            {% endfor %}
+                <tr> 
+                    <td></td>
+                    <td>Bill Items Total </td>
+                    
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>{{ paybill.get('items') | tally | to_dollars }}</strong></td>
+
+                    <td></td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+{% else %}
+<span class="text-lg text-gray-500 text-center">Load active, completed or paused Jobs only! </span>
+{% endif %}
+</div>

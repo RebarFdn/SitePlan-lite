@@ -163,6 +163,7 @@ class UnpaidTaskModel(BaseModel):
     imperial:ImperialModel = ImperialModel()
     assignedto:Any
     progress: int =  Field(default=0)
+    total:float= Field(default=0.001)
 
     @property
     def set_quantity_percent(self)->None:
@@ -173,6 +174,14 @@ class UnpaidTaskModel(BaseModel):
             self.imperial.quantity = self.imperial.quantity * percent
             self.imperial.total = self.imperial.quantity * self.imperial.price
 
+    @property
+    def calculate_total(self):
+        if self.metric.total > 0.001:
+            self.total = self.metric.total
+        else:
+            self.total = self.imperial.total
+    
+  
 
 
 class PaybillModel(BaseModel):
@@ -191,6 +200,34 @@ class PaybillModel(BaseModel):
     user:str = Field(default="Ian")
     expence:BillExpence = BillExpence()
     fees:BillFees = BillFees()
+
+    @property
+    def calculate_total(self):
+        self.total = self.itemsTotal + self.expence.total
+
+    @property
+    def calculate_items_total(self):
+        self.itemsTotal = tally(items=self.items)
+
+    @property
+    def calculate_expence(self):
+        if self.fees.contractor > 0:
+            self.expence.contractor = self.itemsTotal * (self.fees.contractor / 100)
+        else:
+            pass
+        if self.fees.insurance > 0:
+            self.expence.insurance = self.itemsTotal * (self.fees.insurance / 100)
+        else:
+            pass
+        if self.fees.misc > 0:
+            self.expence.misc = self.itemsTotal * (self.fees.misc / 100)
+        else:
+            pass
+        if self.fees.overhead > 0:
+            self.expence.overhead = self.itemsTotal * (self.fees.overhead / 100)
+        else:
+            pass
+        self.expence.total = sum([self.expence.contractor, self.expence.insurance, self.expence.misc, self.expence.overhead ])
 
 
 class Supplier(BaseModel):
