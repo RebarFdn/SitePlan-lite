@@ -1,102 +1,41 @@
 
-<p class="text-lg text-center font-semibold">{{job.title}}</p>
-<div class="navbar bg-base-100 shadow-sm">
-  <div>      
-      <label class="btn btn-ghost" hx-get="/Project/{{job.project_id}}/jobs/i" hx-target="#job-console" hx-trigger="click">
-            <span class="fa fa-chevron-left"></span>Jobs</label>
-  </div>
-  <!-- Navbar Start -->
-  <div class="navbar-start">
-    <div class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> 
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
-      </div>
-      
-      <ul
-         tabindex="0"
-          class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-         uk-tab="connect: .switcher-container">
-        <li><a><span class="fa fa-home"></span>Home</a> </li>
-        
-        <li><a><span class="fa fa-list-ol"></span>Tasks</a></li>
-        <li><a><span class="fa fa-dollar"></span>Bill</a></li>
-        <li><a><span class="fa fa-users"></span>Crew</a> </li>
-        
-       
-      </ul>
-     
+<p class="text-lg text-center font-semibold"><label class="btn btn-ghost" hx-get="/Project/{{job.project_id}}/jobs/i" hx-target="#job-console" hx-trigger="click">
+            <span class="fa fa-chevron-left"></span>Jobs</label> {{job.title}}</p>
+
+<div class="uk-grid">
+    <div class="uk-width-1-5@m overflow-y-auto h-96">
+
+        <ul class="uk-nav uk-nav-default uk-nav-divider bg-blue-200 uk-border-rounded uk-padding-small uk-margin" uk-switcher="connect: #project-job; animation: uk-animation-fade">
+            <li><a href="#"><span class="fa fa-clock"></span> Home</a></li>
+            <li><a href="#"><span class="fa fa-arrow-circle-right"></span> Tasks</a></li>
+            <li><a href="#"><span class="fa fa-arrow-circle-left"></span> Bill</a></li>
+            <li><a href="#"><span class="fa fa-cart-plus"></span> Crew</a></li>
+            <li><a href="#"><span class="fa fa-ticket"></span> State</a></li>
+            <li><a href="#"><span class="fa fa-list-ol"></span> Event</a></li>
+            <li><a href="#"><span class="fa fa-handshake"></span> Add Crew</a></li>
+            <li><a href="#"> <span class="fa fa-dollar"></span> Add Task</a></li>
+            <li></li>
+        </ul>
+
     </div>
-    
-  </div>
-  <!-- Navbar Center -->
-  <div class="navbar-center hidden lg:flex">
+    <div class="uk-width-expand@m">
 
-    <ul class="uk-subnav uk-subnav-pill" uk-switcher="connect: .switcher-container">
-      <li><a><span class="fa fa-home"></span>Home</a> </li>
-     
-      <li><a><span class="fa fa-list-ol"></span>Tasks</a></li>
-      <li><a><span class="fa fa-dollar"></span>Bill</a></li>
-      <li><a><span class="fa fa-users"></span>Crew</a> </li>        
-    </ul>
-  </div>
-        
-  <!-- Navbar End -->
-  <div class="navbar-end">
-   
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn "><span class="fa fa-wrench"></span>State</div>
-           
-              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                <li><a><span class="fa fa-calculator"></span>Active</a></li>
-                <li><a><span class="fa fa-poo"></span>Completed</a></li>
-                <li><a><span class="fa fa-edit"></span>Paused</a></li>
-                <li><a><span class="fa fa-list-ol"></span>Resumed</a></li>
-                <li><a><span class="fa fa-list-ol"></span>Terminated</a></li>
-              </ul>
-            </div>
+        <div id="project-job" class="uk-switcher">
+            <div id="job-home">{% include 'components/project/job/Home.html' %}</div>
+            <div id="job-tasks">{% include 'components/project/job/Tasks.html' %}</div>
+            <div id="job-bill"><p class="text-lg">Job BOQ</p>{{ job.tasks }}</div>
+            <div id="job-crew"><p class="text-lg">Job Crew</p> {{ job.crew }}</div>
+            <div id="job-state"><p class="text-lg">Job State</p> {{ job.state }}</div>
+            <div id="job-event"><p class="text-lg">Job Event</p> {{ job.event }}</div>
+            <div id="job-event"><p class="text-lg">Add Crew</p> {{ project.workers }}</div>
+            <div id="job-event"><p class="text-lg">Add Task</p> {{ project.rates }}</div>
 
-      <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn "><span class="fa fa-wrench"></span>Tools</div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-              
-              <li><a class="tooltip tooltip-info" data-tip="Add a crew member to the job crew"><span class="fa fa-calculator"></span>Add Crew</a></li>
-            <li><a class="tooltip tooltip-info" data-tip="Add a new task to the job's task queue"><span class="fa fa-poo"></span>Add Task</a></li>
-              </ul>        
-      </div>
+        </div>
 
-       <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn "><span class="fa fa-print"></span>Print</div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-              <li><a class="tooltip tooltip-info" data-tip="Print job tasks"><span class="fa fa-user"></span>Print Tasks</a></li>
-              <li><a class="tooltip tooltip-info" data-tip="Print This Job!"><span class="fa fa-gear"></span>Print Job</a></li>
-              </ul>        
-          </div>
-     
 
-   
-  </div>
-</div>
-<div class="uk-switcher switcher-container">
-  <div id="job-home">
-    {% include 'components/project/job/Home.html' %}
-
-  </div>
-  <div id="job-tasks">
-   <p class="text-lg">Job Tasks</p> 
-   {% include 'components/project/job/Tasks.html' %}
-  </div>
-  <div id="job-bill">
-    <p class="text-lg">Job BOQ</p> 
-    {{ job.tasks }}
-  </div>
-  <div id="job-crew">
-    <p class="text-lg">Job Crew</p> 
-    {{ job.crew }}
-  </div>
+    </div>
 </div>
 
-{% for key, val in job.items() %}
-  <strong>{{ key}} ---- :</strong> <p class="text-xs text-blue-500">{{ val }}</p><br>
-  {% endfor %}
- 
+
+
+

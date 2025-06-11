@@ -1088,7 +1088,7 @@ class ProjectClient:
                     self.project[self.properties[0]] = {item.get('_id') if item.get('_id') else item.get('id'): item for item in self.project.get(self.properties[0])}
 
                 return TEMPLATES.TemplateResponse(f'/components/project/{prop.capitalize()}.html', 
-                    {"request": request, prop: self.project.get(self.properties[0], {}).get(self.properties[1]) })  
+                    {"request": request, prop: self.project.get(self.properties[0], {}).get(self.properties[1]), "project": self.project})  
                              
 
                 

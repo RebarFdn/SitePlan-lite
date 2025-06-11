@@ -26,7 +26,7 @@
                     {% if task.state.active %}
                         
                         <div class="uk-inline">
-                          <span class="badge badge-success" type="button">Active</span>
+                          <span class="badge badge-success cursor-pointer">Active</span>
                             <div class="bg-red-400 text-white rounded-md hover:bg-red-400" uk-dropdown="mode: click">
                                 <ul>
                                     <li><span class="text-xs">{{ task._id }}</span></li>
@@ -42,7 +42,7 @@
                     {% elif task.state.pause %}
                         
                         <div class="uk-inline">
-                            <span class="badge badge-warning" type="button">Paused</span>
+                            <span class="badge badge-warning cursor-pointer">Paused</span>
                               <div class="bg-red-400 text-white rounded-md hover:bg-red-400" uk-dropdown="mode: click">
                                   <ul>
                                       <li><span class="text-xs">{{ task._id }}</span></li>
@@ -57,7 +57,7 @@
                     {% else %}
                        
                         <div class="uk-inline">
-                            <span class="badge badge-primary" type="button">Set State</span>
+                            <span class="badge badge-primary cursor-pointer">State</span>
                               <div class="bg-red-400 text-white rounded-md" uk-dropdown="mode: click">
                                   <ul>
                                       <li><span class="text-xs">{{ task._id }}</span></li>
@@ -74,17 +74,13 @@
                 </td>
                 <td>
                     <div class="uk-inline">
-                        <button class="uk-button uk-button-primary uk-button-small rounded-md" type="button">Manage</button>
+                        
+                        <span class="badge badge-primary cursor-pointer">Manage</span>
                         <div class="bg-red-300 text-gray-900 rounded-md hover:bg-red-400" uk-dropdown="mode: click">
                             <ul>
                                 <li><span class="text-xs">{{ task._id }}</span></li>                                
-                                <li><a 
-                                    href="#" 
-                                    hx-get="/edit_jobtask/{{job._id}}_{{task._id}}"
-                                    hx-target="#project-job-properties"
-                                    
-                                    >Edit</a> </li>
-                                    <li><a href="#" id="href">Add to bill</a> </li>
+                                <li><a href="#edit-task-modal" uk-toggle>Edit</a></li>
+                                    <li><a href="#add-to-bill-modal" uk-toggle">Add to bill</a> </li>
                                 <li><a 
                                     href="#" 
                                     id="href"
@@ -104,4 +100,19 @@
            
         </tbody>
     </table>
+</div>
+
+<div id="edit-task-modal" class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h2 class="uk-modal-title">Editing Task<h2>
+    </div>
+</div>
+
+
+<div id="add-to-bill-modal" class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h2 class="uk-modal-title">Adding task to paybill<h2>
+    </div>
 </div>

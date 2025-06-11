@@ -246,5 +246,3 @@ class supplierManager:
         else:
             return search_.get('id')
 
-
- 
