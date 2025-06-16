@@ -1,7 +1,7 @@
 <div id="jobs-index">
 <div class="navbar bg-base-100 shadow-sm">
     <div class="flex-1">
-      <a class="btn btn-ghost text-xl" onclick="new_job.showModal()">Jobs</a>
+      <a class="btn btn-ghost text-xl" onclick="new_job.showModal()">Jobs <span class="badge badge-primary badge-xs">{{ project.jobs | length }}</span></a>
     </div>
     <div class="navbar-start">
         <ul class="menu menu-horizontal px-1">

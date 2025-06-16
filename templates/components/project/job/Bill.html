@@ -1,0 +1,71 @@
+<p class="text-sm">Tasks</p>
+<div class="text-sm uk-overflow-auto">
+    <table class="uk-table uk-table-small uk-table-divider uk-table-responsive">
+       
+        <thead>
+            <tr>
+              
+                <th>Id</th>
+                <th>Description</th>                
+                <th>Metric Property</th>
+                <th>Imperial Property</th>
+                <th>Total</th>
+                <th>Manage</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in job.tasks %}
+            <tr>
+                
+                <td>{{ task._id }}</td>
+                <td>{{ task.description }}</td>
+                <td>
+                    <ul>
+                        <li>{{ task.metric.get('quantity', 0) | float | round(1, 'floor') }} {{ task.metric.unit }}</li>
+                         <li> at {{ task.metric.price | to_dollars }} per {{ task.metric.unit }}</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>{{ task.imperial.get('quantity', 0)| float | round(1, 'floor') }} {{ task.imperial.unit }}</li>
+                         <li> at {{ task.imperial.price | to_dollars }} per {{ task.imperial.unit }}</li>
+                    </ul>
+                </td>
+                <td>{{task.metric.total | to_dollars }}</td>
+                <td>
+                    <div class="uk-inline">
+                        
+                        <span class="badge badge-primary cursor-pointer">Manage</span>
+                        <div class="bg-red-300 text-gray-900 rounded-md hover:bg-red-400" uk-dropdown="mode: click">
+                            <ul>
+                                <li><span class="text-xs">{{ task._id }}</span></li>                                
+                                <li><a href="#edit-task-modal" uk-toggle>Edit</a></li>
+                                    <li><a href="#add-to-bill-modal" uk-toggle">Add to bill</a> </li>
+                                <li><a 
+                                    href="#" 
+                                    id="href"
+                                    hx-delete="/jobtask/{{job._id}}_{{task._id}}"
+                                    hx-confirm="Are you shure you want to remove {{task.title}} from Job {{job.title}}"
+                                    hx-target="#message"                                    
+                                    >Delete</a> </li>
+                            </ul>
+                            
+                        </div>
+                    </div>
+                </td>
+                
+                
+            </tr>
+            {% endfor %}
+           
+        </tbody>
+    </table>
+</div>
+
+<div id="edit-task-modal" class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h2 class="uk-modal-title">Editing Task<h2>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+<span class="text-lg-font-semibold">Add Job </span>
+
+<div id="job-tasks-queue" class="flex flex-col text-xs overflow-y-auto sm:overflow-x-auto h-96 p-1">
+<p class="text-sm">Add Task</p>
+    <table class="uk-table uk-table-small uk-table-striped uk-table-responsive text-gray-800">
+        <thead>
+            <tr>   
+                <th></th>                
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Category</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in project.rates %}                      
+
+                <tr>    
+                     <td class="bg-gray-200">                         
+                        
+                        <form
+                            hx-post="/Project/{{project._id}}/add_jobtask/{{task._id}}"                           
+                            hx-target="#job-tasks-queue"
+                            hx-trigger="click"
+                        >            
+                            <input class="uk-radio" type="radio" name="task" value="{{task._id}}">
+                        </form>
+                                                    
+                    </td>          
+                    <td>{{ task._id }}</td>
+                    <td>{{ task.title }} </td>
+                    <td>{{ task.description }} </td>
+                    <td>{{ task.category }}</td>
+                     
+                   
+                </tr>
+            {% endfor %}
+                <tr > 
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+
+                    <td></td>
+                </tr>
+        </tbody>
+    </table>
+    
+</div>

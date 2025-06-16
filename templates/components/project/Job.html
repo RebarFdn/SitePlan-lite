@@ -23,12 +23,12 @@
         <div id="project-job" class="uk-switcher">
             <div id="job-home">{% include 'components/project/job/Home.html' %}</div>
             <div id="job-tasks">{% include 'components/project/job/Tasks.html' %}</div>
-            <div id="job-bill"><p class="text-lg">Job BOQ</p>{{ job.tasks }}</div>
+            <div id="job-bill">{% include 'components/project/job/Bill.html' %}</div>
             <div id="job-crew"><p class="text-lg">Job Crew</p> {{ job.crew }}</div>
             <div id="job-state"><p class="text-lg">Job State</p> {{ job.state }}</div>
             <div id="job-event"><p class="text-lg">Job Event</p> {{ job.event }}</div>
             <div id="job-event"><p class="text-lg">Add Crew</p> {{ project.workers }}</div>
-            <div id="job-event"><p class="text-lg">Add Task</p> {{ project.rates }}</div>
+            <div id="job-event">{% include 'components/project/job/AddTask.html' %}</div>
 
         </div>
 

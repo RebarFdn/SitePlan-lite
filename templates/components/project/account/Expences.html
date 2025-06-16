@@ -59,7 +59,7 @@
 <!-- This is the Deposit modal -->
 <div id="expence-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body rounded-lg">
-        <p class="text-lg text-center font-semibold">Project account Expence </p>
+        <p class="text-lg text-center font-semibold">Project {{project._id}} account Expence </p>
         <form 
             hx-post="/Project/{{project._id}}/expence/e"
             hx-target="#account-expences"

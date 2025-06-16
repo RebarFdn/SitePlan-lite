@@ -7,10 +7,6 @@ from modules.utils import timestamp,  to_dollars, generate_id, load_metadata, se
 from database import Recouch, local_db
 from config import TEMPLATES
 
-from pydantic import BaseModel, Field
-from eaziform import FormModel
-
-
 def page_url(page:str=None)->str:
     return f"/components/rate/{page}"
 
@@ -88,51 +84,8 @@ def rate_model()->dict:
             }
 
 
-class Metric(BaseModel):
-    unit:str = None
-    price:float = 0
-    quantity:float = 0
-    total: float = 0
-
-class Imperial(BaseModel):
-    unit:str = None
-    price:float = 0
-    quantity:float = 0
-    total: float = 0
-
-class State(BaseModel):
-    active:bool = False
-    complete:bool = False
-    pause:bool = False
-    terminate:bool = False
-          
-
-class Event(BaseModel):
-    started:str = None # date
-    completed:str = None
-    paused:list = []
-    restart:list = []
-    terminated: str = None
-          
-
-class Output(BaseModel):
-    metric:float = 0
-    imperial:float = 0
-    
 
 
-class Rate(FormModel):
-    _id: str
-    title: str
-    description: str
-    assigned:bool = False
-    assignedto:str = None
-    phase:str = None
-    paid: str = None
-    timestamp:int = 0
-    comments: list = []
-    progress:float = 0
-    category:typing.Any
 
 
 async def all_rates_ref(conn:typing.Coroutine=db_connection)->list:

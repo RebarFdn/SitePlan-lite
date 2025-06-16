@@ -9,9 +9,10 @@ from pydantic_extra_types.country import CountryShortName
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 try:
-    from eaziform import FormModel
-except ImportError:
     from models.eaziform import FormModel
+except ImportError:
+    
+    from eaziform import FormModel
 
 try:
     from modules.utils import generate_id, timestamp, tally
@@ -44,6 +45,21 @@ class Address(BaseModel):
     country:str = Field(default= None)
     zip: str = Field(default=None, min_length=3, max_length=6)
 
+
+class State(BaseModel):
+    active:bool = False
+    complete:bool = False
+    pause:bool = False
+    terminate:bool = False
+          
+
+class Event(BaseModel):
+    started:str = None # date
+    completed:str = None
+    paused:list = []
+    restart:list = []
+    terminated: str = None
+          
 # Contact and Communication
 
 class Contact(BaseModel):
@@ -69,6 +85,25 @@ class ImperialModel(BaseModel):
     quantity:float = Field(default=0.001)
     total:float = Field(default=0.001)
 
+
+class Output(BaseModel):
+    metric:float = 0
+    imperial:float = 0
+    
+
+
+class Rate(FormModel):
+    _id: str
+    title: str
+    description: str
+    assigned:bool = False
+    assignedto:str = None
+    phase:str = None
+    paid: str = None
+    timestamp:int = 0
+    comments: list = []
+    progress:float = 0
+    category:Any
 
 
 ## Financial and Accounting Models
@@ -407,6 +442,59 @@ class MaterialSupplier(BaseModel):
     address:Address = Address()
     contact: Contact = Contact()
 
+
+# Jobs and Tasks 
+class JobTotal(BaseModel):
+    imperial:float = Field(default=0.0)
+    metric:float = Field(default=0.0)
+    fees:float = Field(default=0.0)
+
+
+class JobCost(BaseModel):
+    task:float = Field(default=0.0)
+    contractor:float = Field(default=0.0)
+    misc:float = Field(default=0.0)
+    insurance:float = Field(default=0.0)
+    overhead:float = Field(default=0.0)
+    total:JobTotal = JobTotal()
+    unit:str = Field(default="$")
+
+class JobPayment(BaseModel):
+    amount:float = 0 # Amount to be paid out
+    date:int # The payment date
+    percent:int # The percent value of the job progress
+
+
+class JobPaymentResult(BaseModel):
+    paid:bool = Field(default=False) 
+    payments:list = []
+
+
+class JobCrew(BaseModel):
+    name:str = Field(default=None)
+    rating:int = Field(default=0)
+    members:list = []
+    event:Event = Event()
+    state:State = State()
+     
+    
+class Job(BaseModel):
+    id: str = Field(default=None, validation_alias=AliasChoices('id', '_id'))
+    project_id: str = Field(default=None)
+    title: str = Field(default=None)
+    description:str = Field(default=None)
+    projectPhase: str
+    crew:JobCrew = JobCrew()
+    worker:str
+    tasks:list = []
+    event:Event = Event()
+    state:State = State()
+    fees:BillFees = BillFees()
+    costs:JobCost = JobCost()
+    progress:int = Field(default=0)
+    result:JobPaymentResult = JobPaymentResult()
+
+    
 
 class ProjectClient(BaseModel):
     name:str

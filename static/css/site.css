@@ -2771,6 +2771,9 @@
   .bg-gray-100 {
     background-color: var(--color-gray-100);
   }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
+  }
   .bg-red-300 {
     background-color: var(--color-red-300);
   }

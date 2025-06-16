@@ -1,20 +1,24 @@
-
+import time
+from plyer import notification
 from typing import Coroutine, List, Any
 from asyncio import sleep
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse
-from ezchart import ezChart
+
 from database import Recouch, local_db
 from logger import logger
 from modules.supplier import supplier_name_index, get_supplier, update_supplier, get_supplier_key_index
 from modules.utils import tally, timestamp, load_metadata, set_metadata, generate_id
-from models import (Project, project_phases, project_template ,DepositModel, WithdrawalModel, 
+from models import (Project, project_phases, project_template, DepositModel, WithdrawalModel, 
 ExpenceModel, BillFees , PaybillModel, Supplier, InvoiceItem, InvoiceModel, UnpaidTaskModel, SupplierInvoiceRecord)
 from modules.site_db import SiteDb
 from config import TEMPLATES
+try:
+    from models.ezchart import ezChart
+except ImportError:
+    from ezchart import ezChart
 
-import time
-from plyer import notification
+
 #from tabulate import tabulate
 
 _databases:dict = { # Project Databases
@@ -179,7 +183,7 @@ async def piechart(request:Request, project:dict=None):
     return HTMLResponse(chart.chart())
 
 
-# Project accounting utilities 
+# Project accounting management 
 async def account_statistics(request:Request, project:dict=None)-> TEMPLATES.TemplateResponse:
     """Account Statistics Reporting"""
     if type(project) == dict:
@@ -419,7 +423,8 @@ async def record_expence( request:Request, project:dict=None, data:dict=None )->
     # process withdrawals
     if data:   
         data['date'] = timestamp(date=data.get('date')) # Update timestamp to int
-        expence = ExpenceModel( **data ) # Validate data                     
+        expence = ExpenceModel( **data ) # Validate data  
+        print(expence)                   
         project['account']['expences'].append(expence.model_dump())
         withdrawal = WithdrawalModel(date=expence.date, ref=expence.ref, amount=expence.total, recipient=expence.claimant)
         withdrawal.user=None
@@ -484,6 +489,7 @@ async def delete_expence(request:Request, project:dict=None, id:str=None )-> TEM
                                 "_id": project.get('_id'), 
                                 "account": { "expences": project.get('account',{}).get('expences', [])}
                             } })
+
 
 def can_record_invoice(project:dict=None, data:dict=None)->bool:
     """Check in the project repository if invoice is existing
@@ -828,10 +834,7 @@ async def add_bill_item(request:Request, project:dict=None, iid:str=None )-> TEM
         finally:                
             del(project) # clean up
    
-        
-
-
-
+ 
 async def update_paybill( request:Request, project:dict=None, data:dict=None )-> TEMPLATES.TemplateResponse:
     """Retreive a paybill object by given bill id """
 
@@ -869,6 +872,12 @@ async def delete_paybill( request:Request, project:dict=None, bill_id:str=None )
                     del(project) # clean up
     else:
         return {"error": 501, "message": "Your Request was not processed."}
+
+
+# Project Jobs and tasks management 
+
+
+
 
 
 class projectManager:
@@ -949,7 +958,6 @@ class projectManager:
             return search_.get(self.properties[0])
         else:
             return search_.get('id')
-
 
 
 class ProjectClient:
